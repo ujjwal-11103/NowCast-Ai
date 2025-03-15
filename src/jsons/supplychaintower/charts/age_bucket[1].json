@@ -1,0 +1,22 @@
+[
+    {
+        "Age_Bucket": "0-30 days",
+        "Count": 467,
+        "Liquidation_Risk_Simple": "Low Risk"
+    },
+    {
+        "Age_Bucket": "31-60 days",
+        "Count": 329,
+        "Liquidation_Risk_Simple": "Moderate Risk"
+    },
+    {
+        "Age_Bucket": "61-90 days",
+        "Count": 10,
+        "Liquidation_Risk_Simple": "High Risk"
+    },
+    {
+        "Age_Bucket": "90+ days",
+        "Count": 10,
+        "Liquidation_Risk_Simple": "Critical Risk"
+    }
+]

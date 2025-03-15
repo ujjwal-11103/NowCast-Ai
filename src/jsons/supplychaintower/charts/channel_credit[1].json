@@ -1,0 +1,38 @@
+[
+    {
+        "Channel": "Amazon",
+        "Credit_Limit": 20000000,
+        "Credit_Utilization": 19362122.4624368958,
+        "Utilization_Percentage": 96.8106123122
+    },
+    {
+        "Channel": "Flipkart",
+        "Credit_Limit": 15000000,
+        "Credit_Utilization": 7889784.6273860438,
+        "Utilization_Percentage": 52.5985641826
+    },
+    {
+        "Channel": "BigBasket",
+        "Credit_Limit": 7500000,
+        "Credit_Utilization": 5779861.257379014,
+        "Utilization_Percentage": 77.0648167651
+    },
+    {
+        "Channel": "Shopify",
+        "Credit_Limit": 5000000,
+        "Credit_Utilization": 4272651.2986272909,
+        "Utilization_Percentage": 85.4530259725
+    },
+    {
+        "Channel": "Blinkit",
+        "Credit_Limit": 3000000,
+        "Credit_Utilization": 2806453.6856191284,
+        "Utilization_Percentage": 93.5484561873
+    },
+    {
+        "Channel": "Zepto",
+        "Credit_Limit": 2000000,
+        "Credit_Utilization": 1714086.9321324276,
+        "Utilization_Percentage": 85.7043466066
+    }
+]
