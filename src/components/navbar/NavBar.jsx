@@ -65,8 +65,7 @@ const NavBar = () => {
         <header className="bg-[#0a2472] text-white p-4 flex justify-between items-center">
             {/* Left Section */}
             <div className="flex items-center space-x-4">
-                <BarChart3 size={24} className="text-white" />
-                {/* <img src={logoPolestar} alt="Logo" className="me-4" style={{ height: "50px" }} /> */}
+                <img src="Intellimark_AI.png" alt="Logo" className="me-2" style={{ height: "35px" }} />
                 <h1 className="text-xl font-bold">Intellimark AI</h1>
                 <span className="px-3 py-1 bg-[#1e3799] rounded-md text-sm font-medium">{selectedUser.headerText}</span>
             </div>

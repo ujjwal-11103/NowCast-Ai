@@ -100,10 +100,9 @@ const NewLaunches = () => {
     );
 
     return (
-        <div className="flex flex-col lg:flex-row gap-4 p-4">
+        <div className="flex flex-col lg:flex-row gap-1 p-4">
             {/* Data Table */}
             <div className="bg-white w-full lg:min-w-1/2">
-                <h2 className="text-lg font-semibold text-gray-800 mb-4">New Launches Data</h2>
                 <div className="overflow-x-auto">
                     <div className="max-h-[400px] overflow-y-auto border rounded-md">
                         <table className="w-full">
@@ -175,22 +174,23 @@ const NewLaunches = () => {
             </div>
 
             {/* Plotly Chart */}
-            <div className="w-full lg:w-1/2 border rounded-lg shadow-md p-4 bg-white">
-                <h2 className="text-lg font-semibold text-gray-800 mb-4">New Launches Analysis</h2>
+            <div className="w-full lg:w-1/2 bg-white">
                 <Plot
                     data={traces}
                     layout={{
                         barmode: "stack",
-                        title: { text: "", font: { size: 18 }, x: 0.5, y: 0.95 },
+                        title: { text: "New Launches Analysis", font: { size: 18 }, x: 0.5, y: 0.95 },
                         template: "plotly_white",
-                        legend: { x: 0.5, y: 1 },
+                        legend: { x: 0.6, y: 1 },
                         xaxis: { title: "" },
                         yaxis: { title: "" },
                         responsive: true,
                     }}
+                    config={{ displayModeBar: false }} // Hides the zoom buttons and mode bar
                     useResizeHandler={true}
                     style={{ width: "100%", height: "100%" }}
                 />
+
             </div>
         </div>
     );

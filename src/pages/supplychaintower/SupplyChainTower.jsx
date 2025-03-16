@@ -20,6 +20,8 @@ const MapComponent = React.lazy(() => import("./charts/IndiaMap"))
 const SupplyChainTower = () => {
     const [activeTab, setActiveTab] = useState("DOH")
     const [view, setView] = useState("Snapshot"); // Default view is Snapshot
+    const [selectedView, setSelectedView] = useState("inventory");
+
 
 
 
@@ -146,10 +148,10 @@ const SupplyChainTower = () => {
                     <Card className="shadow-sm">
                         <CardContent className="p-4">
                             {/* Tab Navigation */}
-                            <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-lg font-medium text-gray-700">
+                            <div className="flex justify-between items-center mb-8">
+                                {/* <h3 className="text-lg font-medium text-gray-700">
                                     {activeTab === "DOH" ? "Week on Hand vs Count of SKUs" : "Inventory Aging Distribution"}
-                                </h3>
+                                </h3> */}
                                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-auto">
                                     <TabsList>
                                         <TabsTrigger
@@ -177,7 +179,7 @@ const SupplyChainTower = () => {
                 {/* Alerts Table */}
                 <div className="grid lg:grid-cols-12 gap-6 mb-6">
                     {/* Good Performers Table */}
-                    <div className="lg:col-span-6 bg-white rounded-xl shadow-card hover:shadow-card-hover transition-shadow">
+                    <div className="lg:col-span-6 bg-white rounded-xl shadow-sm hover:shadow-card-hover transition-shadow">
                         <div className="p-4 border-b border-neutral-200">
                             <h2 className="text-lg font-semibold">Top Alerts Out Of Stock</h2>
                         </div>
@@ -206,7 +208,7 @@ const SupplyChainTower = () => {
                     </div>
 
                     {/* Bad Performers Table */}
-                    <div className="lg:col-span-6 bg-white rounded-xl shadow-card hover:shadow-card-hover transition-shadow">
+                    <div className="lg:col-span-6 bg-white rounded-xl shadow-sm hover:shadow-card-hover transition-shadow">
                         <div className="p-4 border-b border-neutral-200">
                             <h2 className="text-lg font-semibold">Top Alerts Over Inventory</h2>
                         </div>
@@ -236,7 +238,7 @@ const SupplyChainTower = () => {
                 </div>
 
                 {/* Tabs for Snapshot & Credit */}
-                <div>
+                <div className="mb-6">
                     <Tabs value={view} onValueChange={setView} className="w-auto">
                         <TabsList>
                             <TabsTrigger
@@ -258,31 +260,43 @@ const SupplyChainTower = () => {
                             <ChannelCard
                                 logo="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg"
                                 state="NA"
+                                doh="1.00"
+                                age="1165"
                                 fillRate={80}
                             />
                             <ChannelCard
                                 logo="https://upload.wikimedia.org/wikipedia/commons/0/05/Flipkart_logo.png"
                                 state="NA"
+                                doh="1.01"
+                                age="1132"
                                 fillRate={80}
                             />
                             <ChannelCard
                                 logo="https://blinkit.com/images/logo.svg"
                                 state="Delhi"
+                                doh="1.02"
+                                age="1205"
                                 fillRate={68}
                             />
                             <ChannelCard
                                 logo="https://www.zeptonow.com/images/logo.svg"
                                 state="Maharashtra"
+                                doh="1.24"
+                                age="1150"
                                 fillRate={66}
                             />
                             <ChannelCard
                                 logo="https://upload.wikimedia.org/wikipedia/commons/0/0e/Shopify_logo_2018.svg"
                                 state="Punjab"
+                                doh="1.01"
+                                age="1144"
                                 fillRate={69}
                             />
                             <ChannelCard
                                 logo="https://www.bigbasket.com/static/v2489/common/img/bb_logo.png"
                                 state="Karnataka"
+                                doh="1.00"
+                                age="1086"
                                 fillRate={68}
                             />
                         </div>
@@ -292,22 +306,28 @@ const SupplyChainTower = () => {
                 </div>
 
                 {/* Outlet table and chart */}
-                <div className="bg-white rounded-lg shadow-sm p-4">
+                <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
                     {/* Header Section */}
                     <div className="flex justify-between items-center mb-6">
-                        <div className="flex gap-4">
-                            <button className="px-4 py-2 bg-blue-500 text-white rounded-md">
-                                Inventory Recommendation
-                            </button>
-                            <button className="px-4 py-2 text-gray-700">New Launches</button>
-                        </div>
-                        <h2 className="text-lg font-semibold text-[#0A1D56]">
-                            Inventory Recommendation Data
-                        </h2>
-                    </div>
-                    <InventoryTable />
-                    <NewLaunches />
 
+                        <h2 className="text-lg font-semibold text-[#0A1D56]">
+                            {selectedView === "inventory" ? "Inventory Recommendation Data" : "New Launches Data"}
+                        </h2>
+
+                        <Tabs value={selectedView} onValueChange={setSelectedView} className="w-auto">
+                            <TabsList>
+                                <TabsTrigger value="inventory" className={`cursor-pointer ${selectedView === "inventory" ? "bg-blue-500 text-white" : ""}`}>
+                                    Inventory Recommendation
+                                </TabsTrigger>
+                                <TabsTrigger value="newLaunches" className={`cursor-pointer ${selectedView === "newLaunches" ? "bg-blue-500 text-white" : ""}`}>
+                                    New Launches
+                                </TabsTrigger>
+                            </TabsList>
+                        </Tabs>
+                    </div>
+
+                    {/* Conditional Rendering */}
+                    {selectedView === "inventory" ? <InventoryTable /> : <NewLaunches />}
                 </div>
 
 

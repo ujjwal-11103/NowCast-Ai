@@ -8,7 +8,7 @@ const ChannelCard = ({ logo, state, doh, age, fillRate }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-card hover:shadow-card-hover transition-all p-5 border border-neutral-100">
+    <div className="bg-white rounded-xl shadow-sm hover:shadow-lg-hover transition-all p-5 border border-neutral-100">
       <img src={logo} alt="Channel logo" className="h-8 mb-4" />
       <div className="space-y-3">
         <div className="flex justify-between items-center">

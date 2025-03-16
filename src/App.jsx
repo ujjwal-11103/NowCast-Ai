@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import Login from './pages/LoginPage/Login'
 import Teresa from './pages/teresa/Teresa';
 import SupplyChainTower from './pages/supplychaintower/SupplyChainTower';
+import MarketMixModelling from './pages/neptune/MarketMixModelling';
 
 const App = () => {
   return (
@@ -13,6 +14,7 @@ const App = () => {
       <Routes>
         <Route path='/' element={<Login />} />
         <Route path='/teresa' element={<Teresa />} />
+        <Route path='/neptune' element={<MarketMixModelling />} />
         <Route path="/supplychaintower" element={<SupplyChainTower />} />
       </Routes>
     </BrowserRouter>
