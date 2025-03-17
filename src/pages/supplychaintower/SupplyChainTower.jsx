@@ -6,6 +6,8 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 // import flipkart from "../../assets/company logo/Flipkart_logo.png"
 // import amazon from "../../assets/company logo/Amazon-Logo.png"
 // import blinkit from "../../assets/company logo/blinkit-logo.png"
+import flipkart from "../../assets/company logo/Flipkart.svg"
+import blinkit from "../../assets/company logo/blinkit.svg"
 
 import DOH from "./charts/DOH"
 import Age from "./charts/Age"
@@ -136,7 +138,7 @@ const SupplyChainTower = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
                     {/* Map Visualization */}
                     <Card className="shadow-sm">
-                        <CardContent className="p-4">
+                        <CardContent className="px-4 py-0">
                             <h3 className="text-lg font-medium text-gray-700">Interactive Map Visualization</h3>
                             <Suspense fallback={<div className="h-[400px] bg-gray-100 animate-pulse rounded-md"></div>}>
                                 <MapComponent />
@@ -265,14 +267,14 @@ const SupplyChainTower = () => {
                                 fillRate={80}
                             />
                             <ChannelCard
-                                logo="https://upload.wikimedia.org/wikipedia/commons/0/05/Flipkart_logo.png"
+                                logo={flipkart}
                                 state="NA"
                                 doh="1.01"
                                 age="1132"
                                 fillRate={80}
                             />
                             <ChannelCard
-                                logo="https://blinkit.com/images/logo.svg"
+                                logo={blinkit}
                                 state="Delhi"
                                 doh="1.02"
                                 age="1205"
