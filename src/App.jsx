@@ -12,10 +12,11 @@ const App = () => {
     <BrowserRouter>
       <Toaster richColors />
       <Routes>
-        <Route path='/' element={<Login />} />
+        {/* <Route path='/' element={<Login />} /> */}
         <Route path='/teresa' element={<Teresa />} />
         <Route path='/neptune' element={<MarketMixModelling />} />
         <Route path="/supplychaintower" element={<SupplyChainTower />} />
+        <Route path="/" element={<SupplyChainTower />} />
       </Routes>
     </BrowserRouter>
   )
