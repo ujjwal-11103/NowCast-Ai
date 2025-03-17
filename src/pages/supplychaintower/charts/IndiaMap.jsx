@@ -4,6 +4,7 @@ import { scaleLinear } from "d3-scale";
 import axios from "axios";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import indiaStatesTopoJson from "../../../jsons/supplychaintower/india_topo.json";
+import indiaStatesGeoJson from "../../../jsons/supplychaintower/in.json";
 
 const IndiaMap = () => {
     const [stateData, setStateData] = useState([]);
@@ -59,21 +60,14 @@ const IndiaMap = () => {
                 width={800}
                 height={600}
             >
-                <Geographies geography={indiaStatesTopoJson}>
+                <Geographies geography={indiaStatesGeoJson}>
                     {({ geographies }) =>
                         geographies.map((geo) => {
-                            const stateName = geo.properties.st_nm;
+                            const stateName = geo.properties?.name || geo.properties?.st_nm;
                             if (!stateName) return null;
 
                             const stateInfo = getStateData(stateName);
                             const totalAlerts = stateInfo?.Total_Alerts || 0;
-
-                            let tooltipText = `<strong>${stateName}</strong><br>Total Alerts: ${totalAlerts}<br><br>`;
-                            if (stateInfo) {
-                                stateInfo.Item.forEach((item, index) => {
-                                    tooltipText += `Alert ${index + 1}:<br> Item: ${item} <br> DOH: ${stateInfo.Days_on_Hand[index]} <br> Inventory Alert: ${stateInfo.Inventory_Alert[index]}<br><br>`;
-                                });
-                            }
 
                             return (
                                 <Tooltip key={geo.rsmKey}>
@@ -104,12 +98,12 @@ const IndiaMap = () => {
                                             <div className="mt-2 text-blue-500 font-semibold">More alerts...</div>
                                         )}
                                     </TooltipContent>
-
                                 </Tooltip>
                             );
                         })
                     }
                 </Geographies>
+
             </ComposableMap>
         </div>
     );
