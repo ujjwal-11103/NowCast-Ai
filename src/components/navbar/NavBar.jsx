@@ -36,19 +36,26 @@ const NavBar = () => {
 
     const toggleDropdown = () => setIsDropdownVisible(!isDropdownVisible);
 
+    // const handleUserClick = (userKey) => {
+    //     setSelectedUser(users[userKey]);
+    //     setIsDropdownVisible(false);
+    //     const userRoutes = {
+    //         Ravi: "/neptune",
+    //         umesh: "/alfred",
+    //         mahesh: "/teresa",
+    //         Ramesh: "/ceo-cockpit",
+    //         Suresh: "/supplychaintower",
+    //         sandesh: "/pricingpage",
+    //     };
+    //     navigate(userRoutes[userKey]);
+    // };
+
     const handleUserClick = (userKey) => {
         setSelectedUser(users[userKey]);
         setIsDropdownVisible(false);
-        const userRoutes = {
-            Ravi: "/neptune",
-            umesh: "/alfred",
-            mahesh: "/teresa",
-            Ramesh: "/ceo-cockpit",
-            Suresh: "/supplychaintower",
-            sandesh: "/pricingpage",
-        };
-        navigate(userRoutes[userKey]);
+        window.location.href = "http://52.172.42.245:8080/";
     };
+
 
     const handleClickOutside = (event) => {
         if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
