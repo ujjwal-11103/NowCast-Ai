@@ -6,6 +6,7 @@ import Login from './pages/LoginPage/Login'
 import Teresa from './pages/teresa/Teresa';
 import SupplyChainTower from './pages/supplychaintower/SupplyChainTower';
 import MarketMixModelling from './pages/neptune/MarketMixModelling';
+import Overall from './pages/Overall/Overall';
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
         <Route path='/neptune' element={<MarketMixModelling />} />
         <Route path="/supplychaintower" element={<SupplyChainTower />} />
         <Route path="/" element={<SupplyChainTower />} />
+        <Route path="/dashboard" element={<Overall />} />
       </Routes>
     </BrowserRouter>
   )
