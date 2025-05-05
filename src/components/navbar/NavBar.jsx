@@ -78,8 +78,7 @@ const NavBar = () => {
             </div>
 
             {/* Right Section */}
-            <div className="flex items-center space-x-6">
-                {/* User Dropdown */}
+            {/* <div className="flex items-center space-x-6">
                 <div className="relative" ref={dropdownRef}>
                     <div className="flex items-center space-x-2 cursor-pointer group" onClick={toggleDropdown}>
                         <img src={selectedUser.img} alt="Profile" className="w-9 h-9 rounded-full" />
@@ -90,7 +89,6 @@ const NavBar = () => {
                         <ChevronDown size={16} className="text-blue-200 group-hover:text-white transition-colors" />
                     </div>
 
-                    {/* Dropdown Menu */}
                     {isDropdownVisible && (
                         <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded-md shadow-lg z-50">
                             {Object.keys(users).map(
@@ -112,7 +110,7 @@ const NavBar = () => {
                         </div>
                     )}
                 </div>
-            </div>
+            </div> */}
         </header>
     );
 };

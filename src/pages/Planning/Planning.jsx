@@ -1,6 +1,10 @@
 
 import React, { useState } from "react";
-import { ArrowDown, ExternalLink, LineChart } from "lucide-react"
+import { ArrowDown, DollarSign, ExternalLink, LineChart } from "lucide-react"
+import { Package } from 'lucide-react';
+import { ChartPie } from 'lucide-react';
+
+
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -21,30 +25,9 @@ const Planning = () => {
     return (
         <div className="flex h-full">
             <SideBar />
-            <div className="flex-1 overflow-auto">
+            <div className="flex-1 overflow-auto ">
                 <header className="flex items-center justify-between border-b p-4">
                     <h1 className="text-2xl font-bold text-[#0A2472]">Planning Module</h1>
-                    <div className="flex items-center gap-2">
-                        <Button variant="outline">Deploy</Button>
-                        <Button variant="ghost" size="icon">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="lucide lucide-more-vertical"
-                            >
-                                <circle cx="12" cy="12" r="1" />
-                                <circle cx="12" cy="5" r="1" />
-                                <circle cx="12" cy="19" r="1" />
-                            </svg>
-                        </Button>
-                    </div>
                 </header>
 
                 <main className="p-6">
@@ -54,15 +37,15 @@ const Planning = () => {
                         <div className="flex items-center gap-2 mb-4">
                             <span className="font-medium">Forecasted Sales for:</span>
                             <div className="flex items-center gap-2">
-                                <Badge className="bg-[#1E40AF] hover:bg-[#0A2472]">Channel 2</Badge>
+                                <Badge className="bg-[#3661ee] hover:bg-[#3351ad] text-white">Channel 2</Badge>
                                 <span>&gt;</span>
-                                <Badge className="bg-[#1E40AF] hover:bg-[#0A2472]">Chain 3</Badge>
+                                <Badge className="bg-[#3661ee] hover:bg-[#3351ad] text-white">Chain 3</Badge>
                                 <span>&gt;</span>
-                                <Badge className="bg-[#1E40AF] hover:bg-[#0A2472]">Depot 5</Badge>
+                                <Badge className="bg-[#3661ee] hover:bg-[#3351ad] text-white">Depot 5</Badge>
                                 <span>&gt;</span>
-                                <Badge className="bg-[#1E40AF] hover:bg-[#0A2472]">SubCat 5</Badge>
+                                <Badge className="bg-[#3661ee] hover:bg-[#3351ad] text-white">SubCat 5</Badge>
                                 <span>&gt;</span>
-                                <Badge className="bg-[#1E40AF] hover:bg-[#0A2472]">SKU 10</Badge>
+                                <Badge className="bg-[#3661ee] hover:bg-[#3351ad] text-white">SKU 10</Badge>
                             </div>
                         </div>
                     </div>
@@ -71,21 +54,7 @@ const Planning = () => {
                         <Card>
                             <CardContent className="p-6">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="text-[#0A2472]"
-                                    >
-                                        <rect width="20" height="14" x="2" y="5" rx="2" />
-                                        <line x1="2" x2="22" y1="10" y2="10" />
-                                    </svg>
+                                    <Package className="h-6 w-6 text-blue-500" />
                                     <span className="text-sm font-medium">Forecasted Volume</span>
                                 </div>
                                 <div className="flex items-baseline">
@@ -99,22 +68,8 @@ const Planning = () => {
                         <Card>
                             <CardContent className="p-6">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="text-[#0A2472]"
-                                    >
-                                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                                    </svg>
+                                    <DollarSign className="h-6 w-6 text-blue-500" />
                                     <span className="text-sm font-medium">Forecasted Value</span>
-                                    <ExternalLink size={14} className="text-gray-400" />
                                 </div>
                                 <div className="flex items-baseline">
                                     <span className="text-3xl font-bold text-[#0A2472]">₹ 58.3</span>
@@ -127,7 +82,7 @@ const Planning = () => {
                         <Card>
                             <CardContent className="p-6">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <LineChart className="text-[#0A2472]" size={24} />
+                                    <LineChart className="h-6 w-6 text-green-500" size={24} />
                                     <span className="text-sm font-medium">YoY Growth</span>
                                 </div>
                                 <div className="flex flex-col">
@@ -149,22 +104,7 @@ const Planning = () => {
                         <Card>
                             <CardContent className="p-6">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="text-[#0A2472]"
-                                    >
-                                        <circle cx="12" cy="12" r="10" />
-                                        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
-                                        <path d="M2 12h20" />
-                                    </svg>
+                                    <ChartPie className="h-6 w-6 text-blue-500" />
                                     <span className="text-sm font-medium">Total Volume</span>
                                 </div>
                                 <div className="flex items-baseline">
@@ -277,11 +217,10 @@ const Planning = () => {
                     <div>
                         <div className="flex items-center gap-2 mb-4">
                             <h2 className="text-xl font-semibold">Waterfall Charts</h2>
-                            <ExternalLink size={16} className="text-gray-400" />
                         </div>
 
-                        <Accordion type="multiple" className="space-y-4">
-                            <AccordionItem value="item-1" className="border rounded-lg overflow-hidden">
+                        <Accordion type="multiple" className="flex flex-wrap gap-4 items-start">
+                            <AccordionItem value="item-1" className="w-full md:w-[48%] border rounded-lg overflow-hidden">
                                 <AccordionTrigger className="px-4 py-3 bg-gray-50 hover:bg-gray-100">
                                     <span className="font-medium">SKU 10 - Jan Waterfall</span>
                                 </AccordionTrigger>
@@ -292,7 +231,7 @@ const Planning = () => {
                                 </AccordionContent>
                             </AccordionItem>
 
-                            <AccordionItem value="item-2" className="border rounded-lg overflow-hidden">
+                            <AccordionItem value="item-2" className="w-full md:w-[48%] border rounded-lg overflow-hidden">
                                 <AccordionTrigger className="px-4 py-3 bg-gray-50 hover:bg-gray-100">
                                     <span className="font-medium">SKU 10 - Feb Waterfall</span>
                                 </AccordionTrigger>
@@ -303,7 +242,7 @@ const Planning = () => {
                                 </AccordionContent>
                             </AccordionItem>
 
-                            <AccordionItem value="item-3" className="border rounded-lg overflow-hidden">
+                            <AccordionItem value="item-3" className="w-full md:w-[48%] border rounded-lg overflow-hidden">
                                 <AccordionTrigger className="px-4 py-3 bg-gray-50 hover:bg-gray-100">
                                     <span className="font-medium">SKU 5 - Jan Waterfall</span>
                                 </AccordionTrigger>
@@ -314,7 +253,7 @@ const Planning = () => {
                                 </AccordionContent>
                             </AccordionItem>
 
-                            <AccordionItem value="item-4" className="border rounded-lg overflow-hidden">
+                            <AccordionItem value="item-4" className="w-full md:w-[48%] border rounded-lg overflow-hidden">
                                 <AccordionTrigger className="px-4 py-3 bg-gray-50 hover:bg-gray-100">
                                     <span className="font-medium">SKU 5 - Feb Waterfall</span>
                                 </AccordionTrigger>
@@ -325,7 +264,7 @@ const Planning = () => {
                                 </AccordionContent>
                             </AccordionItem>
 
-                            <AccordionItem value="item-5" className="border rounded-lg overflow-hidden">
+                            <AccordionItem value="item-5" className="w-full md:w-[48%] border rounded-lg overflow-hidden">
                                 <AccordionTrigger className="px-4 py-3 bg-gray-50 hover:bg-gray-100">
                                     <span className="font-medium">SKU 6 - Jan Waterfall</span>
                                 </AccordionTrigger>
@@ -336,7 +275,7 @@ const Planning = () => {
                                 </AccordionContent>
                             </AccordionItem>
 
-                            <AccordionItem value="item-6" className="border rounded-lg overflow-hidden">
+                            <AccordionItem value="item-6" className="w-full md:w-[48%] border rounded-lg overflow-hidden">
                                 <AccordionTrigger className="px-4 py-3 bg-gray-50 hover:bg-gray-100">
                                     <span className="font-medium">SKU 6 - Feb Waterfall</span>
                                 </AccordionTrigger>
@@ -347,7 +286,7 @@ const Planning = () => {
                                 </AccordionContent>
                             </AccordionItem>
 
-                            <AccordionItem value="item-7" className="border rounded-lg overflow-hidden">
+                            <AccordionItem value="item-7" className="w-full md:w-[48%] border rounded-lg overflow-hidden">
                                 <AccordionTrigger className="px-4 py-3 bg-gray-50 hover:bg-gray-100">
                                     <span className="font-medium">SKU 9 - Jan Waterfall</span>
                                 </AccordionTrigger>
@@ -358,7 +297,7 @@ const Planning = () => {
                                 </AccordionContent>
                             </AccordionItem>
 
-                            <AccordionItem value="item-8" className="border rounded-lg overflow-hidden">
+                            <AccordionItem value="item-8" className="w-full md:w-[48%] border rounded-lg overflow-hidden">
                                 <AccordionTrigger className="px-4 py-3 bg-gray-50 hover:bg-gray-100">
                                     <span className="font-medium">SKU 9 - Feb Waterfall</span>
                                 </AccordionTrigger>

@@ -108,7 +108,7 @@ const SupplyChainTower = () => {
     return (
         <div className="min-h-screen bg-slate-50">
             {/* Navbar */}
-            <NavBar />
+            {/* <NavBar /> */}
 
             {/* Main Content */}
             <main className="p-4">
