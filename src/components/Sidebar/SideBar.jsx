@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSidebar } from "@/context/sidebar/SidebarContext";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -11,9 +11,79 @@ import {
 } from "@/components/ui/select";
 import { Menu } from "lucide-react";
 
+import data from "../../jsons/Planning/JF_censored.json"
+
 const SideBar = () => {
     const { selectedNav, setSelectedNav } = useSidebar();
     const [isOpen, setIsOpen] = useState(true);
+
+    const [selectedChannel, setSelectedChannel] = useState(null);
+    const [selectedChain, setSelectedChain] = useState(null);
+    const [selectedDepot, setSelectedDepot] = useState(null);
+    const [selectedSubCat, setSelectedSubCat] = useState(null);
+    const [selectedSubSKU, setSelectedSubSKU] = useState(null);
+
+    const [channelOptions, setChannelOptions] = useState([]);
+    const [chainOptions, setChainOptions] = useState([]);
+    const [depotOptions, setDepotOptions] = useState([]);
+    const [subCatOptions, setSubCatOptions] = useState([]);
+    const [skuOptions, setSkuOptions] = useState([]);
+
+    // Load unique channels initially
+    useEffect(() => {
+        const channels = [...new Set(data.map(item => item.Channel))];
+        setChannelOptions(channels);
+    }, []);
+
+    useEffect(() => {
+        if (selectedChannel) {
+            const filtered = data.filter(item => item.Channel === selectedChannel);
+            setChainOptions([...new Set(filtered.map(item => item.Chain))]);
+            setSelectedChain(null);
+            setDepotOptions([]);
+            setSubCatOptions([]);
+            setSkuOptions([]);
+        }
+    }, [selectedChannel]);
+
+    useEffect(() => {
+        if (selectedChain) {
+            const filtered = data.filter(
+                item => item.Channel === selectedChannel && item.Chain === selectedChain
+            );
+            setDepotOptions([...new Set(filtered.map(item => item.Depot))]);
+            setSelectedDepot(null);
+            setSubCatOptions([]);
+            setSkuOptions([]);
+        }
+    }, [selectedChain]);
+
+    useEffect(() => {
+        if (selectedDepot) {
+            const filtered = data.filter(
+                item =>
+                    item.Channel === selectedChannel &&
+                    item.Chain === selectedChain &&
+                    item.Depot === selectedDepot
+            );
+            setSubCatOptions([...new Set(filtered.map(item => item.SubCat))]);
+            setSelectedSubCat(null);
+            setSkuOptions([]);
+        }
+    }, [selectedDepot]);
+
+    useEffect(() => {
+        if (selectedSubCat) {
+            const filtered = data.filter(
+                item =>
+                    item.Channel === selectedChannel &&
+                    item.Chain === selectedChain &&
+                    item.Depot === selectedDepot &&
+                    item.SubCat === selectedSubCat
+            );
+            setSkuOptions([...new Set(filtered.map(item => item.SKU))]);
+        }
+    }, [selectedSubCat]);
 
     return (
         <>
@@ -62,51 +132,90 @@ const SideBar = () => {
                     </RadioGroup>
                 </div>
 
-                <div className="p-4 border-t">
-                    <div className="space-y-4">
-                        {[
-                            {
-                                label: "Channel",
-                                default: "channel-2",
-                                items: ["channel-1", "channel-2", "channel-3"],
-                            },
-                            {
-                                label: "Chain",
-                                default: "chain-3",
-                                items: ["chain-1", "chain-2", "chain-3"],
-                            },
-                            {
-                                label: "Depot",
-                                default: "depot-5",
-                                items: ["depot-1", "depot-3", "depot-5"],
-                            },
-                            {
-                                label: "SubCat",
-                                default: "subcat-5",
-                                items: ["subcat-3", "subcat-4", "subcat-5"],
-                            },
-                            {
-                                label: "SKU",
-                                default: "sku-10",
-                                items: ["sku-5", "sku-9", "sku-10"],
-                            },
-                        ].map(({ label, default: defaultValue, items }) => (
-                            <div key={label}>
-                                <h3 className="text-sm font-medium mb-2">{label}</h3>
-                                <Select defaultValue={defaultValue}>
-                                    <SelectTrigger className="w-full bg-white">
-                                        <SelectValue placeholder={`Select ${label.toLowerCase()}`} />
-                                    </SelectTrigger>
-                                    <SelectContent className=" bg-white">
-                                        {items.map((item) => (
-                                            <SelectItem key={item} value={item}>
-                                                {item.replace(/-/g, " ").toUpperCase()}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        ))}
+                <div className="p-4 border-t space-y-4">
+                    {/* Channel */}
+                    <div>
+                        <h3 className="text-sm font-medium mb-2">Channel</h3>
+                        <Select onValueChange={setSelectedChannel}>
+                            <SelectTrigger className="w-full bg-white">
+                                <SelectValue placeholder="Select channel" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-white">
+                                {channelOptions.map(channel => (
+                                    <SelectItem key={channel} value={channel}>
+                                        {channel.toUpperCase()}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* Chain */}
+                    <div>
+                        <h3 className="text-sm font-medium mb-2">Chain</h3>
+                        <Select onValueChange={setSelectedChain} disabled={!selectedChannel}>
+                            <SelectTrigger className="w-full bg-white">
+                                <SelectValue placeholder="Select chain" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-white">
+                                {chainOptions.map(chain => (
+                                    <SelectItem key={chain} value={chain}>
+                                        {chain.toUpperCase()}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* Depot */}
+                    <div>
+                        <h3 className="text-sm font-medium mb-2">Depot</h3>
+                        <Select onValueChange={setSelectedDepot} disabled={!selectedChain}>
+                            <SelectTrigger className="w-full bg-white">
+                                <SelectValue placeholder="Select depot" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-white">
+                                {depotOptions.map(depot => (
+                                    <SelectItem key={depot} value={depot}>
+                                        {depot.toUpperCase()}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* SubCat */}
+                    <div>
+                        <h3 className="text-sm font-medium mb-2">SubCat</h3>
+                        <Select onValueChange={setSelectedSubCat} disabled={!selectedDepot}>
+                            <SelectTrigger className="w-full bg-white">
+                                <SelectValue placeholder="Select subcat" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-white">
+                                {subCatOptions.map(subcat => (
+                                    <SelectItem key={subcat} value={subcat}>
+                                        {subcat.toUpperCase()}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* SKU */}
+                    <div>
+                        <h3 className="text-sm font-medium mb-2">SKU</h3>
+                        <Select onValueChange={setSelectedSubSKU} disabled={!selectedSubCat}>
+                            <SelectTrigger className="w-full bg-white">
+                                <SelectValue placeholder="Select SKU" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-white">
+                                {skuOptions.map(sku => (
+                                    <SelectItem key={sku} value={sku}>
+                                        {sku.toUpperCase()}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
                 </div>
             </div>
