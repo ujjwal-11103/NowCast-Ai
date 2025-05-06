@@ -23,7 +23,14 @@ const Planning = () => {
         sku: "SKU 10",
     })
 
-    const { forecastSum, forecastValue, yoyGrowth } = useForecast();
+    const { forecastSum, forecastValue, yoyGrowth, parentLevelForecast } = useForecast();
+
+    const formatForecastValue = (value) => {
+        if (value >= 1000000) return (value / 1000000).toFixed(1) + "M ";
+        if (value >= 1000) return (value / 1000).toFixed(1) + "K ";
+        return value.toFixed(1) + " Units";
+    };
+    
 
 
     return (
@@ -162,8 +169,8 @@ const Planning = () => {
                                     <span className="text-sm font-medium">Total Volume</span>
                                 </div>
                                 <div className="flex items-baseline">
-                                    <span className="text-3xl font-bold text-[#0A2472]">13.0</span>
-                                    <span className="ml-1 text-lg font-medium">K Units</span>
+                                    <span className="text-3xl font-bold text-[#0A2472]">{parentLevelForecast !== null ? formatForecastValue(parentLevelForecast) : "N/A"}</span>
+                                    <span className="ml-1 text-lg font-medium"> Units</span>
                                 </div>
                                 <div className="mt-2 text-xs text-gray-500">Total volume for SKU: SKU 10</div>
                             </CardContent>

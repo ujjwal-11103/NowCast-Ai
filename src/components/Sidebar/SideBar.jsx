@@ -20,7 +20,7 @@ const SideBar = () => {
     const { selectedNav, setSelectedNav } = useSidebar();
     const [isOpen, setIsOpen] = useState(true);
 
-    const { forecastSum, setForecastSum, forecastValue, setForecastValue, yoyGrowth, setYoyGrowth } = useForecast();
+    const { forecastSum, setForecastSum, forecastValue, setForecastValue, yoyGrowth, setYoyGrowth, parentLevelForecast, setParentLevelForecast } = useForecast();
 
 
     const [selectedChannel, setSelectedChannel] = useState(null);
@@ -96,6 +96,8 @@ const SideBar = () => {
     // const [forecastSum, setForecastSum] = useState(null);
     // const [forecastValue, setForecastValue] = useState(null); // NEW
     // const [yoyGrowth, setYoyGrowth] = useState(null);
+    // const [parentLevelForecast, setParentLevelForecast] = useState(null);
+
 
 
 
@@ -116,6 +118,7 @@ const SideBar = () => {
 
             setForecastSum(totalForecast);
 
+            // 2nd card
             const matchedPrice = priceData.find(
                 (item) =>
                     item.Channel === selectedChannel &&
@@ -134,6 +137,7 @@ const SideBar = () => {
                 setForecastValue(null);
             }
 
+            // card 3
             // Step 1: Filter actuals from Jan and Feb 2024
             const actuals2024 = data.filter(item =>
                 item.Channel === selectedChannel &&
@@ -155,10 +159,40 @@ const SideBar = () => {
             } else {
                 setYoyGrowth(null);
             }
-            
 
+            // card 4
+            const parentLevelData = data.filter(item =>
+                item.Channel === selectedChannel &&
+                item.Chain === selectedChain &&
+                item.Depot === selectedDepot &&
+                item.SubCat === selectedSubCat &&
+                (item.Date === "2025-01-01" || item.Date === "2025-02-01")
+            );
+
+            const parentTotalForecast = parentLevelData.reduce((sum, item) => {
+                return sum + (item.forecast || 0);
+            }, 0);
+
+            setParentLevelForecast(parentTotalForecast);
+
+        } else if (selectedChannel && selectedChain && selectedDepot && selectedSubCat) {
+            // ➕ From Depot level (when SubCat selected, but not SKU)
+
+            const parentLevelData = data.filter(item =>
+                item.Channel === selectedChannel &&
+                item.Chain === selectedChain &&
+                item.Depot === selectedDepot &&
+                (item.Date === "2025-01-01" || item.Date === "2025-02-01")
+            );
+
+            const parentTotalForecast = parentLevelData.reduce((sum, item) => {
+                return sum + (item.forecast || 0);
+            }, 0);
+
+            setParentLevelForecast(parentTotalForecast);
 
         } else {
+            setParentLevelForecast(null);
             setForecastSum(null);
         }
     }, [selectedChannel, selectedChain, selectedDepot, selectedSubCat, selectedSubSKU]);
@@ -166,6 +200,7 @@ const SideBar = () => {
     console.log("forcast Volume:", forecastSum);
     console.log("forcast value :", forecastValue);
     console.log("YoY Growth :", yoyGrowth);
+    console.log("parentLevelForecast  :", parentLevelForecast);
 
 
     return (

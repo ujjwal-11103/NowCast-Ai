@@ -8,6 +8,8 @@ export const ForecastProvider = ({ children }) => {
   const [forecastSum, setForecastSum] = useState(null);
   const [forecastValue, setForecastValue] = useState(null); // NEW
   const [yoyGrowth, setYoyGrowth] = useState(null);
+  const [parentLevelForecast, setParentLevelForecast] = useState(null);
+
 
 
   return (
@@ -17,7 +19,9 @@ export const ForecastProvider = ({ children }) => {
       forecastValue,
       setForecastValue,
       yoyGrowth,
-      setYoyGrowth, // <-- include this
+      setYoyGrowth,
+      parentLevelForecast,
+      setParentLevelForecast
     }}>
       {children}
     </ForecastContext.Provider>
