@@ -5,19 +5,28 @@ import { groupBy } from 'lodash';
 import { useForecast } from '@/context/ForecastContext/ForecastContext';
 
 const SalesTrendChart = () => {
-
     const { filters } = useForecast();
 
-
     const { dates, actuals, forecasts } = useMemo(() => {
+        // Determine which filters are set to "All" or have specific values
+        const filterConditions = {
+            channel: filters.channel === "All" ? null : filters.channel,
+            chain: filters.chain === "All" ? null : filters.chain,
+            depot: filters.depot === "All" ? null : filters.depot,
+            subCat: filters.subCat === "All" ? null : filters.subCat,
+            sku: filters.sku === "All" ? null : filters.sku
+        };
+
+        // Filter data based on the selected filters
         const filteredData = rawData.filter((item) => {
-            return (!filters.channel || item.Channel === filters.channel) &&
-                (!filters.chain || item.Chain === filters.chain) &&
-                (!filters.depot || item.Depot === filters.depot) &&
-                (!filters.subCat || item.SubCat === filters.subCat) &&
-                (!filters.sku || item.SKU === filters.sku);
+            return (!filterConditions.channel || item.Channel === filterConditions.channel) &&
+                   (!filterConditions.chain || item.Chain === filterConditions.chain) &&
+                   (!filterConditions.depot || item.Depot === filterConditions.depot) &&
+                   (!filterConditions.subCat || item.SubCat === filterConditions.subCat) &&
+                   (!filterConditions.sku || item.SKU === filterConditions.sku);
         });
 
+        // Clean and convert numeric values
         const cleaned = filteredData.map(d => ({
             ...d,
             Date: d.Date,
@@ -25,6 +34,7 @@ const SalesTrendChart = () => {
             forecast: d.forecast ? Number(d.forecast) : 0,
         }));
 
+        // Group by date and calculate sums
         const grouped = groupBy(cleaned, 'Date');
         const sortedDates = Object.keys(grouped).sort((a, b) => new Date(a) - new Date(b));
 
@@ -59,7 +69,7 @@ const SalesTrendChart = () => {
                 },
             ]}
             layout={{
-                title: 'Sales Trend',
+                title: getChartTitle(filters),
                 plot_bgcolor: '#f7fafc',
                 paper_bgcolor: '#f7fafc',
                 font: { family: 'Arial', size: 12 },
@@ -75,4 +85,28 @@ const SalesTrendChart = () => {
         />
     );
 };
+
+// Helper function to generate chart title based on filters
+function getChartTitle(filters) {
+    const parts = [];
+    
+    if (filters.channel) {
+        parts.push(`Channel: ${filters.channel === "All" ? "All Channels" : filters.channel}`);
+    }
+    if (filters.chain) {
+        parts.push(`Chain: ${filters.chain === "All" ? "All Chains" : filters.chain}`);
+    }
+    if (filters.depot) {
+        parts.push(`Depot: ${filters.depot === "All" ? "All Depots" : filters.depot}`);
+    }
+    if (filters.subCat) {
+        parts.push(`SubCat: ${filters.subCat === "All" ? "All SubCategories" : filters.subCat}`);
+    }
+    if (filters.sku) {
+        parts.push(`SKU: ${filters.sku === "All" ? "All SKUs" : filters.sku}`);
+    }
+
+    return parts.length > 0 ? `Sales Trend (${parts.join(', ')})` : 'Sales Trend';
+}
+
 export default SalesTrendChart;

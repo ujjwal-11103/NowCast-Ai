@@ -14,11 +14,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import SideBar from "@/components/Sidebar/SideBar";
 import { useForecast } from "@/context/ForecastContext/ForecastContext";
 import SalesTrendChart from "@/components/planning/SalesTrendChart ";
+import ForecastTable from "@/components/planning/ForecastTable";
 
 const Planning = () => {
 
     const { forecastSum, forecastValue, yoyGrowth, parentLevelForecast, filters } = useForecast();
-    console.log("Filters:", filters);
+    // console.log("Filters:", filters);
 
     const formatForecastValue = (value) => {
         if (value >= 1000000) return (value / 1000000).toFixed(1) + "M ";
@@ -200,7 +201,8 @@ const Planning = () => {
 
                     <div className="mb-8">
                         <div className="overflow-x-auto">
-                            <Table>
+                            {/* <ForecastTable /> */}
+                            {/* <Table>
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead colSpan={2}>Last Year Values</TableHead>
@@ -273,7 +275,7 @@ const Planning = () => {
                                         <TableCell>1392</TableCell>
                                     </TableRow>
                                 </TableBody>
-                            </Table>
+                            </Table> */}
                         </div>
                     </div>
 
