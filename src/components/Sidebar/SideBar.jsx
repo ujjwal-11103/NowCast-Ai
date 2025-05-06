@@ -12,10 +12,16 @@ import {
 import { Menu } from "lucide-react";
 
 import data from "../../jsons/Planning/JF_censored.json"
+import priceData from "../../jsons/Planning/price_df_censored.json";
+
+import { useForecast } from "@/context/ForecastContext/ForecastContext";
 
 const SideBar = () => {
     const { selectedNav, setSelectedNav } = useSidebar();
     const [isOpen, setIsOpen] = useState(true);
+
+    const { forecastSum, setForecastSum, forecastValue, setForecastValue, yoyGrowth, setYoyGrowth } = useForecast();
+
 
     const [selectedChannel, setSelectedChannel] = useState(null);
     const [selectedChain, setSelectedChain] = useState(null);
@@ -84,6 +90,83 @@ const SideBar = () => {
             setSkuOptions([...new Set(filtered.map(item => item.SKU))]);
         }
     }, [selectedSubCat]);
+
+
+    // cards section logic
+    // const [forecastSum, setForecastSum] = useState(null);
+    // const [forecastValue, setForecastValue] = useState(null); // NEW
+    // const [yoyGrowth, setYoyGrowth] = useState(null);
+
+
+
+    useEffect(() => {
+        if (selectedChannel && selectedChain && selectedDepot && selectedSubCat && selectedSubSKU) {
+            const filteredData = data.filter(item =>
+                item.Channel === selectedChannel &&
+                item.Chain === selectedChain &&
+                item.Depot === selectedDepot &&
+                item.SubCat === selectedSubCat &&
+                item.SKU === selectedSubSKU &&
+                (item.Date === "2025-01-01" || item.Date === "2025-02-01")
+            );
+
+            const totalForecast = filteredData.reduce((sum, item) => {
+                return sum + (item.forecast || 0);
+            }, 0);
+
+            setForecastSum(totalForecast);
+
+            const matchedPrice = priceData.find(
+                (item) =>
+                    item.Channel === selectedChannel &&
+                    item.Chain === selectedChain &&
+                    item.Depot === selectedDepot &&
+                    item.SubCat === selectedSubCat &&
+                    item.SKU === selectedSubSKU
+            );
+
+            const unitPrice = matchedPrice?.UnitPrice || 0;
+
+            if (totalForecast != null) {
+                const value = totalForecast * unitPrice;
+                setForecastValue(Math.round(value));
+            } else {
+                setForecastValue(null);
+            }
+
+            // Step 1: Filter actuals from Jan and Feb 2024
+            const actuals2024 = data.filter(item =>
+                item.Channel === selectedChannel &&
+                item.Chain === selectedChain &&
+                item.Depot === selectedDepot &&
+                item.SubCat === selectedSubCat &&
+                item.SKU === selectedSubSKU &&
+                (item.Date === "2024-01-01" || item.Date === "2024-02-01")
+            );
+
+            const totalActual2024 = actuals2024.reduce((sum, item) => {
+                return sum + (item.actual || 0);
+            }, 0);
+
+            // Step 2: Calculate YoY growth if forecast is present
+            if (totalActual2024 > 0) {
+                const yoy = ((totalForecast - totalActual2024) / totalActual2024) * 100;
+                setYoyGrowth(yoy.toFixed(1));
+            } else {
+                setYoyGrowth(null);
+            }
+            
+
+
+        } else {
+            setForecastSum(null);
+        }
+    }, [selectedChannel, selectedChain, selectedDepot, selectedSubCat, selectedSubSKU]);
+
+    console.log("forcast Volume:", forecastSum);
+    console.log("forcast value :", forecastValue);
+    console.log("YoY Growth :", yoyGrowth);
+
 
     return (
         <>

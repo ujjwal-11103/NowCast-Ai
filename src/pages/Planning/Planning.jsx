@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { ArrowDown, DollarSign, ExternalLink, LineChart } from "lucide-react"
+import { ArrowDown, ArrowUp, DollarSign, ExternalLink, LineChart, Minus } from "lucide-react"
 import { Package } from 'lucide-react';
 import { ChartPie } from 'lucide-react';
 
@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import SideBar from "@/components/Sidebar/SideBar";
+import { useForecast } from "@/context/ForecastContext/ForecastContext";
 
 const Planning = () => {
     const [selectedFilters, setSelectedFilters] = useState({
@@ -21,6 +22,9 @@ const Planning = () => {
         subcat: "SubCat 5",
         sku: "SKU 10",
     })
+
+    const { forecastSum, forecastValue, yoyGrowth } = useForecast();
+
 
     return (
         <div className="flex h-full">
@@ -58,7 +62,10 @@ const Planning = () => {
                                     <span className="text-sm font-medium">Forecasted Volume</span>
                                 </div>
                                 <div className="flex items-baseline">
-                                    <span className="text-3xl font-bold text-[#0A2472]">2.4</span>
+                                    <span className="text-3xl font-bold text-[#0A2472]">
+                                        {(forecastSum / 1000).toFixed(1)}
+                                    </span>
+
                                     <span className="ml-1 text-lg font-medium">K Units</span>
                                 </div>
                                 <div className="mt-2 text-xs text-gray-500">Total predicted units</div>
@@ -72,8 +79,8 @@ const Planning = () => {
                                     <span className="text-sm font-medium">Forecasted Value</span>
                                 </div>
                                 <div className="flex items-baseline">
-                                    <span className="text-3xl font-bold text-[#0A2472]">₹ 58.3</span>
-                                    <span className="ml-1 text-lg font-medium">K</span>
+                                    <span className="text-3xl font-bold text-[#0A2472]">₹ {(forecastValue / 100000).toFixed(1)}</span>
+                                    <span className="ml-1 text-lg font-medium">L</span>
                                 </div>
                                 <div className="mt-2 text-xs text-gray-500">Total predicted revenue</div>
                             </CardContent>
@@ -86,18 +93,65 @@ const Planning = () => {
                                     <span className="text-sm font-medium">YoY Growth</span>
                                 </div>
                                 <div className="flex flex-col">
+                                    {/* Volume */}
                                     <div className="flex items-center gap-1">
-                                        <ArrowDown className="text-red-500" size={16} />
-                                        <span className="text-red-500 font-medium">-15.4%</span>
+                                        {yoyGrowth == null ? (
+                                            <Minus className="text-gray-400" size={16} />
+                                        ) : yoyGrowth < 0 ? (
+                                            <ArrowDown className="text-red-500" size={16} />
+                                        ) : yoyGrowth > 0 ? (
+                                            <ArrowUp className="text-green-500" size={16} />
+                                        ) : (
+                                            <Minus className="text-gray-400" size={16} />
+                                        )}
+
+                                        <span
+                                            className={`font-medium ${yoyGrowth == null
+                                                ? "text-gray-400"
+                                                : yoyGrowth < 0
+                                                    ? "text-red-500"
+                                                    : yoyGrowth > 0
+                                                        ? "text-green-500"
+                                                        : "text-gray-400"
+                                                }`}
+                                        >
+                                            {yoyGrowth != null ? `${Math.abs(yoyGrowth)}%` : "--"}
+                                        </span>
+
                                         <span className="text-xs text-gray-500">(Volume)</span>
                                     </div>
+
+                                    {/* Value */}
                                     <div className="flex items-center gap-1 mt-1">
-                                        <ArrowDown className="text-red-500" size={16} />
-                                        <span className="text-red-500 font-medium">-15.4%</span>
+                                        {yoyGrowth == null ? (
+                                            <Minus className="text-gray-400" size={16} />
+                                        ) : yoyGrowth < 0 ? (
+                                            <ArrowDown className="text-red-500" size={16} />
+                                        ) : yoyGrowth > 0 ? (
+                                            <ArrowUp className="text-green-500" size={16} />
+                                        ) : (
+                                            <Minus className="text-gray-400" size={16} />
+                                        )}
+
+                                        <span
+                                            className={`font-medium ${yoyGrowth == null
+                                                ? "text-gray-400"
+                                                : yoyGrowth < 0
+                                                    ? "text-red-500"
+                                                    : yoyGrowth > 0
+                                                        ? "text-green-500"
+                                                        : "text-gray-400"
+                                                }`}
+                                        >
+                                            {yoyGrowth != null ? `${Math.abs(yoyGrowth)}%` : "--"}
+                                        </span>
+
                                         <span className="text-xs text-gray-500">(Value)</span>
                                     </div>
                                 </div>
-                                <div className="mt-2 text-xs text-gray-500">vs Jan-Feb 2024 Actuals</div>
+
+
+                                <div className="mt-2 text-xs text-gray-500">vs Jan+Feb 2024 Actuals</div>
                             </CardContent>
                         </Card>
 

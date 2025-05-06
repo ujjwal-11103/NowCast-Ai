@@ -10,21 +10,25 @@ import Overall from './pages/Overall/Overall';
 import Planning from './pages/Planning/Planning';
 
 import { SidebarProvider } from './context/sidebar/SidebarContext';
+import { ForecastProvider } from './context/ForecastContext/ForecastContext';
+
 import MainPage from './pages/Main/MainPage';
 
 const App = () => {
   return (
     <BrowserRouter>
       <Toaster richColors />
-      <SidebarProvider>
-        <Routes>
-          {/* <Route path='/' element={<Login />} /> */}
-          <Route path='/teresa' element={<Teresa />} />
-          <Route path='/neptune' element={<MarketMixModelling />} />
-          {/* <Route path="/supplychaintower" element={<SupplyChainTower />} /> */}
-          <Route path="/" element={<MainPage />} />
-        </Routes>
-      </SidebarProvider>
+      <ForecastProvider>
+        <SidebarProvider>
+          <Routes>
+            {/* <Route path='/' element={<Login />} /> */}
+            <Route path='/teresa' element={<Teresa />} />
+            <Route path='/neptune' element={<MarketMixModelling />} />
+            {/* <Route path="/supplychaintower" element={<SupplyChainTower />} /> */}
+            <Route path="/" element={<MainPage />} />
+          </Routes>
+        </SidebarProvider>
+      </ForecastProvider>
     </BrowserRouter>
   )
 }

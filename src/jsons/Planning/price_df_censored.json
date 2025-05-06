@@ -1,0 +1,4522 @@
+[
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":21
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 2",
+        "UnitPrice":41
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 2",
+        "UnitPrice":30
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 3",
+        "UnitPrice":23
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 3",
+        "Depot":"Depot 5",
+        "SubCat":"SubCat 4",
+        "SKU":"SKU 4",
+        "UnitPrice":31
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 3",
+        "Depot":"Depot 5",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 5",
+        "UnitPrice":24
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 3",
+        "Depot":"Depot 5",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 6",
+        "UnitPrice":38
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 3",
+        "Depot":"Depot 5",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 7",
+        "UnitPrice":36
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 3",
+        "Depot":"Depot 5",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 8",
+        "UnitPrice":35
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 3",
+        "Depot":"Depot 5",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 9",
+        "UnitPrice":50
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 3",
+        "Depot":"Depot 5",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 10",
+        "UnitPrice":24
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 3",
+        "Depot":"Depot 5",
+        "SubCat":"SubCat 6",
+        "SKU":"SKU 11",
+        "UnitPrice":46
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 3",
+        "Depot":"Depot 5",
+        "SubCat":"SubCat 6",
+        "SKU":"SKU 12",
+        "UnitPrice":22
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 3",
+        "Depot":"Depot 5",
+        "SubCat":"SubCat 6",
+        "SKU":"SKU 13",
+        "UnitPrice":47
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 3",
+        "Depot":"Depot 5",
+        "SubCat":"SubCat 6",
+        "SKU":"SKU 14",
+        "UnitPrice":9
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 3",
+        "Depot":"Depot 5",
+        "SubCat":"SubCat 6",
+        "SKU":"SKU 15",
+        "UnitPrice":12
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 3",
+        "Depot":"Depot 5",
+        "SubCat":"SubCat 6",
+        "SKU":"SKU 16",
+        "UnitPrice":18
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 3",
+        "Depot":"Depot 5",
+        "SubCat":"SubCat 7",
+        "SKU":"SKU 17",
+        "UnitPrice":39
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 3",
+        "Depot":"Depot 5",
+        "SubCat":"SubCat 8",
+        "SKU":"SKU 18",
+        "UnitPrice":25
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 3",
+        "Depot":"Depot 5",
+        "SubCat":"SubCat 8",
+        "SKU":"SKU 19",
+        "UnitPrice":32
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 3",
+        "Depot":"Depot 5",
+        "SubCat":"SubCat 8",
+        "SKU":"SKU 20",
+        "UnitPrice":32
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 3",
+        "Depot":"Depot 5",
+        "SubCat":"SubCat 8",
+        "SKU":"SKU 21",
+        "UnitPrice":48
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 3",
+        "Depot":"Depot 5",
+        "SubCat":"SubCat 8",
+        "SKU":"SKU 22",
+        "UnitPrice":44
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 3",
+        "Depot":"Depot 5",
+        "SubCat":"SubCat 8",
+        "SKU":"SKU 23",
+        "UnitPrice":38
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 3",
+        "Depot":"Depot 5",
+        "SubCat":"SubCat 6",
+        "SKU":"SKU 24",
+        "UnitPrice":34
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 5",
+        "UnitPrice":44
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 6",
+        "UnitPrice":8
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 7",
+        "UnitPrice":41
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 8",
+        "UnitPrice":32
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 9",
+        "UnitPrice":18
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 10",
+        "UnitPrice":7
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 6",
+        "SKU":"SKU 11",
+        "UnitPrice":29
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 6",
+        "SKU":"SKU 12",
+        "UnitPrice":36
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 6",
+        "SKU":"SKU 13",
+        "UnitPrice":44
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 6",
+        "SKU":"SKU 14",
+        "UnitPrice":43
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 6",
+        "SKU":"SKU 15",
+        "UnitPrice":32
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 6",
+        "SKU":"SKU 16",
+        "UnitPrice":20
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":44
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":15
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":15
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":28
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":31
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 8",
+        "SKU":"SKU 18",
+        "UnitPrice":20
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 8",
+        "SKU":"SKU 19",
+        "UnitPrice":44
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 8",
+        "SKU":"SKU 20",
+        "UnitPrice":10
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 8",
+        "SKU":"SKU 22",
+        "UnitPrice":15
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 8",
+        "SKU":"SKU 21",
+        "UnitPrice":33
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 9",
+        "SKU":"SKU 30",
+        "UnitPrice":12
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 9",
+        "SKU":"SKU 31",
+        "UnitPrice":43
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 8",
+        "SKU":"SKU 23",
+        "UnitPrice":14
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 9",
+        "SKU":"SKU 32",
+        "UnitPrice":14
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 6",
+        "SKU":"SKU 24",
+        "UnitPrice":8
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 9",
+        "SKU":"SKU 33",
+        "UnitPrice":44
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 6",
+        "SKU":"SKU 34",
+        "UnitPrice":11
+    },
+    {
+        "Channel":"Channel 2",
+        "Chain":"Chain 4",
+        "Depot":"Depot 6",
+        "SubCat":"SubCat 6",
+        "SKU":"SKU 35",
+        "UnitPrice":21
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":37
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 11",
+        "SKU":"SKU 37",
+        "UnitPrice":32
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 7",
+        "UnitPrice":27
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 10",
+        "UnitPrice":40
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 38",
+        "UnitPrice":41
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":14
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":33
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":35
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 41",
+        "UnitPrice":28
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":20
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":32
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":39
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":16
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 11",
+        "SKU":"SKU 37",
+        "UnitPrice":38
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 7",
+        "UnitPrice":12
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 10",
+        "UnitPrice":40
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 38",
+        "UnitPrice":31
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":25
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":19
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":40
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 41",
+        "UnitPrice":14
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":21
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":7
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":14
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":35
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 11",
+        "SKU":"SKU 37",
+        "UnitPrice":21
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 6",
+        "UnitPrice":50
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 7",
+        "UnitPrice":37
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 8",
+        "UnitPrice":12
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 10",
+        "UnitPrice":21
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 38",
+        "UnitPrice":41
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":25
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":37
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":40
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 41",
+        "UnitPrice":8
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":39
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":33
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":17
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":21
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 11",
+        "SKU":"SKU 37",
+        "UnitPrice":44
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 10",
+        "UnitPrice":44
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 38",
+        "UnitPrice":48
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":26
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":18
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":34
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 41",
+        "UnitPrice":43
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":18
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":32
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 11",
+        "SKU":"SKU 37",
+        "UnitPrice":47
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 7",
+        "UnitPrice":18
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 10",
+        "UnitPrice":8
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 38",
+        "UnitPrice":23
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":10
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":19
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 41",
+        "UnitPrice":50
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":11
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":10
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":29
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":30
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 11",
+        "SKU":"SKU 37",
+        "UnitPrice":13
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 6",
+        "UnitPrice":23
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 7",
+        "UnitPrice":18
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 8",
+        "UnitPrice":16
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 10",
+        "UnitPrice":34
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 38",
+        "UnitPrice":12
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":33
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":15
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":33
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 41",
+        "UnitPrice":12
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":9
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":46
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":26
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":13
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 6",
+        "UnitPrice":44
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 8",
+        "UnitPrice":12
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":26
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 6",
+        "UnitPrice":18
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 8",
+        "UnitPrice":12
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":28
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":29
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":7
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 6",
+        "UnitPrice":39
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":34
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":9
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 8",
+        "UnitPrice":21
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 8",
+        "UnitPrice":40
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 7",
+        "UnitPrice":44
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 6",
+        "UnitPrice":28
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":46
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 11",
+        "SKU":"SKU 37",
+        "UnitPrice":29
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 6",
+        "UnitPrice":26
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 7",
+        "UnitPrice":15
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 8",
+        "UnitPrice":35
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 5",
+        "SKU":"SKU 10",
+        "UnitPrice":29
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 38",
+        "UnitPrice":34
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":32
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":37
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":50
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 41",
+        "UnitPrice":43
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":49
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":9
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":42
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":15
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":7
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":11
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":49
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":40
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":46
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":19
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":17
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":45
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":25
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":13
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":23
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":41
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":31
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":26
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 43",
+        "UnitPrice":44
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 44",
+        "UnitPrice":28
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 12",
+        "SKU":"SKU 45",
+        "UnitPrice":39
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 46",
+        "UnitPrice":24
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 43",
+        "UnitPrice":37
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 47",
+        "UnitPrice":38
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 12",
+        "SKU":"SKU 45",
+        "UnitPrice":47
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 46",
+        "UnitPrice":20
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 43",
+        "UnitPrice":33
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 47",
+        "UnitPrice":19
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 44",
+        "UnitPrice":19
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 47",
+        "UnitPrice":42
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 48",
+        "UnitPrice":29
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 46",
+        "UnitPrice":9
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 48",
+        "UnitPrice":43
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 48",
+        "UnitPrice":41
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 5",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 44",
+        "UnitPrice":50
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":30
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":18
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":48
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":30
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":35
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":10
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":46
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":15
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":36
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":48
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":7
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 41",
+        "UnitPrice":35
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":46
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":11
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":50
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":40
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":36
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 43",
+        "UnitPrice":17
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 48",
+        "UnitPrice":37
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":26
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":45
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":29
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 41",
+        "UnitPrice":33
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":28
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":24
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":49
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":14
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":9
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 43",
+        "UnitPrice":45
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 48",
+        "UnitPrice":37
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":10
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":23
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":16
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 41",
+        "UnitPrice":23
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":17
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":49
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":9
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":29
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":24
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 43",
+        "UnitPrice":31
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 48",
+        "UnitPrice":17
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":8
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":43
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":23
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 41",
+        "UnitPrice":31
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":17
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":24
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":50
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":15
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":35
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 43",
+        "UnitPrice":28
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 48",
+        "UnitPrice":49
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":46
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":15
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":33
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 41",
+        "UnitPrice":36
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":46
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":39
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":48
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":37
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":8
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":15
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 43",
+        "UnitPrice":44
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 48",
+        "UnitPrice":7
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":16
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 38",
+        "UnitPrice":42
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":11
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":30
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":40
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":21
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":41
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":16
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":23
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":7
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 43",
+        "UnitPrice":28
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 48",
+        "UnitPrice":19
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":26
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 38",
+        "UnitPrice":17
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":42
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":20
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":8
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 41",
+        "UnitPrice":44
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":44
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":39
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":17
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":44
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":9
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":33
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":12
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 38",
+        "UnitPrice":12
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":12
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":24
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 41",
+        "UnitPrice":19
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":16
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":11
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":33
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":41
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":21
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":21
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 43",
+        "UnitPrice":39
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 48",
+        "UnitPrice":11
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":24
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":21
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":8
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":37
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":13
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":38
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":11
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":9
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":15
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":7
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":20
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 46",
+        "UnitPrice":40
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 47",
+        "UnitPrice":48
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 46",
+        "UnitPrice":9
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 47",
+        "UnitPrice":50
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 46",
+        "UnitPrice":19
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 47",
+        "UnitPrice":15
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 46",
+        "UnitPrice":9
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 47",
+        "UnitPrice":45
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 46",
+        "UnitPrice":48
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 47",
+        "UnitPrice":12
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":22
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 41",
+        "UnitPrice":16
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 38",
+        "UnitPrice":18
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":8
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":43
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":28
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 41",
+        "UnitPrice":37
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":9
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":31
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":10
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 38",
+        "UnitPrice":48
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":25
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":49
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":50
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 41",
+        "UnitPrice":7
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":43
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":28
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":22
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":11
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":32
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":18
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":8
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 48",
+        "UnitPrice":32
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":8
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":21
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":50
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":12
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":22
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":21
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":34
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":14
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":36
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":23
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":28
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":26
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":15
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":31
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":10
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":47
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":23
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":20
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":41
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 12",
+        "SKU":"SKU 49",
+        "UnitPrice":23
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 12",
+        "SKU":"SKU 45",
+        "UnitPrice":18
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 12",
+        "SKU":"SKU 49",
+        "UnitPrice":11
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 12",
+        "SKU":"SKU 49",
+        "UnitPrice":29
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 12",
+        "SKU":"SKU 45",
+        "UnitPrice":34
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 12",
+        "SKU":"SKU 49",
+        "UnitPrice":25
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 12",
+        "SKU":"SKU 45",
+        "UnitPrice":10
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 12",
+        "SKU":"SKU 49",
+        "UnitPrice":14
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 12",
+        "SKU":"SKU 45",
+        "UnitPrice":38
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":41
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":36
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":9
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":41
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":24
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":31
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":36
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":43
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 47",
+        "UnitPrice":42
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 48",
+        "UnitPrice":46
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 43",
+        "UnitPrice":11
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":15
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":26
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 41",
+        "UnitPrice":21
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":37
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 46",
+        "UnitPrice":19
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 43",
+        "UnitPrice":16
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":38
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":8
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":44
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":50
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":7
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 47",
+        "UnitPrice":16
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 48",
+        "UnitPrice":36
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 48",
+        "UnitPrice":8
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 47",
+        "UnitPrice":23
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 47",
+        "UnitPrice":50
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 48",
+        "UnitPrice":44
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":9
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 47",
+        "UnitPrice":50
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 48",
+        "UnitPrice":20
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 44",
+        "UnitPrice":12
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 44",
+        "UnitPrice":9
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 44",
+        "UnitPrice":17
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 44",
+        "UnitPrice":26
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 44",
+        "UnitPrice":45
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 44",
+        "UnitPrice":29
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 50",
+        "UnitPrice":13
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 50",
+        "UnitPrice":28
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":33
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 50",
+        "UnitPrice":46
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":8
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":39
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":26
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":41
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":36
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":36
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":30
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 50",
+        "UnitPrice":48
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 50",
+        "UnitPrice":24
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":23
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":44
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":44
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 41",
+        "UnitPrice":18
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":39
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":29
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":37
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":45
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":18
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":14
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 46",
+        "UnitPrice":45
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 43",
+        "UnitPrice":43
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 47",
+        "UnitPrice":16
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 44",
+        "UnitPrice":43
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 48",
+        "UnitPrice":27
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 39",
+        "UnitPrice":44
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":9
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 1",
+        "UnitPrice":37
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 41",
+        "UnitPrice":24
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":21
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 28",
+        "UnitPrice":26
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 38",
+        "UnitPrice":14
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":20
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 50",
+        "UnitPrice":31
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 48",
+        "UnitPrice":7
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 42",
+        "UnitPrice":27
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 26",
+        "UnitPrice":37
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 29",
+        "UnitPrice":37
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 47",
+        "UnitPrice":40
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":8
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":44
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 44",
+        "UnitPrice":19
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":34
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 44",
+        "UnitPrice":32
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":46
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":41
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 44",
+        "UnitPrice":46
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":7
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":10
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 44",
+        "UnitPrice":24
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":34
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":19
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 44",
+        "UnitPrice":37
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":16
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 27",
+        "UnitPrice":37
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 47",
+        "UnitPrice":22
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 48",
+        "UnitPrice":17
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 44",
+        "UnitPrice":43
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 50",
+        "UnitPrice":50
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 50",
+        "UnitPrice":38
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 36",
+        "UnitPrice":26
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 50",
+        "UnitPrice":9
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 50",
+        "UnitPrice":15
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 50",
+        "UnitPrice":44
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 50",
+        "UnitPrice":21
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 50",
+        "UnitPrice":14
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 50",
+        "UnitPrice":16
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 50",
+        "UnitPrice":21
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 50",
+        "UnitPrice":49
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 50",
+        "UnitPrice":49
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":33
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 10",
+        "SKU":"SKU 50",
+        "UnitPrice":41
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 25",
+        "UnitPrice":17
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 43",
+        "UnitPrice":22
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 43",
+        "UnitPrice":36
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 43",
+        "UnitPrice":16
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 43",
+        "UnitPrice":24
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":13
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":41
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":40
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":45
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":7
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":41
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 1",
+        "SKU":"SKU 40",
+        "UnitPrice":50
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 44",
+        "UnitPrice":41
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 44",
+        "UnitPrice":21
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 44",
+        "UnitPrice":21
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 43",
+        "UnitPrice":16
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 12",
+        "SKU":"SKU 45",
+        "UnitPrice":11
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 46",
+        "UnitPrice":25
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 46",
+        "UnitPrice":22
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 46",
+        "UnitPrice":32
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 47",
+        "UnitPrice":40
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 47",
+        "UnitPrice":8
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 47",
+        "UnitPrice":34
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 43",
+        "UnitPrice":23
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 51",
+        "UnitPrice":49
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 52",
+        "UnitPrice":26
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 51",
+        "UnitPrice":15
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 52",
+        "UnitPrice":27
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 51",
+        "UnitPrice":12
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 52",
+        "UnitPrice":7
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 51",
+        "UnitPrice":10
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 52",
+        "UnitPrice":15
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 51",
+        "UnitPrice":39
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 52",
+        "UnitPrice":48
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 51",
+        "UnitPrice":13
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 52",
+        "UnitPrice":26
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 51",
+        "UnitPrice":37
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 52",
+        "UnitPrice":47
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 51",
+        "UnitPrice":38
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 52",
+        "UnitPrice":12
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 51",
+        "UnitPrice":23
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 51",
+        "UnitPrice":18
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 51",
+        "UnitPrice":39
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 51",
+        "UnitPrice":33
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 51",
+        "UnitPrice":46
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 53",
+        "UnitPrice":20
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 2",
+        "UnitPrice":7
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 53",
+        "UnitPrice":26
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 2",
+        "UnitPrice":47
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 51",
+        "UnitPrice":37
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 53",
+        "UnitPrice":26
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 2",
+        "UnitPrice":22
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 3",
+        "UnitPrice":12
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 53",
+        "UnitPrice":22
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 2",
+        "UnitPrice":34
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 3",
+        "UnitPrice":9
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 53",
+        "UnitPrice":15
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 2",
+        "UnitPrice":23
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 3",
+        "UnitPrice":42
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 3",
+        "UnitPrice":21
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 53",
+        "UnitPrice":40
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 2",
+        "UnitPrice":17
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 51",
+        "UnitPrice":26
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 53",
+        "UnitPrice":39
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 2",
+        "UnitPrice":49
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 52",
+        "UnitPrice":42
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 53",
+        "UnitPrice":48
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 2",
+        "UnitPrice":20
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 52",
+        "UnitPrice":26
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 53",
+        "UnitPrice":43
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 2",
+        "UnitPrice":42
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 52",
+        "UnitPrice":47
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 53",
+        "UnitPrice":37
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 2",
+        "UnitPrice":47
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 52",
+        "UnitPrice":17
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 53",
+        "UnitPrice":46
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 2",
+        "UnitPrice":47
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 52",
+        "UnitPrice":17
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 53",
+        "UnitPrice":32
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 2",
+        "UnitPrice":49
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 1",
+        "Depot":"Depot 4",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 52",
+        "UnitPrice":25
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 3",
+        "UnitPrice":9
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 51",
+        "UnitPrice":31
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 1",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 52",
+        "UnitPrice":15
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 7",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 3",
+        "UnitPrice":10
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 8",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 3",
+        "UnitPrice":36
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 53",
+        "UnitPrice":46
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 2",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 52",
+        "UnitPrice":50
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 3",
+        "UnitPrice":32
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 2",
+        "Depot":"Depot 3",
+        "SubCat":"SubCat 2",
+        "SKU":"SKU 53",
+        "UnitPrice":9
+    },
+    {
+        "Channel":"Channel 1",
+        "Chain":"Chain 6",
+        "Depot":"Depot 9",
+        "SubCat":"SubCat 3",
+        "SKU":"SKU 3",
+        "UnitPrice":21
+    }
+]
