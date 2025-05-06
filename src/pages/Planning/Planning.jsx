@@ -16,15 +16,9 @@ import { useForecast } from "@/context/ForecastContext/ForecastContext";
 import SalesTrendChart from "@/components/planning/SalesTrendChart ";
 
 const Planning = () => {
-    const [selectedFilters, setSelectedFilters] = useState({
-        channel: "Channel 2",
-        chain: "Chain 3",
-        depot: "Depot 5",
-        subcat: "SubCat 5",
-        sku: "SKU 10",
-    })
 
-    const { forecastSum, forecastValue, yoyGrowth, parentLevelForecast } = useForecast();
+    const { forecastSum, forecastValue, yoyGrowth, parentLevelForecast, filters } = useForecast();
+    console.log("Filters:", filters);
 
     const formatForecastValue = (value) => {
         if (value >= 1000000) return (value / 1000000).toFixed(1) + "M ";
@@ -49,15 +43,21 @@ const Planning = () => {
                         <div className="flex items-center gap-2 mb-4">
                             <span className="font-medium">Forecasted Sales for:</span>
                             <div className="flex items-center gap-2">
-                                <Badge className="bg-[#3661ee] hover:bg-[#3351ad] text-white">Channel 2</Badge>
-                                <span>&gt;</span>
-                                <Badge className="bg-[#3661ee] hover:bg-[#3351ad] text-white">Chain 3</Badge>
-                                <span>&gt;</span>
-                                <Badge className="bg-[#3661ee] hover:bg-[#3351ad] text-white">Depot 5</Badge>
-                                <span>&gt;</span>
-                                <Badge className="bg-[#3661ee] hover:bg-[#3351ad] text-white">SubCat 5</Badge>
-                                <span>&gt;</span>
-                                <Badge className="bg-[#3661ee] hover:bg-[#3351ad] text-white">SKU 10</Badge>
+                                {["channel", "chain", "depot", "subCat", "sku"].map((key, index, array) => {
+                                    const value = filters[key];
+                                    const nextKeys = array.slice(0, index + 1);
+                                    const allPreviousSelected = nextKeys.every(k => filters[k] !== null);
+
+                                    if (value && allPreviousSelected) {
+                                        return (
+                                            <React.Fragment key={key}>
+                                                {index !== 0 && <span>&gt;</span>}
+                                                <Badge className="bg-[#3661ee] hover:bg-[#3351ad] text-white">{value}</Badge>
+                                            </React.Fragment>
+                                        );
+                                    }
+                                    return null;
+                                })}
                             </div>
                         </div>
                     </div>
@@ -173,7 +173,7 @@ const Planning = () => {
                                     <span className="text-3xl font-bold text-[#0A2472]">{parentLevelForecast !== null ? formatForecastValue(parentLevelForecast) : "N/A"}</span>
                                     <span className="ml-1 text-lg font-medium"> Units</span>
                                 </div>
-                                <div className="mt-2 text-xs text-gray-500">Total volume for SKU: SKU 10</div>
+                                <div className="mt-2 text-xs text-gray-500">Total volume for SKU: {filters.sku}</div>
                             </CardContent>
                         </Card>
                     </div>
