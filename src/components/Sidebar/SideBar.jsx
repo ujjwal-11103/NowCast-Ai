@@ -20,7 +20,7 @@ const SideBar = () => {
     const { selectedNav, setSelectedNav } = useSidebar();
     const [isOpen, setIsOpen] = useState(true);
 
-    const { forecastSum, setForecastSum, forecastValue, setForecastValue, yoyGrowth, setYoyGrowth, parentLevelForecast, setParentLevelForecast } = useForecast();
+    const { forecastSum, setForecastSum, forecastValue, setForecastValue, yoyGrowth, setYoyGrowth, parentLevelForecast, setParentLevelForecast, setFilters } = useForecast();
 
 
     const [selectedChannel, setSelectedChannel] = useState(null);
@@ -201,6 +201,16 @@ const SideBar = () => {
     console.log("forcast value :", forecastValue);
     console.log("YoY Growth :", yoyGrowth);
     console.log("parentLevelForecast  :", parentLevelForecast);
+
+    useEffect(() => {
+        setFilters({
+            channel: selectedChannel,
+            chain: selectedChain,
+            depot: selectedDepot,
+            subCat: selectedSubCat,
+            sku: selectedSubSKU,
+        });
+    }, [selectedChannel, selectedChain, selectedDepot, selectedSubCat, selectedSubSKU]);
 
 
     return (

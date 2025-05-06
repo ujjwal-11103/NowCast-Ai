@@ -10,6 +10,14 @@ export const ForecastProvider = ({ children }) => {
   const [yoyGrowth, setYoyGrowth] = useState(null);
   const [parentLevelForecast, setParentLevelForecast] = useState(null);
 
+  // Add filters
+  const [filters, setFilters] = useState({
+    channel: null,
+    chain: null,
+    depot: null,
+    subCat: null,
+    sku: null,
+  });
 
 
   return (
@@ -21,7 +29,9 @@ export const ForecastProvider = ({ children }) => {
       yoyGrowth,
       setYoyGrowth,
       parentLevelForecast,
-      setParentLevelForecast
+      setParentLevelForecast,
+      filters,
+      setFilters,
     }}>
       {children}
     </ForecastContext.Provider>

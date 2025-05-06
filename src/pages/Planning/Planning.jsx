@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import SideBar from "@/components/Sidebar/SideBar";
 import { useForecast } from "@/context/ForecastContext/ForecastContext";
+import SalesTrendChart from "@/components/planning/SalesTrendChart ";
 
 const Planning = () => {
     const [selectedFilters, setSelectedFilters] = useState({
@@ -30,7 +31,7 @@ const Planning = () => {
         if (value >= 1000) return (value / 1000).toFixed(1) + "K ";
         return value.toFixed(1) + " Units";
     };
-    
+
 
 
     return (
@@ -191,8 +192,9 @@ const Planning = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="h-64 w-full bg-gray-100 rounded-lg flex items-center justify-center">
-                            <span className="text-gray-500">Sales Trend Chart</span>
+                        <div className="h-auto w-full bg-gray-100 rounded-lg flex items-center justify-center">
+                            {/* graph */}
+                            <SalesTrendChart />
                         </div>
                     </div>
 
