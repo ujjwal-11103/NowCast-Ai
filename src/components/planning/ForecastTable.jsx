@@ -1,4 +1,4 @@
-import { React } from 'react'
+import { React, useState } from 'react'
 import {
     Table,
     TableHeader,
@@ -77,6 +77,60 @@ const ForecastTable = ({ data, selections }) => {
             : 'N/A'
     }))
 
+    // State to track team inputs and consensus values
+    const [teamInputs, setTeamInputs] = useState({});
+    const [consensusValues, setConsensusValues] = useState(
+        tableData.reduce((acc, item) => {
+            acc[item.name] = {
+                jan: Math.round(item.ForecastJan),
+                feb: Math.round(item.ForecastFeb)
+            };
+            return acc;
+        }, {})
+    );
+
+    // Handle input changes for team fields
+    const handleTeamInputChange = (itemName, team, month, field, value) => {
+        setTeamInputs(prev => {
+            const newInputs = {
+                ...prev,
+                [itemName]: {
+                    ...prev[itemName],
+                    [team]: {
+                        ...prev[itemName]?.[team],
+                        [month]: {
+                            ...prev[itemName]?.[team]?.[month],
+                            [field]: value
+                        }
+                    }
+                }
+            };
+
+            // Calculate new consensus values
+            const salesJan = parseFloat(newInputs[itemName]?.sales?.jan?.value) || 0;
+            const salesFeb = parseFloat(newInputs[itemName]?.sales?.feb?.value) || 0;
+            const marketingJan = parseFloat(newInputs[itemName]?.marketing?.jan?.value) || 0;
+            const marketingFeb = parseFloat(newInputs[itemName]?.marketing?.feb?.value) || 0;
+            const financeJan = parseFloat(newInputs[itemName]?.finance?.jan?.value) || 0;
+            const financeFeb = parseFloat(newInputs[itemName]?.finance?.feb?.value) || 0;
+
+            // Original forecast values
+            const originalJan = Math.round(tableData.find(item => item.name === itemName)?.ForecastJan || 0);
+            const originalFeb = Math.round(tableData.find(item => item.name === itemName)?.ForecastFeb || 0);
+
+            setConsensusValues(prev => ({
+                ...prev,
+                [itemName]: {
+                    jan: originalJan + salesJan + marketingJan + financeJan,
+                    feb: originalFeb + salesFeb + marketingFeb + financeFeb
+                }
+            }));
+
+            return newInputs;
+        });
+    };
+
+
     return (
         <div className="space-y-4">
             {/* Main Data Table */}
@@ -113,6 +167,7 @@ const ForecastTable = ({ data, selections }) => {
                 </div>
 
                 {/* Consensus Table */}
+                {/* Consensus Table - updated to use consensusValues */}
                 <div className="w-48 rounded-md border border-gray-200">
                     <Table>
                         <TableHeader className="bg-gray-50">
@@ -128,10 +183,10 @@ const ForecastTable = ({ data, selections }) => {
                             {tableData.map((row) => (
                                 <TableRow key={row.name} className="hover:bg-gray-50">
                                     <TableCell className="text-right border-r border-gray-200">
-                                        {Math.round(row.ForecastJan)}
+                                        {consensusValues[row.name]?.jan || Math.round(row.ForecastJan)}
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        {Math.round(row.ForecastFeb)}
+                                        {consensusValues[row.name]?.feb || Math.round(row.ForecastFeb)}
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -191,35 +246,143 @@ const ForecastTable = ({ data, selections }) => {
                                 <TableCell className="font-medium border-r border-gray-200">{row.name}</TableCell>
 
                                 {/* Sales Team */}
-                                <TableCell className="border-r border-gray-200"><input type="number" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
-                                <TableCell className="border-r border-gray-200"><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
-                                <TableCell className="border-r border-gray-200"><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
-                                <TableCell className="border-r border-gray-200"><input type="number" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
-                                <TableCell className="border-r border-gray-200"><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
-                                <TableCell className="border-r border-gray-200"><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
+                                <TableCell className="border-r border-gray-200">
+                                    <input
+                                        type="number"
+                                        className="w-full p-1 border border-gray-300 rounded"
+                                        onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'value', e.target.value)}
+                                    />
+                                </TableCell>
+                                <TableCell className="border-r border-gray-200">
+                                    <input
+                                        type="text"
+                                        className="w-full p-1 border border-gray-300 rounded"
+                                        onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'comment', e.target.value)}
+                                    />
+                                </TableCell>
+                                <TableCell className="border-r border-gray-200">
+                                    <input
+                                        type="text"
+                                        className="w-full p-1 border border-gray-300 rounded"
+                                        onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'owner', e.target.value)}
+                                    />
+                                </TableCell>
+                                <TableCell className="border-r border-gray-200">
+                                    <input
+                                        type="number"
+                                        className="w-full p-1 border border-gray-300 rounded"
+                                        onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'value', e.target.value)}
+                                    />
+                                </TableCell>
+                                <TableCell className="border-r border-gray-200">
+                                    <input
+                                        type="text"
+                                        className="w-full p-1 border border-gray-300 rounded"
+                                        onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'comment', e.target.value)}
+                                    />
+                                </TableCell>
+                                <TableCell className="border-r border-gray-200">
+                                    <input
+                                        type="text"
+                                        className="w-full p-1 border border-gray-300 rounded"
+                                        onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'owner', e.target.value)}
+                                    />
+                                </TableCell>
 
                                 {/* Marketing Team */}
-                                <TableCell className="border-r border-gray-200"><input type="number" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
-                                <TableCell className="border-r border-gray-200"><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
-                                <TableCell className="border-r border-gray-200"><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
-                                <TableCell className="border-r border-gray-200"><input type="number" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
-                                <TableCell className="border-r border-gray-200"><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
-                                <TableCell className="border-r border-gray-200"><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
+                                <TableCell className="border-r border-gray-200">
+                                    <input
+                                        type="number"
+                                        className="w-full p-1 border border-gray-300 rounded"
+                                        onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'value', e.target.value)}
+                                    />
+                                </TableCell>
+                                <TableCell className="border-r border-gray-200">
+                                    <input
+                                        type="text"
+                                        className="w-full p-1 border border-gray-300 rounded"
+                                        onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'comment', e.target.value)}
+                                    />
+                                </TableCell>
+                                <TableCell className="border-r border-gray-200">
+                                    <input
+                                        type="text"
+                                        className="w-full p-1 border border-gray-300 rounded"
+                                        onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'owner', e.target.value)}
+                                    />
+                                </TableCell>
+                                <TableCell className="border-r border-gray-200">
+                                    <input
+                                        type="number"
+                                        className="w-full p-1 border border-gray-300 rounded"
+                                        onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'value', e.target.value)}
+                                    />
+                                </TableCell>
+                                <TableCell className="border-r border-gray-200">
+                                    <input
+                                        type="text"
+                                        className="w-full p-1 border border-gray-300 rounded"
+                                        onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'comment', e.target.value)}
+                                    />
+                                </TableCell>
+                                <TableCell className="border-r border-gray-200">
+                                    <input
+                                        type="text"
+                                        className="w-full p-1 border border-gray-300 rounded"
+                                        onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'owner', e.target.value)}
+                                    />
+                                </TableCell>
 
                                 {/* Finance Team */}
-                                <TableCell className="border-r border-gray-200"><input type="number" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
-                                <TableCell className="border-r border-gray-200"><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
-                                <TableCell className="border-r border-gray-200"><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
-                                <TableCell className="border-r border-gray-200"><input type="number" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
-                                <TableCell className="border-r border-gray-200"><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
-                                <TableCell className=""><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
+                                <TableCell className="border-r border-gray-200">
+                                    <input
+                                        type="number"
+                                        className="w-full p-1 border border-gray-300 rounded"
+                                        onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'value', e.target.value)}
+                                    />
+                                </TableCell>
+                                <TableCell className="border-r border-gray-200">
+                                    <input
+                                        type="text"
+                                        className="w-full p-1 border border-gray-300 rounded"
+                                        onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'comment', e.target.value)}
+                                    />
+                                </TableCell>
+                                <TableCell className="border-r border-gray-200">
+                                    <input
+                                        type="text"
+                                        className="w-full p-1 border border-gray-300 rounded"
+                                        onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'owner', e.target.value)}
+                                    />
+                                </TableCell>
+                                <TableCell className="border-r border-gray-200">
+                                    <input
+                                        type="number"
+                                        className="w-full p-1 border border-gray-300 rounded"
+                                        onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'value', e.target.value)}
+                                    />
+                                </TableCell>
+                                <TableCell className="border-r border-gray-200">
+                                    <input
+                                        type="text"
+                                        className="w-full p-1 border border-gray-300 rounded"
+                                        onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'comment', e.target.value)}
+                                    />
+                                </TableCell>
+                                <TableCell className="">
+                                    <input
+                                        type="text"
+                                        className="w-full p-1 border border-gray-300 rounded"
+                                        onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'owner', e.target.value)}
+                                    />
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
 
             </div>
-        </div>
+        </div >
 
 
 
