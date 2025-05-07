@@ -70,7 +70,13 @@ const Planning = () => {
                                 const nextKeys = array.slice(0, index + 1);
                                 const allPreviousSelected = nextKeys.every(k => filters[k] !== null);
 
-                                if (value && allPreviousSelected) {
+                                // Find the last non-"All" value in the filters
+                                const lastNonAllKey = [...array].reverse().find(k => filters[k] && filters[k] !== "All");
+
+                                // Only show if:
+                                // 1. It's the last non-"All" value or any previous value before it
+                                // 2. All previous filters are selected
+                                if (value && value !== "All" && allPreviousSelected && array.indexOf(lastNonAllKey) >= index) {
                                     return (
                                         <React.Fragment key={key}>
                                             {index !== 0 && <span>&gt;</span>}
@@ -124,7 +130,7 @@ const Planning = () => {
                                 <LineChart className="h-6 w-6 text-green-500" size={24} />
                                 <span className="text-sm font-medium">YoY Growth</span>
                             </div>
-                            <div className="flex flex-col">
+                            <div className="flex justify-center gap-8">
                                 {/* Volume */}
                                 <div className="flex items-center gap-1">
                                     {yoyGrowth == null ? (
@@ -136,25 +142,27 @@ const Planning = () => {
                                     ) : (
                                         <Minus className="text-gray-400" size={16} />
                                     )}
+                                    <div className="flex flex-col">
 
-                                    <span
-                                        className={`font-medium ${yoyGrowth == null
-                                            ? "text-gray-400"
-                                            : yoyGrowth < 0
-                                                ? "text-red-500"
-                                                : yoyGrowth > 0
-                                                    ? "text-green-500"
-                                                    : "text-gray-400"
-                                            }`}
-                                    >
-                                        {yoyGrowth != null ? `${Math.abs(yoyGrowth)}%` : "--"}
-                                    </span>
+                                        <span
+                                            className={`font-medium ${yoyGrowth == null
+                                                ? "text-gray-400"
+                                                : yoyGrowth < 0
+                                                    ? "text-red-500"
+                                                    : yoyGrowth > 0
+                                                        ? "text-green-500"
+                                                        : "text-gray-400"
+                                                }`}
+                                        >
+                                            {yoyGrowth != null ? `${Math.abs(yoyGrowth)}%` : "--"}
+                                        </span>
 
-                                    <span className="text-xs text-gray-500">(Volume)</span>
+                                        <span className="text-xs text-gray-500">(Volume)</span>
+                                    </div>
                                 </div>
 
                                 {/* Value */}
-                                <div className="flex items-center gap-1 mt-1">
+                                <div className="flex items-center gap-1">
                                     {yoyGrowth == null ? (
                                         <Minus className="text-gray-400" size={16} />
                                     ) : yoyGrowth < 0 ? (
@@ -165,20 +173,23 @@ const Planning = () => {
                                         <Minus className="text-gray-400" size={16} />
                                     )}
 
-                                    <span
-                                        className={`font-medium ${yoyGrowth == null
-                                            ? "text-gray-400"
-                                            : yoyGrowth < 0
-                                                ? "text-red-500"
-                                                : yoyGrowth > 0
-                                                    ? "text-green-500"
-                                                    : "text-gray-400"
-                                            }`}
-                                    >
-                                        {yoyGrowth != null ? `${Math.abs(yoyGrowth)}%` : "--"}
-                                    </span>
+                                    <div className="flex flex-col">
 
-                                    <span className="text-xs text-gray-500">(Value)</span>
+                                        <span
+                                            className={`font-medium ${yoyGrowth == null
+                                                ? "text-gray-400"
+                                                : yoyGrowth < 0
+                                                    ? "text-red-500"
+                                                    : yoyGrowth > 0
+                                                        ? "text-green-500"
+                                                        : "text-gray-400"
+                                                }`}
+                                        >
+                                            {yoyGrowth != null ? `${Math.abs(yoyGrowth)}%` : "--"}
+                                        </span>
+
+                                        <span className="text-xs text-gray-500">(Value)</span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -194,10 +205,21 @@ const Planning = () => {
                                 <span className="text-sm font-medium">Total Volume</span>
                             </div>
                             <div className="flex items-baseline">
-                                <span className="text-3xl font-bold text-[#0A2472]">{parentLevelForecast !== null ? formatForecastValue(parentLevelForecast) : "N/A"}</span>
+                                <span className="text-3xl font-bold text-[#0A2472]">
+                                    {parentLevelForecast !== null ? formatForecastValue(parentLevelForecast) : "N/A"}
+                                </span>
                                 <span className="ml-1 text-lg font-medium text-[#0A2472]">Units</span>
                             </div>
-                            <div className="mt-2 text-xs text-gray-500">Total volume for SKU: {filters.sku}</div>
+                            <div className="mt-2 text-xs text-gray-500">
+                                Total volume for: {
+                                    (() => {
+                                        // Find the last non-"All" filter value
+                                        const lastNonAllKey = ["sku", "subCat", "depot", "chain", "channel"]
+                                            .find(k => filters[k] && filters[k] !== "All");
+                                        return lastNonAllKey ? filters[lastNonAllKey] : "selected filters";
+                                    })()
+                                }
+                            </div>
                         </CardContent>
                     </Card>
                 </div>
