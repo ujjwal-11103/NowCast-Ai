@@ -16,16 +16,39 @@ import { useForecast } from "@/context/ForecastContext/ForecastContext";
 import SalesTrendChart from "@/components/planning/SalesTrendChart ";
 import ForecastTable from "@/components/planning/ForecastTable";
 
+import data from "../../jsons/Planning/JF_censored.json"
+
 const Planning = () => {
 
     const { forecastSum, forecastValue, yoyGrowth, parentLevelForecast, filters } = useForecast();
-    // console.log("Filters:", filters);
+    console.log("Filters:", filters.channel);
 
-    const formatForecastValue = (value) => {
-        if (value >= 1000000) return (value / 1000000).toFixed(1) + "M ";
-        if (value >= 1000) return (value / 1000).toFixed(1) + "K ";
-        return value.toFixed(1) + " Units";
+    const formatForecastValue = (value, isCurrency = false, useIndianUnits = false) => {
+        if (value === null || value === undefined) return "N/A";
+        let formattedValue;
+
+        if (useIndianUnits) {
+            if (value >= 10000000) {
+                formattedValue = (value / 10000000).toFixed(1) + " Cr";
+            } else if (value >= 100000) {
+                formattedValue = (value / 100000).toFixed(1) + " L";
+            } else {
+                formattedValue = value.toFixed(1);
+            }
+            return isCurrency ? `₹ ${formattedValue}` : `${formattedValue}`;
+        } else {
+            if (value >= 1_000_000) {
+                formattedValue = (value / 1_000_000).toFixed(1) + "M";
+            } else if (value >= 1_000) {
+                formattedValue = (value / 1_000).toFixed(1) + "K";
+            } else {
+                formattedValue = value.toFixed(1);
+            }
+            return isCurrency ? `₹ ${formattedValue}` : `${formattedValue}`;
+        }
     };
+
+
 
 
 
@@ -72,10 +95,10 @@ const Planning = () => {
                                 </div>
                                 <div className="flex items-baseline">
                                     <span className="text-3xl font-bold text-[#0A2472]">
-                                        {(forecastSum / 1000).toFixed(1)}
+                                        {formatForecastValue(forecastSum, false)}
                                     </span>
 
-                                    <span className="ml-1 text-lg font-medium">K Units</span>
+                                    <span className="ml-1 text-lg font-medium text-[#0A2472]">Units</span>
                                 </div>
                                 <div className="mt-2 text-xs text-gray-500">Total predicted units</div>
                             </CardContent>
@@ -88,8 +111,10 @@ const Planning = () => {
                                     <span className="text-sm font-medium">Forecasted Value</span>
                                 </div>
                                 <div className="flex items-baseline">
-                                    <span className="text-3xl font-bold text-[#0A2472]">₹ {(forecastValue / 100000).toFixed(1)}</span>
-                                    <span className="ml-1 text-lg font-medium">L</span>
+                                    <span className="text-3xl font-bold text-[#0A2472]">
+                                        {formatForecastValue(forecastValue, true, true)}
+                                    </span>
+                                    {/* <span className="ml-1 text-lg font-medium">L</span> */}
                                 </div>
                                 <div className="mt-2 text-xs text-gray-500">Total predicted revenue</div>
                             </CardContent>
@@ -172,7 +197,7 @@ const Planning = () => {
                                 </div>
                                 <div className="flex items-baseline">
                                     <span className="text-3xl font-bold text-[#0A2472]">{parentLevelForecast !== null ? formatForecastValue(parentLevelForecast) : "N/A"}</span>
-                                    <span className="ml-1 text-lg font-medium"> Units</span>
+                                    <span className="ml-1 text-lg font-medium text-[#0A2472]">Units</span>
                                 </div>
                                 <div className="mt-2 text-xs text-gray-500">Total volume for SKU: {filters.sku}</div>
                             </CardContent>
@@ -201,81 +226,16 @@ const Planning = () => {
 
                     <div className="mb-8">
                         <div className="overflow-x-auto">
-                            {/* <ForecastTable /> */}
-                            {/* <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead colSpan={2}>Last Year Values</TableHead>
-                                        <TableHead colSpan={2}>Baseline Forecast</TableHead>
-                                        <TableHead>Custom Metric</TableHead>
-                                        <TableHead>Name</TableHead>
-                                        <TableHead colSpan={2}>Sales Team</TableHead>
-                                        <TableHead colSpan={2}>Consensus</TableHead>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableHead>Jan</TableHead>
-                                        <TableHead>Feb</TableHead>
-                                        <TableHead>Jan</TableHead>
-                                        <TableHead>Feb</TableHead>
-                                        <TableHead>LZF/LZA</TableHead>
-                                        <TableHead></TableHead>
-                                        <TableHead>Jan</TableHead>
-                                        <TableHead>Comment</TableHead>
-                                        <TableHead>Jan</TableHead>
-                                        <TableHead>Feb</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    <TableRow>
-                                        <TableCell>2290</TableCell>
-                                        <TableCell>578</TableCell>
-                                        <TableCell>1182</TableCell>
-                                        <TableCell>1246</TableCell>
-                                        <TableCell>0.85</TableCell>
-                                        <TableCell>SKU 10</TableCell>
-                                        <TableCell>0</TableCell>
-                                        <TableCell></TableCell>
-                                        <TableCell>1182</TableCell>
-                                        <TableCell>1246</TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell>4380</TableCell>
-                                        <TableCell>4380</TableCell>
-                                        <TableCell>2638</TableCell>
-                                        <TableCell>2755</TableCell>
-                                        <TableCell>0.62</TableCell>
-                                        <TableCell>SKU 5</TableCell>
-                                        <TableCell>0</TableCell>
-                                        <TableCell></TableCell>
-                                        <TableCell>2638</TableCell>
-                                        <TableCell>2755</TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell>1409</TableCell>
-                                        <TableCell>682</TableCell>
-                                        <TableCell>1133</TableCell>
-                                        <TableCell>1606</TableCell>
-                                        <TableCell>1.31</TableCell>
-                                        <TableCell>SKU 6</TableCell>
-                                        <TableCell>0</TableCell>
-                                        <TableCell></TableCell>
-                                        <TableCell>1133</TableCell>
-                                        <TableCell>1606</TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell>1268</TableCell>
-                                        <TableCell>1900</TableCell>
-                                        <TableCell>1010</TableCell>
-                                        <TableCell>1392</TableCell>
-                                        <TableCell>0.76</TableCell>
-                                        <TableCell>SKU 9</TableCell>
-                                        <TableCell>0</TableCell>
-                                        <TableCell></TableCell>
-                                        <TableCell>1010</TableCell>
-                                        <TableCell>1392</TableCell>
-                                    </TableRow>
-                                </TableBody>
-                            </Table> */}
+                            <ForecastTable
+                                data={data}
+                                selections={[
+                                    { field: 'Channel', value: filters.channel },
+                                    { field: 'Chain', value: filters.chain },
+                                    { field: 'Depot', value: filters.depot },
+                                    { field: 'SubCat', value: filters.subCat },
+                                    { field: 'SKU', value: filters.sku }
+                                ]}
+                            />
                         </div>
                     </div>
 

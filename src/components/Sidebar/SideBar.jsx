@@ -40,198 +40,107 @@ const SideBar = () => {
         setChannelOptions(channels);
     }, []);
 
+    // Handle chain selection
     useEffect(() => {
         if (selectedChannel) {
             const filtered = data.filter(item => item.Channel === selectedChannel);
             setChainOptions([...new Set(filtered.map(item => item.Chain))]);
+
+            // Reset downstream selections when channel changes
             setSelectedChain(null);
+            setSelectedDepot(null);
+            setSelectedSubCat(null);
+            setSelectedSubSKU(null);
             setDepotOptions([]);
             setSubCatOptions([]);
             setSkuOptions([]);
         }
     }, [selectedChannel]);
 
+    // Handle depot selection
     useEffect(() => {
         if (selectedChain) {
-            const filtered = data.filter(
-                item => item.Channel === selectedChannel && item.Chain === selectedChain
-            );
-            setDepotOptions([...new Set(filtered.map(item => item.Depot))]);
-            setSelectedDepot(null);
-            setSubCatOptions([]);
-            setSkuOptions([]);
+            if (selectedChain === "All") {
+                // When "All" is selected for chain, set all downstream to "All" and clear options
+                setSelectedDepot("All");
+                setSelectedSubCat("All");
+                setSelectedSubSKU("All");
+                setDepotOptions([]);
+                setSubCatOptions([]);
+                setSkuOptions([]);
+            } else {
+                const filtered = data.filter(
+                    item => item.Channel === selectedChannel && item.Chain === selectedChain
+                );
+                setDepotOptions([...new Set(filtered.map(item => item.Depot))]);
+                setSelectedDepot(null);
+                setSelectedSubCat(null);
+                setSelectedSubSKU(null);
+                setSubCatOptions([]);
+                setSkuOptions([]);
+            }
         }
-    }, [selectedChain]);
+    }, [selectedChain, selectedChannel]);
 
+    // Handle subcat selection
     useEffect(() => {
         if (selectedDepot) {
-            const filtered = data.filter(
-                item =>
-                    item.Channel === selectedChannel &&
-                    item.Chain === selectedChain &&
-                    item.Depot === selectedDepot
-            );
-            setSubCatOptions([...new Set(filtered.map(item => item.SubCat))]);
-            setSelectedSubCat(null);
-            setSkuOptions([]);
+            if (selectedDepot === "All") {
+                // When "All" is selected for depot, set downstream to "All" and clear options
+                setSelectedSubCat("All");
+                setSelectedSubSKU("All");
+                setSubCatOptions([]);
+                setSkuOptions([]);
+            } else {
+                const filtered = data.filter(
+                    item =>
+                        item.Channel === selectedChannel &&
+                        item.Chain === selectedChain &&
+                        item.Depot === selectedDepot
+                );
+                setSubCatOptions([...new Set(filtered.map(item => item.SubCat))]);
+                setSelectedSubCat(null);
+                setSelectedSubSKU(null);
+                setSkuOptions([]);
+            }
         }
-    }, [selectedDepot]);
+    }, [selectedDepot, selectedChannel, selectedChain]);
 
+    // Handle SKU selection
     useEffect(() => {
         if (selectedSubCat) {
-            const filtered = data.filter(
-                item =>
-                    item.Channel === selectedChannel &&
-                    item.Chain === selectedChain &&
-                    item.Depot === selectedDepot &&
-                    item.SubCat === selectedSubCat
-            );
-            setSkuOptions([...new Set(filtered.map(item => item.SKU))]);
+            if (selectedSubCat === "All") {
+                // When "All" is selected for subcat, set SKU to "All" and clear options
+                setSelectedSubSKU("All");
+                setSkuOptions([]);
+            } else {
+                const filtered = data.filter(
+                    item =>
+                        item.Channel === selectedChannel &&
+                        item.Chain === selectedChain &&
+                        item.Depot === selectedDepot &&
+                        item.SubCat === selectedSubCat
+                );
+                setSkuOptions([...new Set(filtered.map(item => item.SKU))]);
+                setSelectedSubSKU(null);
+            }
         }
-    }, [selectedSubCat]);
+    }, [selectedSubCat, selectedChannel, selectedChain, selectedDepot]);
 
-    // Calculate aggregated values when "All" is selected
-    // useEffect(() => {
-    //     if (selectedChannel && selectedChain && selectedDepot && selectedSubCat) {
-    //         // Filter data based on selected filters
-    //         let filteredData = data.filter(item =>
-    //             item.Channel === selectedChannel &&
-    //             item.Chain === selectedChain &&
-    //             item.Depot === selectedDepot &&
-    //             item.SubCat === selectedSubCat &&
-    //             (item.Date === "2025-01-01" || item.Date === "2025-02-01")
-    //         );
-
-    //         // If SKU is selected (not "All"), filter further by SKU
-    //         if (selectedSubSKU && selectedSubSKU !== "All") {
-    //             filteredData = filteredData.filter(item => item.SKU === selectedSubSKU);
-    //         }
-
-    //         // Calculate total forecast
-    //         const totalForecast = filteredData.reduce((sum, item) => sum + (item.forecast || 0), 0);
-    //         setForecastSum(totalForecast);
-
-    //         // Calculate forecast value
-    //         if (selectedSubSKU && selectedSubSKU !== "All") {
-    //             // For specific SKU, use its unit price
-    //             const matchedPrice = priceData.find(
-    //                 item =>
-    //                     item.Channel === selectedChannel &&
-    //                     item.Chain === selectedChain &&
-    //                     item.Depot === selectedDepot &&
-    //                     item.SubCat === selectedSubCat &&
-    //                     item.SKU === selectedSubSKU
-    //             );
-    //             const unitPrice = matchedPrice?.UnitPrice || 0;
-    //             setForecastValue(Math.round(totalForecast * unitPrice));
-    //         } else {
-    //             // For "All" SKUs, sum up all values
-    //             const skuPrices = priceData.filter(
-    //                 item =>
-    //                     item.Channel === selectedChannel &&
-    //                     item.Chain === selectedChain &&
-    //                     item.Depot === selectedDepot &&
-    //                     item.SubCat === selectedSubCat
-    //             );
-
-    //             const totalValue = filteredData.reduce((sum, item) => {
-    //                 const skuPrice = skuPrices.find(p => p.SKU === item.SKU)?.UnitPrice || 0;
-    //                 return sum + (item.forecast || 0) * skuPrice;
-    //             }, 0);
-    //             setForecastValue(Math.round(totalValue));
-    //         }
-
-    //         // Calculate YoY Growth
-    //         let actuals2024 = data.filter(item =>
-    //             item.Channel === selectedChannel &&
-    //             item.Chain === selectedChain &&
-    //             item.Depot === selectedDepot &&
-    //             item.SubCat === selectedSubCat &&
-    //             (item.Date === "2024-01-01" || item.Date === "2024-02-01")
-    //         );
-
-    //         if (selectedSubSKU && selectedSubSKU !== "All") {
-    //             actuals2024 = actuals2024.filter(item => item.SKU === selectedSubSKU);
-    //         }
-
-    //         const totalActual2024 = actuals2024.reduce((sum, item) => sum + (item.actual || 0), 0);
-
-    //         if (totalActual2024 > 0) {
-    //             const yoy = ((totalForecast - totalActual2024) / totalActual2024) * 100;
-    //             setYoyGrowth(yoy.toFixed(1));
-    //         } else {
-    //             setYoyGrowth(null);
-    //         }
-
-    //         // Calculate parent level forecast (one level up)
-    //         let parentFilter = {};
-    //         if (selectedSubSKU === "All") {
-    //             // At SubCat level (since we're showing all SKUs)
-    //             parentFilter = {
-    //                 Channel: selectedChannel,
-    //                 Chain: selectedChain,
-    //                 Depot: selectedDepot,
-    //                 Date: ["2025-01-01", "2025-02-01"]
-    //             };
-    //         } else if (selectedSubCat && !selectedSubSKU) {
-    //             // At Depot level (SubCat selected but no SKU)
-    //             parentFilter = {
-    //                 Channel: selectedChannel,
-    //                 Chain: selectedChain,
-    //                 Depot: selectedDepot,
-    //                 Date: ["2025-01-01", "2025-02-01"]
-    //             };
-    //         } else if (selectedDepot && !selectedSubCat) {
-    //             // At Chain level
-    //             parentFilter = {
-    //                 Channel: selectedChannel,
-    //                 Chain: selectedChain,
-    //                 Date: ["2025-01-01", "2025-02-01"]
-    //             };
-    //         }
-
-    //         const parentLevelData = data.filter(item =>
-    //             (parentFilter.Channel ? item.Channel === parentFilter.Channel : true) &&
-    //             (parentFilter.Chain ? item.Chain === parentFilter.Chain : true) &&
-    //             (parentFilter.Depot ? item.Depot === parentFilter.Depot : true) &&
-    //             (parentFilter.Date ? parentFilter.Date.includes(item.Date) : true)
-    //         );
-
-    //         const parentTotalForecast = parentLevelData.reduce((sum, item) =>
-    //             sum + (item.forecast || 0), 0);
-
-    //         setParentLevelForecast(parentTotalForecast);
-    //     } else {
-    //         setForecastSum(null);
-    //         setForecastValue(null);
-    //         setYoyGrowth(null);
-    //         setParentLevelForecast(null);
-    //     }
-    // }, [selectedChannel, selectedChain, selectedDepot, selectedSubCat, selectedSubSKU]);
-    // Calculate aggregated values when "All" is selected at any level
+    // Calculate metrics based on selections
     useEffect(() => {
-        // Only proceed if we have at least Channel selected
         if (selectedChannel) {
-            // Filter data based on selected filters (handling "All" at each level)
+            // Filter data based on selections
             let filteredData = data.filter(item => {
-                // Handle Channel (no "All" option)
-                if (selectedChannel && item.Channel !== selectedChannel) return false;
-
-                // Handle Chain (with "All" option)
+                if (item.Channel !== selectedChannel) return false;
                 if (selectedChain && selectedChain !== "All" && item.Chain !== selectedChain) return false;
-
-                // Handle Depot (with "All" option)
                 if (selectedDepot && selectedDepot !== "All" && item.Depot !== selectedDepot) return false;
-
-                // Handle SubCat (with "All" option)
                 if (selectedSubCat && selectedSubCat !== "All" && item.SubCat !== selectedSubCat) return false;
-
-                // Handle SKU (with "All" option)
                 if (selectedSubSKU && selectedSubSKU !== "All" && item.SKU !== selectedSubSKU) return false;
-
-                // Only include Jan and Feb 2025 data for forecast calculations
                 return item.Date === "2025-01-01" || item.Date === "2025-02-01";
             });
+
+            // Calculate metrics...
 
             // Calculate total forecast
             const totalForecast = filteredData.reduce((sum, item) => sum + (item.forecast || 0), 0);
@@ -241,32 +150,18 @@ const SideBar = () => {
             if (filteredData.length > 0) {
                 let totalValue = 0;
 
-                // For specific SKU selection
-                if (selectedSubSKU && selectedSubSKU !== "All") {
-                    const matchedPrice = priceData.find(
-                        item =>
-                            (!selectedChannel || item.Channel === selectedChannel) &&
-                            (!selectedChain || selectedChain === "All" || item.Chain === selectedChain) &&
-                            (!selectedDepot || selectedDepot === "All" || item.Depot === selectedDepot) &&
-                            (!selectedSubCat || selectedSubCat === "All" || item.SubCat === selectedSubCat) &&
-                            item.SKU === selectedSubSKU
+                filteredData.forEach(dataItem => {
+                    const matchedPrice = priceData.find(priceItem =>
+                        priceItem.Channel === dataItem.Channel &&
+                        priceItem.Chain === dataItem.Chain &&
+                        priceItem.Depot === dataItem.Depot &&
+                        priceItem.SubCat === dataItem.SubCat &&
+                        priceItem.SKU === dataItem.SKU
                     );
                     const unitPrice = matchedPrice?.UnitPrice || 0;
-                    totalValue = totalForecast * unitPrice;
-                } else {
-                    // For "All" selections at any level
-                    filteredData.forEach(dataItem => {
-                        const matchedPrice = priceData.find(priceItem =>
-                            priceItem.Channel === dataItem.Channel &&
-                            priceItem.Chain === dataItem.Chain &&
-                            priceItem.Depot === dataItem.Depot &&
-                            priceItem.SubCat === dataItem.SubCat &&
-                            priceItem.SKU === dataItem.SKU
-                        );
-                        const unitPrice = matchedPrice?.UnitPrice || 0;
-                        totalValue += (dataItem.forecast || 0) * unitPrice;
-                    });
-                }
+                    totalValue += (dataItem.forecast || 0) * unitPrice;
+                });
+
                 setForecastValue(Math.round(totalValue));
             } else {
                 setForecastValue(null);
@@ -292,33 +187,33 @@ const SideBar = () => {
                 setYoyGrowth(null);
             }
 
-            // Calculate parent level forecast (one level up)
+            // Calculate parent level forecast (immediate parent in hierarchy)
             let parentFilter = {};
 
-            // Determine which level we're at based on selections
-            if (selectedSubSKU === "All") {
-                // At SubCat level (showing all SKUs)
+            // Determine parent level based on current selection
+            if (selectedSubSKU && selectedSubSKU !== "All") {
+                // Current level: SKU -> Parent: SubCat (all SKUs in same SubCat)
                 parentFilter = {
                     Channel: selectedChannel,
                     Chain: selectedChain !== "All" ? selectedChain : null,
                     Depot: selectedDepot !== "All" ? selectedDepot : null,
                     SubCat: selectedSubCat !== "All" ? selectedSubCat : null
                 };
-            } else if (selectedSubCat === "All") {
-                // At Depot level (showing all SubCats)
+            } else if (selectedSubSKU === "All" || selectedSubCat) {
+                // Current level: SubCat -> Parent: Depot (all SubCats in same Depot)
                 parentFilter = {
                     Channel: selectedChannel,
                     Chain: selectedChain !== "All" ? selectedChain : null,
                     Depot: selectedDepot !== "All" ? selectedDepot : null
                 };
-            } else if (selectedDepot === "All") {
-                // At Chain level (showing all Depots)
+            } else if (selectedDepot === "All" || selectedDepot) {
+                // Current level: Depot -> Parent: Chain (all Depots in same Chain)
                 parentFilter = {
                     Channel: selectedChannel,
                     Chain: selectedChain !== "All" ? selectedChain : null
                 };
-            } else if (selectedChain === "All") {
-                // At Channel level (showing all Chains)
+            } else if (selectedChain === "All" || selectedChain) {
+                // Current level: Chain -> Parent: Channel (all Chains in same Channel)
                 parentFilter = {
                     Channel: selectedChannel
                 };
@@ -353,6 +248,12 @@ const SideBar = () => {
             sku: selectedSubSKU,
         });
     }, [selectedChannel, selectedChain, selectedDepot, selectedSubCat, selectedSubSKU]);
+
+    // Determine which dropdowns to show
+    const showChainDropdown = selectedChannel;
+    const showDepotDropdown = selectedChain && selectedChain !== "All";
+    const showSubCatDropdown = selectedDepot && selectedDepot !== "All";
+    const showSKUDropdown = selectedSubCat && selectedSubCat !== "All";
 
     return (
         <>
@@ -418,77 +319,101 @@ const SideBar = () => {
                         </Select>
                     </div>
 
-                    {/* Chain */}
-                    <div>
-                        <h3 className="text-sm font-medium mb-2">Chain</h3>
-                        <Select onValueChange={setSelectedChain} disabled={!selectedChannel}>
-                            <SelectTrigger className="w-full bg-white">
-                                <SelectValue placeholder="Select chain" />
-                            </SelectTrigger>
-                            <SelectContent className="bg-white">
-                                <SelectItem value="All">ALL</SelectItem>
-                                {chainOptions.map(chain => (
-                                    <SelectItem key={chain} value={chain}>
-                                        {chain.toUpperCase()}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                    {/* Chain - only show if channel is selected */}
+                    {showChainDropdown && (
+                        <div>
+                            <h3 className="text-sm font-medium mb-2">Chain</h3>
+                            <Select
+                                value={selectedChain || ""}
+                                onValueChange={setSelectedChain}
+                                disabled={!selectedChannel}
+                            >
+                                <SelectTrigger className="w-full bg-white">
+                                    <SelectValue placeholder="Select chain" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white">
+                                    <SelectItem value="All">ALL</SelectItem>
+                                    {chainOptions.map(chain => (
+                                        <SelectItem key={chain} value={chain}>
+                                            {chain.toUpperCase()}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
 
-                    {/* Depot */}
-                    <div>
-                        <h3 className="text-sm font-medium mb-2">Depot</h3>
-                        <Select onValueChange={setSelectedDepot} disabled={!selectedChain}>
-                            <SelectTrigger className="w-full bg-white">
-                                <SelectValue placeholder="Select depot" />
-                            </SelectTrigger>
-                            <SelectContent className="bg-white">
-                                <SelectItem value="All">ALL</SelectItem>
-                                {depotOptions.map(depot => (
-                                    <SelectItem key={depot} value={depot}>
-                                        {depot.toUpperCase()}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                    {/* Depot - only show if chain is selected and not "All" */}
+                    {showDepotDropdown && (
+                        <div>
+                            <h3 className="text-sm font-medium mb-2">Depot</h3>
+                            <Select
+                                value={selectedDepot || ""}
+                                onValueChange={setSelectedDepot}
+                                disabled={!selectedChain}
+                            >
+                                <SelectTrigger className="w-full bg-white">
+                                    <SelectValue placeholder="Select depot" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white">
+                                    <SelectItem value="All">ALL</SelectItem>
+                                    {depotOptions.map(depot => (
+                                        <SelectItem key={depot} value={depot}>
+                                            {depot.toUpperCase()}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
 
-                    {/* SubCat */}
-                    <div>
-                        <h3 className="text-sm font-medium mb-2">SubCat</h3>
-                        <Select onValueChange={setSelectedSubCat} disabled={!selectedDepot}>
-                            <SelectTrigger className="w-full bg-white">
-                                <SelectValue placeholder="Select subcat" />
-                            </SelectTrigger>
-                            <SelectContent className="bg-white">
-                                <SelectItem value="All">ALL</SelectItem>
-                                {subCatOptions.map(subcat => (
-                                    <SelectItem key={subcat} value={subcat}>
-                                        {subcat.toUpperCase()}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                    {/* SubCat - only show if depot is selected and not "All" */}
+                    {showSubCatDropdown && (
+                        <div>
+                            <h3 className="text-sm font-medium mb-2">SubCat</h3>
+                            <Select
+                                value={selectedSubCat || ""}
+                                onValueChange={setSelectedSubCat}
+                                disabled={!selectedDepot}
+                            >
+                                <SelectTrigger className="w-full bg-white">
+                                    <SelectValue placeholder="Select subcat" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white">
+                                    <SelectItem value="All">ALL</SelectItem>
+                                    {subCatOptions.map(subcat => (
+                                        <SelectItem key={subcat} value={subcat}>
+                                            {subcat.toUpperCase()}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
 
-                    {/* SKU */}
-                    <div>
-                        <h3 className="text-sm font-medium mb-2">SKU</h3>
-                        <Select onValueChange={setSelectedSubSKU} disabled={!selectedSubCat}>
-                            <SelectTrigger className="w-full bg-white">
-                                <SelectValue placeholder="Select SKU" />
-                            </SelectTrigger>
-                            <SelectContent className="bg-white">
-                                <SelectItem value="All">ALL</SelectItem>
-                                {skuOptions.map(sku => (
-                                    <SelectItem key={sku} value={sku}>
-                                        {sku.toUpperCase()}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                    {/* SKU - only show if subcat is selected and not "All" */}
+                    {showSKUDropdown && (
+                        <div>
+                            <h3 className="text-sm font-medium mb-2">SKU</h3>
+                            <Select
+                                value={selectedSubSKU || ""}
+                                onValueChange={setSelectedSubSKU}
+                                disabled={!selectedSubCat}
+                            >
+                                <SelectTrigger className="w-full bg-white">
+                                    <SelectValue placeholder="Select SKU" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white">
+                                    <SelectItem value="All">ALL</SelectItem>
+                                    {skuOptions.map(sku => (
+                                        <SelectItem key={sku} value={sku}>
+                                            {sku.toUpperCase()}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
                 </div>
             </div>
         </>
