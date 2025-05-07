@@ -224,115 +224,18 @@ const Planning = () => {
                     </div>
 
                     <div className="mb-8">
-                        <div className="overflow-x-auto">
-                            <ForecastTable
-                                data={data}
-                                selections={[
-                                    { field: 'Channel', value: filters.channel },
-                                    { field: 'Chain', value: filters.chain },
-                                    { field: 'Depot', value: filters.depot },
-                                    { field: 'SubCat', value: filters.subCat },
-                                    { field: 'SKU', value: filters.sku }
-                                ]}
-                            />
-                        </div>
+                        <ForecastTable
+                            data={data}
+                            selections={[
+                                { field: 'Channel', value: filters.channel },
+                                { field: 'Chain', value: filters.chain },
+                                { field: 'Depot', value: filters.depot },
+                                { field: 'SubCat', value: filters.subCat },
+                                { field: 'SKU', value: filters.sku }
+                            ]}
+                        />
                     </div>
 
-                    <div>
-                        <div className="flex items-center gap-2 mb-4">
-                            <h2 className="text-xl font-semibold">Waterfall Charts</h2>
-                        </div>
-
-                        <Accordion type="multiple" className="flex flex-wrap gap-4 items-start">
-                            <AccordionItem value="item-1" className="w-full md:w-[48%] border rounded-lg overflow-hidden">
-                                <AccordionTrigger className="px-4 py-3 bg-gray-50 hover:bg-gray-100">
-                                    <span className="font-medium">SKU 10 - Jan Waterfall</span>
-                                </AccordionTrigger>
-                                <AccordionContent className="p-4">
-                                    <div className="h-40 w-full bg-gray-100 rounded-lg flex items-center justify-center">
-                                        <span className="text-gray-500">Jan Waterfall Chart for SKU 10</span>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-
-                            <AccordionItem value="item-2" className="w-full md:w-[48%] border rounded-lg overflow-hidden">
-                                <AccordionTrigger className="px-4 py-3 bg-gray-50 hover:bg-gray-100">
-                                    <span className="font-medium">SKU 10 - Feb Waterfall</span>
-                                </AccordionTrigger>
-                                <AccordionContent className="p-4">
-                                    <div className="h-40 w-full bg-gray-100 rounded-lg flex items-center justify-center">
-                                        <span className="text-gray-500">Feb Waterfall Chart for SKU 10</span>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-
-                            <AccordionItem value="item-3" className="w-full md:w-[48%] border rounded-lg overflow-hidden">
-                                <AccordionTrigger className="px-4 py-3 bg-gray-50 hover:bg-gray-100">
-                                    <span className="font-medium">SKU 5 - Jan Waterfall</span>
-                                </AccordionTrigger>
-                                <AccordionContent className="p-4">
-                                    <div className="h-40 w-full bg-gray-100 rounded-lg flex items-center justify-center">
-                                        <span className="text-gray-500">Jan Waterfall Chart for SKU 5</span>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-
-                            <AccordionItem value="item-4" className="w-full md:w-[48%] border rounded-lg overflow-hidden">
-                                <AccordionTrigger className="px-4 py-3 bg-gray-50 hover:bg-gray-100">
-                                    <span className="font-medium">SKU 5 - Feb Waterfall</span>
-                                </AccordionTrigger>
-                                <AccordionContent className="p-4">
-                                    <div className="h-40 w-full bg-gray-100 rounded-lg flex items-center justify-center">
-                                        <span className="text-gray-500">Feb Waterfall Chart for SKU 5</span>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-
-                            <AccordionItem value="item-5" className="w-full md:w-[48%] border rounded-lg overflow-hidden">
-                                <AccordionTrigger className="px-4 py-3 bg-gray-50 hover:bg-gray-100">
-                                    <span className="font-medium">SKU 6 - Jan Waterfall</span>
-                                </AccordionTrigger>
-                                <AccordionContent className="p-4">
-                                    <div className="h-40 w-full bg-gray-100 rounded-lg flex items-center justify-center">
-                                        <span className="text-gray-500">Jan Waterfall Chart for SKU 6</span>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-
-                            <AccordionItem value="item-6" className="w-full md:w-[48%] border rounded-lg overflow-hidden">
-                                <AccordionTrigger className="px-4 py-3 bg-gray-50 hover:bg-gray-100">
-                                    <span className="font-medium">SKU 6 - Feb Waterfall</span>
-                                </AccordionTrigger>
-                                <AccordionContent className="p-4">
-                                    <div className="h-40 w-full bg-gray-100 rounded-lg flex items-center justify-center">
-                                        <span className="text-gray-500">Feb Waterfall Chart for SKU 6</span>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-
-                            <AccordionItem value="item-7" className="w-full md:w-[48%] border rounded-lg overflow-hidden">
-                                <AccordionTrigger className="px-4 py-3 bg-gray-50 hover:bg-gray-100">
-                                    <span className="font-medium">SKU 9 - Jan Waterfall</span>
-                                </AccordionTrigger>
-                                <AccordionContent className="p-4">
-                                    <div className="h-40 w-full bg-gray-100 rounded-lg flex items-center justify-center">
-                                        <span className="text-gray-500">Jan Waterfall Chart for SKU 9</span>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-
-                            <AccordionItem value="item-8" className="w-full md:w-[48%] border rounded-lg overflow-hidden">
-                                <AccordionTrigger className="px-4 py-3 bg-gray-50 hover:bg-gray-100">
-                                    <span className="font-medium">SKU 9 - Feb Waterfall</span>
-                                </AccordionTrigger>
-                                <AccordionContent className="p-4">
-                                    <div className="h-40 w-full bg-gray-100 rounded-lg flex items-center justify-center">
-                                        <span className="text-gray-500">Feb Waterfall Chart for SKU 9</span>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
-                    </div>
                 </main>
             </div>
         </div>

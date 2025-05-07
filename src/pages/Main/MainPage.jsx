@@ -15,7 +15,7 @@ const MainPage = () => {
 
 
     return (
-        <div className="flex">
+        <div className="flex w-full">
             <SideBar />
             <div className="w-full md:ml-64">
                 {/* <h1 className="text-xl font-bold mb-4">{selectedNav}</h1> */}

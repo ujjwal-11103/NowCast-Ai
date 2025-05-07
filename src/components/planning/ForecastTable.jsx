@@ -7,7 +7,8 @@ import {
     TableBody,
     TableCell,
 } from "@/components/ui/table"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import WaterfallSection from './WaterfallSection'
+// import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
 const ForecastTable = ({ data, selections }) => {
     // Define the hierarchy levels in order from most general to most specific
@@ -382,6 +383,12 @@ const ForecastTable = ({ data, selections }) => {
                 </Table>
 
             </div>
+
+            <WaterfallSection
+                tableData={tableData}
+                consensusValues={consensusValues}
+                teamInputs={teamInputs}
+            />
         </div >
 
 
