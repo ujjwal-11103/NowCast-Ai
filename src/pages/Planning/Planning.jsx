@@ -54,7 +54,6 @@ const Planning = () => {
 
     return (
         <div className="flex h-full">
-            <SideBar />
             <div className="flex-1 overflow-auto ">
                 <header className="flex items-center justify-between border-b p-4">
                     <h1 className="text-2xl font-bold text-[#0A2472]">Planning Module</h1>

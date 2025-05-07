@@ -80,82 +80,149 @@ const ForecastTable = ({ data, selections }) => {
     return (
         <div className="space-y-4">
             {/* Main Data Table */}
-            <div className="rounded-md border">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>{itemLevel}</TableHead>
-                            <TableHead className="text-right">LY Jan</TableHead>
-                            <TableHead className="text-right">LY Feb</TableHead>
-                            <TableHead className="text-right">Forecast Jan</TableHead>
-                            <TableHead className="text-right">Forecast Feb</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {tableData.map((row) => (
-                            <TableRow key={row.name}>
-                                <TableCell className="font-medium">{row.name}</TableCell>
-                                <TableCell className="text-right">{Math.round(row.LYJan)}</TableCell>
-                                <TableCell className="text-right">{Math.round(row.LYFeb)}</TableCell>
-                                <TableCell className="text-right">{Math.round(row.ForecastJan)}</TableCell>
-                                <TableCell className="text-right">{Math.round(row.ForecastFeb)}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </div>
-
-            {/* Teams Input Section */}
-            <ScrollArea className="w-full whitespace-nowrap rounded-md border">
-                <div className="min-w-[800px]">
+            <div className="flex gap-4">
+                {/* Main Data Table */}
+                <div className="flex-1 rounded-md border border-gray-200">
                     <Table>
-                        <TableHeader>
+                        <TableHeader className="bg-gray-50">
                             <TableRow>
-                                <TableHead>{itemLevel}</TableHead>
-                                <TableHead colSpan={3} className="text-center">Sales Team</TableHead>
-                                <TableHead colSpan={3} className="text-center">Marketing Team</TableHead>
-                                <TableHead colSpan={3} className="text-center">Finance Team</TableHead>
+                                <TableHead className="border-r border-gray-200">{itemLevel}</TableHead>
+                                <TableHead colSpan={2} className="text-center border-r border-gray-200">Last Year Values</TableHead>
+                                <TableHead colSpan={2} className="text-center border-r border-gray-200">Baseline Forecast</TableHead>
                             </TableRow>
                             <TableRow>
-                                <TableHead></TableHead>
-                                {/* Sales Team */}
-                                <TableHead>Jan</TableHead>
-                                <TableHead>Comment</TableHead>
-                                <TableHead>Owner</TableHead>
-                                {/* Marketing Team */}
-                                <TableHead>Jan</TableHead>
-                                <TableHead>Comment</TableHead>
-                                <TableHead>Owner</TableHead>
-                                {/* Finance Team */}
-                                <TableHead>Jan</TableHead>
-                                <TableHead>Comment</TableHead>
-                                <TableHead>Owner</TableHead>
+                                <TableHead className="border-r border-gray-200"></TableHead>
+                                <TableHead className="text-center border-r border-gray-200">Jan</TableHead>
+                                <TableHead className="text-center border-r border-gray-200">Feb</TableHead>
+                                <TableHead className="text-center border-r border-gray-200">Jan</TableHead>
+                                <TableHead className="text-center">Feb</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {tableData.map((row) => (
-                                <TableRow key={row.name}>
-                                    <TableCell className="font-medium">{row.name}</TableCell>
-                                    {/* Sales Team */}
-                                    <TableCell><input type="number" className="w-20" /></TableCell>
-                                    <TableCell><input type="text" className="w-32" /></TableCell>
-                                    <TableCell><input type="text" className="w-24" /></TableCell>
-                                    {/* Marketing Team */}
-                                    <TableCell><input type="number" className="w-20" /></TableCell>
-                                    <TableCell><input type="text" className="w-32" /></TableCell>
-                                    <TableCell><input type="text" className="w-24" /></TableCell>
-                                    {/* Finance Team */}
-                                    <TableCell><input type="number" className="w-20" /></TableCell>
-                                    <TableCell><input type="text" className="w-32" /></TableCell>
-                                    <TableCell><input type="text" className="w-24" /></TableCell>
+                                <TableRow key={row.name} className="hover:bg-gray-50">
+                                    <TableCell className="font-medium border-r border-gray-200">{row.name}</TableCell>
+                                    <TableCell className="text-right border-r border-gray-200">{Math.round(row.LYJan)}</TableCell>
+                                    <TableCell className="text-right border-r border-gray-200">{Math.round(row.LYFeb)}</TableCell>
+                                    <TableCell className="text-right border-r border-gray-200">{Math.round(row.ForecastJan)}</TableCell>
+                                    <TableCell className="text-right">{Math.round(row.ForecastFeb)}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
                 </div>
-                <ScrollBar orientation="horizontal" />
-            </ScrollArea>
+
+                {/* Consensus Table */}
+                <div className="w-48 rounded-md border border-gray-200">
+                    <Table>
+                        <TableHeader className="bg-gray-50">
+                            <TableRow>
+                                <TableHead colSpan={2} className="text-center">Consensus</TableHead>
+                            </TableRow>
+                            <TableRow>
+                                <TableHead className="text-center border-r border-gray-200">Jan</TableHead>
+                                <TableHead className="text-center">Feb</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {tableData.map((row) => (
+                                <TableRow key={row.name} className="hover:bg-gray-50">
+                                    <TableCell className="text-right border-r border-gray-200">
+                                        {Math.round(row.ForecastJan)}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        {Math.round(row.ForecastFeb)}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+            </div>
+
+            {/* Teams Input Section */}
+            <div className="rounded-md border border-gray-200">
+                <Table>
+                    <TableHeader className="bg-gray-50">
+                        <TableRow>
+                            <TableHead className="border-r border-gray-200">{itemLevel}</TableHead>
+
+                            {/* Sales Team */}
+                            <TableHead colSpan={6} className="text-center border-r border-gray-200">Sales Team</TableHead>
+
+                            {/* Marketing Team */}
+                            <TableHead colSpan={6} className="text-center border-r border-gray-200">Marketing Team</TableHead>
+
+                            {/* Finance Team */}
+                            <TableHead colSpan={6} className="text-center">Finance Team</TableHead>
+                        </TableRow>
+                        <TableRow>
+                            <TableHead className="border-r border-gray-200"></TableHead>
+
+                            {/* Sales Team */}
+                            <TableHead className="border-r border-gray-200">Jan</TableHead>
+                            <TableHead className="border-r border-gray-200">Comment</TableHead>
+                            <TableHead className="border-r border-gray-200 min-w-[80px]">Owner</TableHead>
+                            <TableHead className="border-r border-gray-200">Feb</TableHead>
+                            <TableHead className="border-r border-gray-200">Comment</TableHead>
+                            <TableHead className="border-r border-gray-200 min-w-[80px]">Owner</TableHead>
+
+                            {/* Marketing Team */}
+                            <TableHead className="border-r border-gray-200">Jan</TableHead>
+                            <TableHead className="border-r border-gray-200">Comment</TableHead>
+                            <TableHead className="border-r border-gray-200 min-w-[80px]">Owner</TableHead>
+                            <TableHead className="border-r border-gray-200">Feb</TableHead>
+                            <TableHead className="border-r border-gray-200">Comment</TableHead>
+                            <TableHead className="border-r border-gray-200 min-w-[80px]">Owner</TableHead>
+
+                            {/* Finance Team */}
+                            <TableHead className="border-r border-gray-200">Jan</TableHead>
+                            <TableHead className="border-r border-gray-200">Comment</TableHead>
+                            <TableHead className="border-r border-gray-200 min-w-[80px]">Owner</TableHead>
+                            <TableHead className="border-r border-gray-200">Feb</TableHead>
+                            <TableHead className="border-r border-gray-200">Comment</TableHead>
+                            <TableHead className="min-w-[80px]">Owner</TableHead>
+                        </TableRow>
+                    </TableHeader>
+
+                    <TableBody>
+                        {tableData.map((row) => (
+                            <TableRow key={row.name} className="hover:bg-gray-50">
+                                <TableCell className="font-medium border-r border-gray-200">{row.name}</TableCell>
+
+                                {/* Sales Team */}
+                                <TableCell className="border-r border-gray-200"><input type="number" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
+                                <TableCell className="border-r border-gray-200"><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
+                                <TableCell className="border-r border-gray-200"><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
+                                <TableCell className="border-r border-gray-200"><input type="number" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
+                                <TableCell className="border-r border-gray-200"><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
+                                <TableCell className="border-r border-gray-200"><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
+
+                                {/* Marketing Team */}
+                                <TableCell className="border-r border-gray-200"><input type="number" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
+                                <TableCell className="border-r border-gray-200"><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
+                                <TableCell className="border-r border-gray-200"><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
+                                <TableCell className="border-r border-gray-200"><input type="number" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
+                                <TableCell className="border-r border-gray-200"><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
+                                <TableCell className="border-r border-gray-200"><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
+
+                                {/* Finance Team */}
+                                <TableCell className="border-r border-gray-200"><input type="number" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
+                                <TableCell className="border-r border-gray-200"><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
+                                <TableCell className="border-r border-gray-200"><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
+                                <TableCell className="border-r border-gray-200"><input type="number" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
+                                <TableCell className="border-r border-gray-200"><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
+                                <TableCell className=""><input type="text" className="w-full p-1 border border-gray-300 rounded" /></TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+
+            </div>
         </div>
+
+
+
     )
 }
 
