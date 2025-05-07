@@ -20,10 +20,10 @@ const SalesTrendChart = () => {
         // Filter data based on the selected filters
         const filteredData = rawData.filter((item) => {
             return (!filterConditions.channel || item.Channel === filterConditions.channel) &&
-                   (!filterConditions.chain || item.Chain === filterConditions.chain) &&
-                   (!filterConditions.depot || item.Depot === filterConditions.depot) &&
-                   (!filterConditions.subCat || item.SubCat === filterConditions.subCat) &&
-                   (!filterConditions.sku || item.SKU === filterConditions.sku);
+                (!filterConditions.chain || item.Chain === filterConditions.chain) &&
+                (!filterConditions.depot || item.Depot === filterConditions.depot) &&
+                (!filterConditions.subCat || item.SubCat === filterConditions.subCat) &&
+                (!filterConditions.sku || item.SKU === filterConditions.sku);
         });
 
         // Clean and convert numeric values
@@ -80,7 +80,7 @@ const SalesTrendChart = () => {
                 hovermode: 'x unified',
                 responsive: true,
             }}
-            style={{ width: '100%', height: '100%' }}
+            style={{ width: '99%', height: '100%' }}
             useResizeHandler={true}
         />
     );
@@ -89,7 +89,7 @@ const SalesTrendChart = () => {
 // Helper function to generate chart title based on filters
 function getChartTitle(filters) {
     const parts = [];
-    
+
     if (filters.channel) {
         parts.push(`Channel: ${filters.channel === "All" ? "All Channels" : filters.channel}`);
     }

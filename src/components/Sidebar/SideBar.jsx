@@ -260,7 +260,7 @@ const SideBar = () => {
             {/* Toggle button */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="fixed top-4 left-4 z-50 bg-[#0A2472] text-white p-2 rounded-md shadow-md lg:hidden"
+                className="fixed top-4 right-4 z-50 bg-[#0A2472] text-white p-2 rounded-md shadow-md lg:hidden"
             >
                 <Menu size={20} />
             </button>

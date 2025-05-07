@@ -8,7 +8,7 @@ import {
     TableCell,
 } from "@/components/ui/table"
 import WaterfallSection from './WaterfallSection'
-// import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
 const ForecastTable = ({ data, selections }) => {
     // Define the hierarchy levels in order from most general to most specific
@@ -137,7 +137,7 @@ const ForecastTable = ({ data, selections }) => {
             {/* Main Data Table */}
             <div className="flex gap-4">
                 {/* Main Data Table */}
-                <div className="flex-1 rounded-md border border-gray-200">
+                <div className="w-[calc(100%-12rem)] rounded-md border border-gray-200">
                     <Table>
                         <TableHeader className="bg-gray-50">
                             <TableRow>
@@ -197,192 +197,197 @@ const ForecastTable = ({ data, selections }) => {
             </div>
 
             {/* Teams Input Section */}
-            <div className="rounded-md border border-gray-200">
-                <Table>
-                    <TableHeader className="bg-gray-50">
-                        <TableRow>
-                            <TableHead className="border-r border-gray-200">{itemLevel}</TableHead>
 
-                            {/* Sales Team */}
-                            <TableHead colSpan={6} className="text-center border-r border-gray-200">Sales Team</TableHead>
+            <ScrollArea className="w-[76vw] whitespace-nowrap rounded-md border">
 
-                            {/* Marketing Team */}
-                            <TableHead colSpan={6} className="text-center border-r border-gray-200">Marketing Team</TableHead>
-
-                            {/* Finance Team */}
-                            <TableHead colSpan={6} className="text-center">Finance Team</TableHead>
-                        </TableRow>
-                        <TableRow>
-                            <TableHead className="border-r border-gray-200"></TableHead>
-
-                            {/* Sales Team */}
-                            <TableHead className="border-r border-gray-200">Jan</TableHead>
-                            <TableHead className="border-r border-gray-200">Comment</TableHead>
-                            <TableHead className="border-r border-gray-200 min-w-[80px]">Owner</TableHead>
-                            <TableHead className="border-r border-gray-200">Feb</TableHead>
-                            <TableHead className="border-r border-gray-200">Comment</TableHead>
-                            <TableHead className="border-r border-gray-200 min-w-[80px]">Owner</TableHead>
-
-                            {/* Marketing Team */}
-                            <TableHead className="border-r border-gray-200">Jan</TableHead>
-                            <TableHead className="border-r border-gray-200">Comment</TableHead>
-                            <TableHead className="border-r border-gray-200 min-w-[80px]">Owner</TableHead>
-                            <TableHead className="border-r border-gray-200">Feb</TableHead>
-                            <TableHead className="border-r border-gray-200">Comment</TableHead>
-                            <TableHead className="border-r border-gray-200 min-w-[80px]">Owner</TableHead>
-
-                            {/* Finance Team */}
-                            <TableHead className="border-r border-gray-200">Jan</TableHead>
-                            <TableHead className="border-r border-gray-200">Comment</TableHead>
-                            <TableHead className="border-r border-gray-200 min-w-[80px]">Owner</TableHead>
-                            <TableHead className="border-r border-gray-200">Feb</TableHead>
-                            <TableHead className="border-r border-gray-200">Comment</TableHead>
-                            <TableHead className="min-w-[80px]">Owner</TableHead>
-                        </TableRow>
-                    </TableHeader>
-
-                    <TableBody>
-                        {tableData.map((row) => (
-                            <TableRow key={row.name} className="hover:bg-gray-50">
-                                <TableCell className="font-medium border-r border-gray-200">{row.name}</TableCell>
+                <div className="rounded-md border border-gray-200">
+                    <Table>
+                        <TableHeader className="bg-gray-50">
+                            <TableRow>
+                                <TableHead className="border-r border-gray-200 min-w-[150px]">{itemLevel}</TableHead>
 
                                 {/* Sales Team */}
-                                <TableCell className="border-r border-gray-200">
-                                    <input
-                                        type="number"
-                                        className="w-full p-1 border border-gray-300 rounded"
-                                        onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'value', e.target.value)}
-                                    />
-                                </TableCell>
-                                <TableCell className="border-r border-gray-200">
-                                    <input
-                                        type="text"
-                                        className="w-full p-1 border border-gray-300 rounded"
-                                        onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'comment', e.target.value)}
-                                    />
-                                </TableCell>
-                                <TableCell className="border-r border-gray-200">
-                                    <input
-                                        type="text"
-                                        className="w-full p-1 border border-gray-300 rounded"
-                                        onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'owner', e.target.value)}
-                                    />
-                                </TableCell>
-                                <TableCell className="border-r border-gray-200">
-                                    <input
-                                        type="number"
-                                        className="w-full p-1 border border-gray-300 rounded"
-                                        onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'value', e.target.value)}
-                                    />
-                                </TableCell>
-                                <TableCell className="border-r border-gray-200">
-                                    <input
-                                        type="text"
-                                        className="w-full p-1 border border-gray-300 rounded"
-                                        onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'comment', e.target.value)}
-                                    />
-                                </TableCell>
-                                <TableCell className="border-r border-gray-200">
-                                    <input
-                                        type="text"
-                                        className="w-full p-1 border border-gray-300 rounded"
-                                        onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'owner', e.target.value)}
-                                    />
-                                </TableCell>
+                                <TableHead colSpan={6} className="text-center border-r border-gray-200">Sales Team</TableHead>
 
                                 {/* Marketing Team */}
-                                <TableCell className="border-r border-gray-200">
-                                    <input
-                                        type="number"
-                                        className="w-full p-1 border border-gray-300 rounded"
-                                        onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'value', e.target.value)}
-                                    />
-                                </TableCell>
-                                <TableCell className="border-r border-gray-200">
-                                    <input
-                                        type="text"
-                                        className="w-full p-1 border border-gray-300 rounded"
-                                        onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'comment', e.target.value)}
-                                    />
-                                </TableCell>
-                                <TableCell className="border-r border-gray-200">
-                                    <input
-                                        type="text"
-                                        className="w-full p-1 border border-gray-300 rounded"
-                                        onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'owner', e.target.value)}
-                                    />
-                                </TableCell>
-                                <TableCell className="border-r border-gray-200">
-                                    <input
-                                        type="number"
-                                        className="w-full p-1 border border-gray-300 rounded"
-                                        onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'value', e.target.value)}
-                                    />
-                                </TableCell>
-                                <TableCell className="border-r border-gray-200">
-                                    <input
-                                        type="text"
-                                        className="w-full p-1 border border-gray-300 rounded"
-                                        onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'comment', e.target.value)}
-                                    />
-                                </TableCell>
-                                <TableCell className="border-r border-gray-200">
-                                    <input
-                                        type="text"
-                                        className="w-full p-1 border border-gray-300 rounded"
-                                        onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'owner', e.target.value)}
-                                    />
-                                </TableCell>
+                                <TableHead colSpan={6} className="text-center border-r border-gray-200">Marketing Team</TableHead>
 
                                 {/* Finance Team */}
-                                <TableCell className="border-r border-gray-200">
-                                    <input
-                                        type="number"
-                                        className="w-full p-1 border border-gray-300 rounded"
-                                        onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'value', e.target.value)}
-                                    />
-                                </TableCell>
-                                <TableCell className="border-r border-gray-200">
-                                    <input
-                                        type="text"
-                                        className="w-full p-1 border border-gray-300 rounded"
-                                        onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'comment', e.target.value)}
-                                    />
-                                </TableCell>
-                                <TableCell className="border-r border-gray-200">
-                                    <input
-                                        type="text"
-                                        className="w-full p-1 border border-gray-300 rounded"
-                                        onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'owner', e.target.value)}
-                                    />
-                                </TableCell>
-                                <TableCell className="border-r border-gray-200">
-                                    <input
-                                        type="number"
-                                        className="w-full p-1 border border-gray-300 rounded"
-                                        onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'value', e.target.value)}
-                                    />
-                                </TableCell>
-                                <TableCell className="border-r border-gray-200">
-                                    <input
-                                        type="text"
-                                        className="w-full p-1 border border-gray-300 rounded"
-                                        onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'comment', e.target.value)}
-                                    />
-                                </TableCell>
-                                <TableCell className="">
-                                    <input
-                                        type="text"
-                                        className="w-full p-1 border border-gray-300 rounded"
-                                        onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'owner', e.target.value)}
-                                    />
-                                </TableCell>
+                                <TableHead colSpan={6} className="text-center">Finance Team</TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                            <TableRow>
+                                <TableHead className="border-r border-gray-200 min-w-[150px]"></TableHead>
 
-            </div>
+                                {/* Sales Team */}
+                                <TableHead className="border-r border-gray-200 min-w-[80px]">Jan</TableHead>
+                                <TableHead className="border-r border-gray-200 min-w-[120px]">Comment</TableHead>
+                                <TableHead className="border-r border-gray-200 min-w-[120px]">Owner</TableHead>
+                                <TableHead className="border-r border-gray-200 min-w-[80px]">Feb</TableHead>
+                                <TableHead className="border-r border-gray-200 min-w-[120px]">Comment</TableHead>
+                                <TableHead className="border-r border-gray-200 min-w-[120px]">Owner</TableHead>
+
+                                {/* Marketing Team */}
+                                <TableHead className="border-r border-gray-200 min-w-[80px]">Jan</TableHead>
+                                <TableHead className="border-r border-gray-200 min-w-[120px]">Comment</TableHead>
+                                <TableHead className="border-r border-gray-200 min-w-[120px]">Owner</TableHead>
+                                <TableHead className="border-r border-gray-200 min-w-[80px]">Feb</TableHead>
+                                <TableHead className="border-r border-gray-200 min-w-[120px]">Comment</TableHead>
+                                <TableHead className="border-r border-gray-200 min-w-[120px]">Owner</TableHead>
+
+                                {/* Finance Team */}
+                                <TableHead className="border-r border-gray-200 min-w-[80px]">Jan</TableHead>
+                                <TableHead className="border-r border-gray-200 min-w-[120px]">Comment</TableHead>
+                                <TableHead className="border-r border-gray-200 min-w-[120px]">Owner</TableHead>
+                                <TableHead className="border-r border-gray-200 min-w-[80px]">Feb</TableHead>
+                                <TableHead className="border-r border-gray-200 min-w-[120px]">Comment</TableHead>
+                                <TableHead className="border-r border-gray-200 min-w-[120px]">Owner</TableHead>
+                            </TableRow>
+                        </TableHeader>
+
+                        <TableBody>
+                            {tableData.map((row) => (
+                                <TableRow key={row.name} className="hover:bg-gray-50">
+                                    <TableCell className="font-medium border-r border-gray-200 min-w-[150px]">{row.name}</TableCell>
+
+                                    {/* Sales Team */}
+                                    <TableCell className="border-r border-gray-200 min-w-[80px]">
+                                        <input
+                                            type="number"
+                                            className="w-full p-1 border border-gray-300 rounded"
+                                            onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'value', e.target.value)}
+                                        />
+                                    </TableCell>
+                                    <TableCell className="border-r border-gray-200 min-w-[120px]">
+                                        <input
+                                            type="text"
+                                            className="w-full p-1 border border-gray-300 rounded"
+                                            onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'comment', e.target.value)}
+                                        />
+                                    </TableCell>
+                                    <TableCell className="border-r border-gray-200 min-w-[120px]">
+                                        <input
+                                            type="text"
+                                            className="w-full p-1 border border-gray-300 rounded"
+                                            onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'owner', e.target.value)}
+                                        />
+                                    </TableCell>
+                                    <TableCell className="border-r border-gray-200 min-w-[80px]">
+                                        <input
+                                            type="number"
+                                            className="w-full p-1 border border-gray-300 rounded"
+                                            onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'value', e.target.value)}
+                                        />
+                                    </TableCell>
+                                    <TableCell className="border-r border-gray-200 min-w-[120px]">
+                                        <input
+                                            type="text"
+                                            className="w-full p-1 border border-gray-300 rounded"
+                                            onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'comment', e.target.value)}
+                                        />
+                                    </TableCell>
+                                    <TableCell className="border-r border-gray-200 min-w-[120px]">
+                                        <input
+                                            type="text"
+                                            className="w-full p-1 border border-gray-300 rounded"
+                                            onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'owner', e.target.value)}
+                                        />
+                                    </TableCell>
+
+                                    {/* Marketing Team */}
+                                    <TableCell className="border-r border-gray-200 min-w-[80px]">
+                                        <input
+                                            type="number"
+                                            className="w-full p-1 border border-gray-300 rounded"
+                                            onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'value', e.target.value)}
+                                        />
+                                    </TableCell>
+                                    <TableCell className="border-r border-gray-200 min-w-[120px]">
+                                        <input
+                                            type="text"
+                                            className="w-full p-1 border border-gray-300 rounded"
+                                            onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'comment', e.target.value)}
+                                        />
+                                    </TableCell>
+                                    <TableCell className="border-r border-gray-200 min-w-[120px]">
+                                        <input
+                                            type="text"
+                                            className="w-full p-1 border border-gray-300 rounded"
+                                            onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'owner', e.target.value)}
+                                        />
+                                    </TableCell>
+                                    <TableCell className="border-r border-gray-200 min-w-[80px]">
+                                        <input
+                                            type="number"
+                                            className="w-full p-1 border border-gray-300 rounded"
+                                            onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'value', e.target.value)}
+                                        />
+                                    </TableCell>
+                                    <TableCell className="border-r border-gray-200 min-w-[120px]">
+                                        <input
+                                            type="text"
+                                            className="w-full p-1 border border-gray-300 rounded"
+                                            onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'comment', e.target.value)}
+                                        />
+                                    </TableCell>
+                                    <TableCell className="border-r border-gray-200 min-w-[120px]">
+                                        <input
+                                            type="text"
+                                            className="w-full p-1 border border-gray-300 rounded"
+                                            onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'owner', e.target.value)}
+                                        />
+                                    </TableCell>
+
+                                    {/* Finance Team */}
+                                    <TableCell className="border-r border-gray-200 min-w-[80px]">
+                                        <input
+                                            type="number"
+                                            className="w-full p-1 border border-gray-300 rounded"
+                                            onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'value', e.target.value)}
+                                        />
+                                    </TableCell>
+                                    <TableCell className="border-r border-gray-200 min-w-[120px]">
+                                        <input
+                                            type="text"
+                                            className="w-full p-1 border border-gray-300 rounded"
+                                            onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'comment', e.target.value)}
+                                        />
+                                    </TableCell>
+                                    <TableCell className="border-r border-gray-200 min-w-[120px]">
+                                        <input
+                                            type="text"
+                                            className="w-full p-1 border border-gray-300 rounded"
+                                            onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'owner', e.target.value)}
+                                        />
+                                    </TableCell>
+                                    <TableCell className="border-r border-gray-200 min-w-[80px]">
+                                        <input
+                                            type="number"
+                                            className="w-full p-1 border border-gray-300 rounded"
+                                            onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'value', e.target.value)}
+                                        />
+                                    </TableCell>
+                                    <TableCell className="border-r border-gray-200 min-w-[120px]">
+                                        <input
+                                            type="text"
+                                            className="w-full p-1 border border-gray-300 rounded"
+                                            onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'comment', e.target.value)}
+                                        />
+                                    </TableCell>
+                                    <TableCell className="min-w-[120px]">
+                                        <input
+                                            type="text"
+                                            className="w-full p-1 border border-gray-300 rounded"
+                                            onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'owner', e.target.value)}
+                                        />
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+
+                </div>
+                <ScrollBar orientation="horizontal" />
+            </ScrollArea>
 
             <WaterfallSection
                 tableData={tableData}
