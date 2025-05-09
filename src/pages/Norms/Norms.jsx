@@ -22,6 +22,8 @@ const Norms = () => {
     const [processedData, setProcessedData] = useState(null);
     const [gridApi, setGridApi] = useState(null);
     const [plotData, setPlotData] = useState([]); // State for plot data
+    const [tableData, setTableData] = useState(null); // Separate state for table data (Only showing "2024-01-01")
+
 
 
     // Process data based on filters and accuracy level
@@ -76,6 +78,10 @@ const Norms = () => {
         };
         const processed = processData(filteredData);
         setProcessedData(processed);
+
+        // Filter table data to only show 2024-01-01
+        const tableDataFor2024 = processed.filter(item => item.Date === "2024-01-01");
+        setTableData(tableDataFor2024);
 
         // Prepare plot data
         const dates = [...new Set(processed.map(item => item.Date))].sort();
@@ -238,7 +244,8 @@ const Norms = () => {
             <div className="ag-theme-alpine mb-16" style={{ height: '300px', width: '100%' }}>
                 <AgGridReact
                     columnDefs={columnDefs}
-                    rowData={processedData || []}
+                    // rowData={processedData || []}
+                    rowData={tableData || []}
                     defaultColDef={defaultColDef}
                     modules={[ClientSideRowModelModule]}
                     onGridReady={params => setGridApi(params.api)}
