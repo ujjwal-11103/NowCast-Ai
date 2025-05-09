@@ -30,7 +30,9 @@ export default function Ingestion() {
         <h1 className="text-3xl font-bold">Data Ingestion Dashboard</h1>
       </div>
 
-      <p className="text-sm text-muted-foreground mb-8">Status as of: 2025-05-05 17:56:18</p>
+      <p className="text-sm text-muted-foreground mb-8">
+      Status as of: {new Date().toISOString().replace('T', ' ').slice(0, 19)}
+      </p>
       <hr />
       <Separator className="my-6" />
 
@@ -67,8 +69,8 @@ export default function Ingestion() {
             </div>
 
             <div>
-              <p className="text-sm text-muted-foreground mb-1">Time Since Last Update</p>
-              <h3 className="text-2xl font-bold">1h 23m ago</h3>
+              {/* <p className="text-sm text-muted-foreground mb-1">Time Since Last Update</p> */}
+              {/* <h3 className="text-2xl font-bold">1h 23m ago</h3> */}
             </div>
           </div>
         </div>

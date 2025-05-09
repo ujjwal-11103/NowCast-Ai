@@ -20,7 +20,7 @@ const SideBar = () => {
     const { selectedNav, setSelectedNav } = useSidebar();
     const [isOpen, setIsOpen] = useState(true);
 
-    const { forecastSum, setForecastSum, forecastValue, setForecastValue, yoyGrowth, setYoyGrowth, parentLevelForecast, setParentLevelForecast, setFilters } = useForecast();
+    const { forecastSum, setForecastSum, forecastValue, setForecastValue, yoyGrowth, setYoyGrowth, parentLevelForecast, setParentLevelForecast, setFilters, setAccuracyLevel } = useForecast();
 
     const [selectedChannel, setSelectedChannel] = useState(null);
     const [selectedChain, setSelectedChain] = useState(null);
@@ -33,6 +33,10 @@ const SideBar = () => {
     const [depotOptions, setDepotOptions] = useState([]);
     const [subCatOptions, setSubCatOptions] = useState([]);
     const [skuOptions, setSkuOptions] = useState([]);
+
+    //norms
+    const [showAccuracyDropdown, setShowAccuracyDropdown] = useState(false);
+    const [selectedAccuracy, setSelectedAccuracy] = useState("95%"); // Default accuracy
 
     // Load unique channels initially
     useEffect(() => {
@@ -255,6 +259,18 @@ const SideBar = () => {
     const showSubCatDropdown = selectedDepot && selectedDepot !== "All";
     const showSKUDropdown = selectedSubCat && selectedSubCat !== "All";
 
+
+    // Norms
+    useEffect(() => {
+        setShowAccuracyDropdown(selectedNav === "Norms");
+        if (selectedNav === "Norms") {
+            setAccuracyLevel(selectedAccuracy); // Update context when Norms is selected
+        }
+    }, [selectedNav, selectedAccuracy]);
+
+    const accuracyOptions = ["90%", "95%", "98%", "99%", "99.5%"];
+
+
     return (
         <>
             {/* Toggle button */}
@@ -408,6 +424,31 @@ const SideBar = () => {
                                     {skuOptions.map(sku => (
                                         <SelectItem key={sku} value={sku}>
                                             {sku.toUpperCase()}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+
+                    {/* Norms */}
+                    {showAccuracyDropdown && (
+                        <div className="mt-4">
+                            <h3 className="text-sm font-medium mb-2">Service Level Accuracy</h3>
+                            <Select
+                                value={selectedAccuracy}
+                                onValueChange={(value) => {
+                                    setSelectedAccuracy(value);
+                                    setAccuracyLevel(value); // Update context
+                                }}
+                            >
+                                <SelectTrigger className="w-full bg-white">
+                                    <SelectValue placeholder="Select accuracy" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white">
+                                    {accuracyOptions.map(option => (
+                                        <SelectItem key={option} value={option}>
+                                            {option}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>

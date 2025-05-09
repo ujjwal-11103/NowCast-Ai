@@ -9,6 +9,8 @@ export const ForecastProvider = ({ children }) => {
   const [forecastValue, setForecastValue] = useState(null); // NEW
   const [yoyGrowth, setYoyGrowth] = useState(null);
   const [parentLevelForecast, setParentLevelForecast] = useState(null);
+  const [accuracyLevel, setAccuracyLevel] = useState("95%"); // Add this line
+
 
   // Add filters
   const [filters, setFilters] = useState({
@@ -32,6 +34,8 @@ export const ForecastProvider = ({ children }) => {
       setParentLevelForecast,
       filters,
       setFilters,
+      accuracyLevel, // Add these
+      setAccuracyLevel,
     }}>
       {children}
     </ForecastContext.Provider>

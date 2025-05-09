@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     ArrowRight,
     ArrowDownRight,
@@ -109,6 +109,8 @@ const StatusItem = ({ label, value, icon, spacing = "" }) => (
     </div>
 );
 
+
+
 const Overall = () => {
     return (
         <div className="container mx-auto p-4 md:p-6">
@@ -118,7 +120,9 @@ const Overall = () => {
                 </div>
                 <h1 className="text-3xl font-bold">Overall Dashboard</h1>
             </div>
-            <p className="text-sm text-muted-foreground mb-8">Status as of: 2025-05-05 15:25:23</p>
+            <p className="text-sm text-muted-foreground mb-8">
+                Status as of: {new Date().toISOString().replace('T', ' ').slice(0, 19)}
+            </p>
 
             <hr />
             <Separator className="my-2 " />
