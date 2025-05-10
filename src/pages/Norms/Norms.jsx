@@ -88,16 +88,16 @@ const Norms = () => {
         const filteredData = data.filter(item => {
             // Always filter by Channel if specified
             if (parentFilters.channel && item.Channel !== parentFilters.channel) return false;
-            
+
             // Only filter by Chain if we're not showing Chains
             if (level !== 'Chain' && parentFilters.chain && parentFilters.chain !== "All" && item.Chain !== parentFilters.chain) return false;
-            
+
             // Only filter by Depot if we're not showing Depots
             if (level !== 'Depot' && parentFilters.depot && parentFilters.depot !== "All" && item.Depot !== parentFilters.depot) return false;
-            
+
             // Only filter by SubCat if we're not showing SubCats
             if (level !== 'SubCat' && parentFilters.subCat && parentFilters.subCat !== "All" && item.SubCat !== parentFilters.subCat) return false;
-            
+
             return true;
         });
 
@@ -149,13 +149,13 @@ const Norms = () => {
 
         // Group data by display level
         const groupedData = groupDataByLevel(processed, displayLevel, parentFilters);
-        
+
         // Convert to array and calculate averages
         const finalData = Object.values(groupedData).map(item => ({
             ...item,
             days_in_hand: (item.days_in_hand / item.count).toFixed(1)
         }));
-        
+
         // For table data (January only)
         const janData = processed.filter(item => item.Date === "2024-01-01");
         const groupedJanData = groupDataByLevel(janData, displayLevel, parentFilters);
@@ -167,25 +167,25 @@ const Norms = () => {
 
         // Update column definitions
         const metricColumns = [
-            { 
-                headerName: 'Inventory LY', 
-                field: 'actual', 
+            {
+                headerName: 'Inventory LY',
+                field: 'actual',
                 valueFormatter: params => Math.floor(params.value),
                 width: 120
             },
-            { 
-                headerName: 'Norms LY', 
-                field: 'inventory', 
+            {
+                headerName: 'Norms LY',
+                field: 'inventory',
                 valueFormatter: params => Math.floor(params.value),
                 width: 120
             },
-            { 
-                headerName: 'User Norms', 
+            {
+                headerName: 'User Norms',
                 field: 'norms',
                 width: 120
             },
-            { 
-                headerName: 'Days in Hand', 
+            {
+                headerName: 'Days in Hand',
                 field: 'days_in_hand',
                 width: 120
             }
@@ -197,8 +197,13 @@ const Norms = () => {
             width: 150,
             sortable: true,
             cellStyle: { borderRight: '1px solid #d1d5db' },
-            pinned: level === displayLevels[0] ? 'left' : null
+            // pinned: level === displayLevels[0] ? 'left' : null
         }));
+
+        // Add pinned to the last hierarchy column (right before metrics)
+        // if (hierarchyColumns.length > 0) {
+        //     hierarchyColumns[hierarchyColumns.length - 4].pinned = 'left';
+        // }
 
         setColumnDefs([...hierarchyColumns, ...metricColumns]);
 
@@ -256,13 +261,64 @@ const Norms = () => {
         showlegend: true
     };
 
+    // Update the defaultColDef to include column borders
     const defaultColDef = {
         sortable: true,
         resizable: true,
         filter: true,
         editable: true,
-        cellStyle: { borderRight: '1px solid #d1d5db' }
+        cellStyle: {
+            borderRight: '1px solid #d1d5db', // Vertical border for cells
+        },
+        headerClass: 'header-cell' // Add class for header borders
     };
+
+    // Add this to your component's CSS (or in a style tag)
+    <style>{`
+    .ag-theme-alpine .ag-cell {
+        border-right: 1px solid #d1d5db;
+    }
+    .ag-theme-alpine .header-cell {
+        border-right: 1px solid #d1d5db;
+    }
+    .ag-theme-alpine .ag-header-cell:last-child,
+    .ag-theme-alpine .ag-cell:last-child {
+        border-right: none; // Remove border from last column
+    }
+`}</style>
+
+    // // Calculate dynamic height based on row count
+    // const tableHeight = tableData
+    //     ? Math.min(300, 40 + (tableData.length * 35) + (tableData.length > 10 ? 17 : 0))
+    //     : 300;
+
+    // Calculate dynamic dimensions based on content
+    const calculateTableDimensions = () => {
+        // Height calculation (same as before)
+        const rowCount = tableData?.length || 0;
+        const height = Math.min(
+            300, // max height
+            40 + // header
+            (rowCount * 35) + // rows
+            (rowCount > 10 ? 17 : 0) // pagination controls if needed
+        );
+
+        // Width calculation based on visible columns
+        const visibleColumns = columnDefs.length;
+        const columnWidth = 150; // base width for hierarchy columns
+        const metricWidth = 120; // width for metric columns
+        const hierarchyColumns = Math.min(visibleColumns - 4, 5); // max 5 hierarchy cols
+        const width = Math.min(
+            '100%', // max width
+            (hierarchyColumns * columnWidth) + // hierarchy columns
+            (4 * metricWidth) + // metric columns
+            20 // padding/margin
+        );
+
+        return { height, width };
+    };
+
+    const { height, width } = calculateTableDimensions();
 
     return (
         <div className="p-4">
@@ -276,8 +332,17 @@ const Norms = () => {
                 config={{ responsive: true }}
             />
 
-            {/* Ag-Grid Table */}
-            <div className="ag-theme-alpine mb-16" style={{ height: '300px', width: '100%' }}>
+            {/* Ag-Grid Table with dynamic height */}
+            {/* Ag-Grid Table with dynamic dimensions */}
+            <div
+                className="ag-theme-alpine mb-16"
+                style={{
+                    height: `${height}px`,
+                    width: `${width}px`,
+                    border: '1px solid #d1d5db',
+                    minWidth: '300px' // ensure minimum readable width
+                }}
+            >
                 <AgGridReact
                     columnDefs={columnDefs}
                     rowData={tableData || []}
