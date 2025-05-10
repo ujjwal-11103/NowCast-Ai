@@ -1,87 +1,206 @@
 import React, { useEffect, useState } from 'react';
 import { useForecast } from '@/context/ForecastContext/ForecastContext';
-import Plot from 'react-plotly.js'; // Note: import Plot, not Plotly
+import Plot from 'react-plotly.js';
 import { AgGridReact } from 'ag-grid-react';
-
-//  Correct AG Grid imports
 import { ClientSideRowModelModule } from 'ag-grid-community';
 import { ModuleRegistry } from 'ag-grid-community';
-
-// Register the required module
-ModuleRegistry.registerModules([ClientSideRowModelModule]);
-
-// Import styles
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-
 import sampleData from '../../jsons/Planning/JF_censored.json';
 
+ModuleRegistry.registerModules([ClientSideRowModelModule]);
 
 const Norms = () => {
     const { accuracyLevel, filters } = useForecast();
     const [processedData, setProcessedData] = useState(null);
     const [gridApi, setGridApi] = useState(null);
-    const [plotData, setPlotData] = useState([]); // State for plot data
-    const [tableData, setTableData] = useState(null); // Separate state for table data (Only showing "2024-01-01")
+    const [plotData, setPlotData] = useState([]);
+    const [tableData, setTableData] = useState(null);
+    const [columnDefs, setColumnDefs] = useState([]);
+    const [displayLevel, setDisplayLevel] = useState('Channel');
 
+    // Determine which level to show and which columns to display
+    const getDisplayConfig = () => {
+        const displayLevels = [];
+        let displayLevel = 'Channel';
 
+        if (filters.chain === 'All') {
+            displayLevel = 'Channel';
+            displayLevels.push('Channel');
+        } else if (filters.depot === 'All') {
+            displayLevel = 'Chain';
+            displayLevels.push('Channel', 'Chain');
+        } else if (filters.subCat === 'All') {
+            displayLevel = 'Depot';
+            displayLevels.push('Channel', 'Chain', 'Depot');
+        } else if (filters.sku === 'All') {
+            displayLevel = 'SubCat';
+            displayLevels.push('Channel', 'Chain', 'Depot', 'SubCat');
+        } else {
+            displayLevel = 'SKU';
+            displayLevels.push('Channel', 'Chain', 'Depot', 'SubCat', 'SKU');
+        }
 
-    // Process data based on filters and accuracy level
-    useEffect(() => {
-        // Filter data based on current selections
-        const filteredData = sampleData.filter(item => {
-            if (filters.channel && item.Channel !== filters.channel) return false;
-            if (filters.chain && filters.chain !== "All" && item.Chain !== filters.chain) return false;
-            if (filters.depot && filters.depot !== "All" && item.Depot !== filters.depot) return false;
-            if (filters.subCat && filters.subCat !== "All" && item.SubCat !== filters.subCat) return false;
-            if (filters.sku && filters.sku !== "All" && item.SKU !== filters.sku) return false;
+        return { displayLevel, displayLevels };
+    };
+
+    // Process data calculations
+    const processData = (data) => {
+        const serviceLevels = {
+            "90%": 1.28,
+            "95%": 1.645,
+            "98%": 2.054,
+            "99%": 2.326,
+            "99.5%": 2.576
+        };
+
+        const Z_val = serviceLevels[accuracyLevel] || 1.645;
+
+        // Calculate residuals
+        const residuals = data
+            .filter(item => item.forecast && item.actual)
+            .map(item => item.forecast - item.actual);
+
+        // Calculate safety stock
+        const calculateSafetyStock = (forecast, actual) => {
+            if (!forecast || !actual) return 0;
+            const residual = forecast - actual;
+            const stdError = residuals.length > 1
+                ? Math.sqrt(residuals.map(r => Math.pow(r, 2)).reduce((a, b) => a + b, 0) / (residuals.length - 1))
+                : Math.abs(residual);
+            return stdError * Z_val;
+        };
+
+        return data.map(item => ({
+            ...item,
+            safety_stock: calculateSafetyStock(item.forecast, item.actual),
+            inventory: item.actual * 1.2 + (item.forecast || 0) * 0.3,
+            norms: (item.forecast || 0) * 1.1 + calculateSafetyStock(item.forecast, item.actual),
+            days_in_hand: ((item.forecast || 0) > 0
+                ? (item.actual * 1.2) / (item.forecast / 30)
+                : 0).toFixed(1)
+        }));
+    };
+
+    // Group data by level while maintaining all items at that level
+    const groupDataByLevel = (data, level, parentFilters) => {
+        // Filter by parent levels only (excluding the current level and above)
+        const filteredData = data.filter(item => {
+            // Always filter by Channel if specified
+            if (parentFilters.channel && item.Channel !== parentFilters.channel) return false;
+            
+            // Only filter by Chain if we're not showing Chains
+            if (level !== 'Chain' && parentFilters.chain && parentFilters.chain !== "All" && item.Chain !== parentFilters.chain) return false;
+            
+            // Only filter by Depot if we're not showing Depots
+            if (level !== 'Depot' && parentFilters.depot && parentFilters.depot !== "All" && item.Depot !== parentFilters.depot) return false;
+            
+            // Only filter by SubCat if we're not showing SubCats
+            if (level !== 'SubCat' && parentFilters.subCat && parentFilters.subCat !== "All" && item.SubCat !== parentFilters.subCat) return false;
+            
             return true;
         });
 
-        // Process data similar to Python logic
-        const processData = (data) => {
-            const serviceLevels = {
-                "90%": 1.28,
-                "95%": 1.645,
-                "98%": 2.054,
-                "99%": 2.326,
-                "99.5%": 2.576
-            };
+        // Group by the display level
+        return filteredData.reduce((acc, item) => {
+            const key = item[level];
+            if (!acc[key]) {
+                acc[key] = {
+                    ...item,
+                    [level]: key,
+                    actual: 0,
+                    forecast: 0,
+                    safety_stock: 0,
+                    inventory: 0,
+                    norms: 0,
+                    days_in_hand: 0,
+                    count: 0
+                };
+            }
 
-            const Z_val = serviceLevels[accuracyLevel] || 1.645;
+            acc[key].actual += item.actual || 0;
+            acc[key].forecast += item.forecast || 0;
+            acc[key].safety_stock += item.safety_stock || 0;
+            acc[key].inventory += item.inventory || 0;
+            acc[key].norms += item.norms || 0;
+            acc[key].days_in_hand += parseFloat(item.days_in_hand) || 0;
+            acc[key].count++;
 
-            // First calculate all residuals
-            const residuals = data
-                .filter(item => item.forecast && item.actual)
-                .map(item => item.forecast - item.actual);
+            return acc;
+        }, {});
+    };
 
-            // Then calculate standard error
-            const calculateSafetyStock = (forecast, actual) => {
-                if (!forecast || !actual) return 0;
-                const residual = forecast - actual;
-                const stdError = residuals.length > 1
-                    ? Math.sqrt(residuals.map(r => Math.pow(r, 2)).reduce((a, b) => a + b, 0) / (residuals.length - 1))
-                    : Math.abs(residual);
-                return stdError * Z_val;
-            };
+    // Main data processing effect
+    useEffect(() => {
+        const { displayLevel, displayLevels } = getDisplayConfig();
+        setDisplayLevel(displayLevel);
 
-            // Process items
-            return data.map(item => ({
-                ...item,
-                safety_stock: calculateSafetyStock(item.forecast, item.actual),
-                inventory: item.actual * 1.2 + (item.forecast || 0) * 0.3,
-                norms: (item.forecast || 0) * 1.1 + calculateSafetyStock(item.forecast, item.actual),
-                days_in_hand: ((item.forecast || 0) > 0
-                    ? (item.actual * 1.2) / (item.forecast / 30)
-                    : 0).toFixed(1)
-            }));
-        };
-        const processed = processData(filteredData);
+        // Process all data first
+        const processed = processData(sampleData);
         setProcessedData(processed);
 
-        // Filter table data to only show 2024-01-01
-        const tableDataFor2024 = processed.filter(item => item.Date === "2024-01-01");
-        setTableData(tableDataFor2024);
+        // Get parent filters (exclude the display level)
+        const parentFilters = {
+            channel: filters.channel,
+            chain: displayLevel === 'Channel' ? 'All' : filters.chain,
+            depot: displayLevel === 'Chain' || displayLevel === 'Channel' ? 'All' : filters.depot,
+            subCat: displayLevel === 'Depot' || displayLevel === 'Chain' || displayLevel === 'Channel' ? 'All' : filters.subCat
+        };
+
+        // Group data by display level
+        const groupedData = groupDataByLevel(processed, displayLevel, parentFilters);
+        
+        // Convert to array and calculate averages
+        const finalData = Object.values(groupedData).map(item => ({
+            ...item,
+            days_in_hand: (item.days_in_hand / item.count).toFixed(1)
+        }));
+        
+        // For table data (January only)
+        const janData = processed.filter(item => item.Date === "2024-01-01");
+        const groupedJanData = groupDataByLevel(janData, displayLevel, parentFilters);
+        const finalJanData = Object.values(groupedJanData).map(item => ({
+            ...item,
+            days_in_hand: (item.days_in_hand / item.count).toFixed(1)
+        }));
+        setTableData(finalJanData);
+
+        // Update column definitions
+        const metricColumns = [
+            { 
+                headerName: 'Inventory LY', 
+                field: 'actual', 
+                valueFormatter: params => Math.floor(params.value),
+                width: 120
+            },
+            { 
+                headerName: 'Norms LY', 
+                field: 'inventory', 
+                valueFormatter: params => Math.floor(params.value),
+                width: 120
+            },
+            { 
+                headerName: 'User Norms', 
+                field: 'norms',
+                width: 120
+            },
+            { 
+                headerName: 'Days in Hand', 
+                field: 'days_in_hand',
+                width: 120
+            }
+        ];
+
+        const hierarchyColumns = displayLevels.map(level => ({
+            headerName: level,
+            field: level,
+            width: 150,
+            sortable: true,
+            cellStyle: { borderRight: '1px solid #d1d5db' },
+            pinned: level === displayLevels[0] ? 'left' : null
+        }));
+
+        setColumnDefs([...hierarchyColumns, ...metricColumns]);
 
         // Prepare plot data
         const dates = [...new Set(processed.map(item => item.Date))].sort();
@@ -137,95 +256,12 @@ const Norms = () => {
         showlegend: true
     };
 
-    const columnDefs = [
-        // {
-        //     field: 'Date',
-        //     headerName: 'Date',
-        //     pinned: 'left',
-        //     width: 120,
-        //     sortable: true,
-        //     cellStyle: { borderRight: '1px solid #d1d5db' } // Gray border
-        // },
-        {
-            field: 'Channel',
-            headerName: 'Channel',
-            width: 150,
-            sortable: true,
-            cellStyle: { borderRight: '1px solid #d1d5db' }
-        },
-        {
-            field: 'Chain',
-            headerName: 'Chain',
-            width: 150,
-            sortable: true,
-            cellStyle: { borderRight: '1px solid #d1d5db' }
-        },
-        {
-            field: 'Depot',
-            headerName: 'Depot',
-            width: 150,
-            sortable: true,
-            cellStyle: { borderRight: '1px solid #d1d5db' }
-        },
-        {
-            field: 'SubCat',
-            headerName: 'Sub Category',
-            width: 150,
-            sortable: true,
-            cellStyle: { borderRight: '1px solid #d1d5db' }
-        },
-        {
-            field: 'SKU',
-            headerName: 'SKU',
-            width: 150,
-            sortable: true,
-            cellStyle: { borderRight: '1px solid #d1d5db' }
-        },
-        {
-            field: 'actual',
-            headerName: 'Inventory LY',
-            width: 120,
-            sortable: true,
-            cellStyle: { borderRight: '1px solid #d1d5db' },
-            valueFormatter: params => Math.floor(params.value) // Trims decimals
-        },
-        {
-            field: 'inventory',
-            headerName: 'Norms LY',
-            width: 120,
-            sortable: true,
-            cellStyle: { borderRight: '1px solid #d1d5db' },
-            valueFormatter: params => Math.floor(params.value) // Trims decimals
-        },
-        // {
-        //     field: 'forecast',
-        //     headerName: 'Forecast',
-        //     width: 120,
-        //     sortable: true,
-        //     cellStyle: { borderRight: '1px solid #d1d5db' }
-        // },
-        {
-            field: 'norms',
-            headerName: 'User Norms',
-            width: 120,
-            sortable: true,
-            cellStyle: { borderRight: '1px solid #d1d5db' }
-        },
-
-        {
-            field: 'days_in_hand',
-            headerName: 'Days in Hand',
-            width: 150,
-            sortable: true
-        }
-    ];
-
     const defaultColDef = {
-        sortable: true, // Enable sorting for all columns
+        sortable: true,
         resizable: true,
         filter: true,
         editable: true,
-        cellStyle: { borderRight: '1px solid #d1d5db' } // Default border for all cells
+        cellStyle: { borderRight: '1px solid #d1d5db' }
     };
 
     return (
@@ -244,18 +280,16 @@ const Norms = () => {
             <div className="ag-theme-alpine mb-16" style={{ height: '300px', width: '100%' }}>
                 <AgGridReact
                     columnDefs={columnDefs}
-                    // rowData={processedData || []}
                     rowData={tableData || []}
                     defaultColDef={defaultColDef}
                     modules={[ClientSideRowModelModule]}
                     onGridReady={params => setGridApi(params.api)}
                     pagination={true}
-                    paginationPageSize={10} // Show 10 rows per page
+                    paginationPageSize={10}
                     suppressCellFocus={true}
-                    // domLayout='autoHeight' // Adjusts height based on rows
-                    headerHeight={40} // Slightly taller headers
-                    rowHeight={35} // Compact but readable rows
-                    suppressHorizontalScroll={true} // Prevent horizontal scrolling
+                    headerHeight={40}
+                    rowHeight={35}
+                    suppressHorizontalScroll={true}
                 />
             </div>
         </div>
