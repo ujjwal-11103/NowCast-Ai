@@ -18,177 +18,194 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
+import SideBar from "@/components/Sidebar/SideBar";
+import { useSidebar } from "@/context/sidebar/SidebarContext";
 
 export default function Ingestion() {
+  const { isSidebarOpen, toggleSidebar } = useSidebar(); // Get sidebar state and toggle function
+
   return (
-    <div className="container mx-auto p-4 md:p-6">
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="bg-black rounded-full p-2">
-          <Upload className="h-6 w-6 text-white" />
-        </div>
-        <h1 className="text-3xl font-bold">Data Ingestion Dashboard</h1>
-      </div>
-
-      <p className="text-sm text-muted-foreground mb-8">
-      Status as of: {new Date().toISOString().replace('T', ' ').slice(0, 19)}
-      </p>
-      <hr />
-      <Separator className="my-6" />
-
-      {/* Overall Status */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-6">
-          <Info className="h-5 w-5" />
-          <h2 className="text-xl font-bold">Overall Status</h2>
+    <div>
+      <div className="flex">
+        <div
+          className={`transition-all duration-300 ${isSidebarOpen ? "w-64" : "w-16"
+            } fixed`}>
+          <SideBar />
         </div>
 
-        <div className="border-l-4 border-green-600 pl-4 py-3 bg-green-50 rounded-r-md">
-          <div className="flex items-center gap-2 mb-1">
-            <CheckCircle className="h-5 w-5 text-green-600" />
-            <span className="font-semibold">Status: Success</span>
-          </div>
-          <p className="text-sm">Ingestion pipeline completed successfully. Data is up-to-date.</p>
-        </div>
-      </div>
-      <hr />
-      <Separator className="my-6" />
+        <div className={`main transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-16"} w-full`}>
 
-      {/* Data Freshness and Schema Check */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div>
-          <div className="flex items-center gap-2 mb-6">
-            <Clock className="h-5 w-5" />
-            <h2 className="text-xl font-bold">Data Freshness</h2>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Last Updated</p>
-              <h3 className="text-2xl font-bold">2025-05-05 16:33:18</h3>
+          <div className="container mx-auto p-4 md:p-6">
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-6">
+              <div className="bg-black rounded-full p-2">
+                <Upload className="h-6 w-6 text-white" />
+              </div>
+              <h1 className="text-3xl font-bold">Data Ingestion Dashboard</h1>
             </div>
 
-            <div>
-              {/* <p className="text-sm text-muted-foreground mb-1">Time Since Last Update</p> */}
-              {/* <h3 className="text-2xl font-bold">1h 23m ago</h3> */}
-            </div>
-          </div>
-        </div>
+            <p className="text-sm text-muted-foreground mb-8">
+              Status as of: {new Date().toISOString().replace('T', ' ').slice(0, 19)}
+            </p>
+            <hr />
+            <Separator className="my-6" />
 
-        <div>
-          <div className="flex items-center gap-2 mb-6">
-            <Layers className="h-5 w-5" />
-            <h2 className="text-xl font-bold">Schema Check</h2>
-          </div>
+            {/* Overall Status */}
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-6">
+                <Info className="h-5 w-5" />
+                <h2 className="text-xl font-bold">Overall Status</h2>
+              </div>
 
-          <div className="border-l-4 border-green-600 pl-4 py-3 bg-green-50 rounded-r-md">
-            <div className="flex items-center gap-2 mb-1">
-              <CheckCircle className="h-5 w-5 text-green-600" />
-              <span className="font-semibold">Status: Passed</span>
-            </div>
-            <p className="text-sm">Schema matches expected structure.</p>
-          </div>
-        </div>
-      </div>
-
-      <hr />
-      <Separator className="my-6" />
-
-      {/* Data Sources */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-6">
-          <Database className="h-5 w-5" />
-          <h2 className="text-xl font-bold">Data Sources</h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <DataSourceCard icon={<Server className="h-5 w-5" />} title="ERP Database" status="Connected" records={9020} color="green" />
-          <DataSourceCard icon={<Cloud className="h-5 w-5" />} title="Salesforce API" status="Connected" records={1367} color="green" />
-          <DataSourceCard icon={<FileText className="h-5 w-5" />} title="Partner FTP Files" status="Delayed" records={968} color="yellow" />
-          <DataSourceCard icon={<BarChart className="h-5 w-5" />} title="Web Analytics Feed" status="Connected" records={32604} color="green" />
-        </div>
-      </div>
-
-      <hr />
-      <Separator className="my-6" />
-
-      {/* Data Volume */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-6">
-          <Database className="h-5 w-5" />
-          <h2 className="text-xl font-bold">Data Volume</h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <div className="mb-6">
-              <p className="text-sm text-muted-foreground mb-1">Total Records Ingested</p>
-              <h3 className="text-4xl font-bold">74,505</h3>
-            </div>
-
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Change from Previous Run</p>
-              <h3 className="text-4xl font-bold">-3.4%</h3>
-              <div className="flex items-center text-red-600">
-                <TrendingDown className="h-4 w-4 mr-1" />
-                <span>-3.4%</span>
+              <div className="border-l-4 border-green-600 pl-4 py-3 bg-green-50 rounded-r-md">
+                <div className="flex items-center gap-2 mb-1">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <span className="font-semibold">Status: Success</span>
+                </div>
+                <p className="text-sm">Ingestion pipeline completed successfully. Data is up-to-date.</p>
               </div>
             </div>
-          </div>
+            <hr />
+            <Separator className="my-6" />
 
-          <div>
-            <p className="text-sm text-muted-foreground mb-2">Ingestion Trend (Last 7 Days)</p>
-            <IngestionTrendChart />
+            {/* Data Freshness and Schema Check */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div>
+                <div className="flex items-center gap-2 mb-6">
+                  <Clock className="h-5 w-5" />
+                  <h2 className="text-xl font-bold">Data Freshness</h2>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Last Updated</p>
+                    <h3 className="text-2xl font-bold">2025-05-05 16:33:18</h3>
+                  </div>
+
+                  <div>
+                    {/* <p className="text-sm text-muted-foreground mb-1">Time Since Last Update</p> */}
+                    {/* <h3 className="text-2xl font-bold">1h 23m ago</h3> */}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center gap-2 mb-6">
+                  <Layers className="h-5 w-5" />
+                  <h2 className="text-xl font-bold">Schema Check</h2>
+                </div>
+
+                <div className="border-l-4 border-green-600 pl-4 py-3 bg-green-50 rounded-r-md">
+                  <div className="flex items-center gap-2 mb-1">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <span className="font-semibold">Status: Passed</span>
+                  </div>
+                  <p className="text-sm">Schema matches expected structure.</p>
+                </div>
+              </div>
+            </div>
+
+            <hr />
+            <Separator className="my-6" />
+
+            {/* Data Sources */}
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-6">
+                <Database className="h-5 w-5" />
+                <h2 className="text-xl font-bold">Data Sources</h2>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <DataSourceCard icon={<Server className="h-5 w-5" />} title="ERP Database" status="Connected" records={9020} color="green" />
+                <DataSourceCard icon={<Cloud className="h-5 w-5" />} title="Salesforce API" status="Connected" records={1367} color="green" />
+                <DataSourceCard icon={<FileText className="h-5 w-5" />} title="Partner FTP Files" status="Delayed" records={968} color="yellow" />
+                <DataSourceCard icon={<BarChart className="h-5 w-5" />} title="Web Analytics Feed" status="Connected" records={32604} color="green" />
+              </div>
+            </div>
+
+            <hr />
+            <Separator className="my-6" />
+
+            {/* Data Volume */}
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-6">
+                <Database className="h-5 w-5" />
+                <h2 className="text-xl font-bold">Data Volume</h2>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <div className="mb-6">
+                    <p className="text-sm text-muted-foreground mb-1">Total Records Ingested</p>
+                    <h3 className="text-4xl font-bold">74,505</h3>
+                  </div>
+
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Change from Previous Run</p>
+                    <h3 className="text-4xl font-bold">-3.4%</h3>
+                    <div className="flex items-center text-red-600">
+                      <TrendingDown className="h-4 w-4 mr-1" />
+                      <span>-3.4%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-sm text-muted-foreground mb-2">Ingestion Trend (Last 7 Days)</p>
+                  <IngestionTrendChart />
+                </div>
+              </div>
+            </div>
+
+            <hr />
+            <Separator className="my-6" />
+
+
+
+            {/* Data Quality & Integrity */}
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-6">
+                <List className="h-5 w-5" />
+                <h2 className="text-xl font-bold">Data Quality & Integrity</h2>
+              </div>
+
+              <p className="text-sm text-muted-foreground mb-6">Displaying sample quality metrics.</p>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <QualityMetricCard
+                  icon={<CheckCircle className="h-5 w-5" />}
+                  title="Data Completeness"
+                  value="97.8%"
+                  target="Target: >95.0%"
+                  progress={97.8}
+                  meetsTarget={true}
+                />
+
+                <QualityMetricCard
+                  icon={<FileText className="h-5 w-5" />}
+                  title="Unique IDs Found"
+                  value="561 Combinations"
+                  showProgress={false}
+                />
+
+                <QualityMetricCard
+                  icon={<Clock className="h-5 w-5" />}
+                  title="Update Timeliness"
+                  value="93.9% On Time"
+                  target="Target: >90.0% On Time"
+                  progress={93.9}
+                  meetsTarget={true}
+                />
+              </div>
+            </div>
+
+            <hr />
+            <Separator className="my-6" />
+
+
           </div>
         </div>
       </div>
-
-      <hr />
-      <Separator className="my-6" />
-
-
-
-      {/* Data Quality & Integrity */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-6">
-          <List className="h-5 w-5" />
-          <h2 className="text-xl font-bold">Data Quality & Integrity</h2>
-        </div>
-
-        <p className="text-sm text-muted-foreground mb-6">Displaying sample quality metrics.</p>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <QualityMetricCard
-            icon={<CheckCircle className="h-5 w-5" />}
-            title="Data Completeness"
-            value="97.8%"
-            target="Target: >95.0%"
-            progress={97.8}
-            meetsTarget={true}
-          />
-
-          <QualityMetricCard
-            icon={<FileText className="h-5 w-5" />}
-            title="Unique IDs Found"
-            value="561 Combinations"
-            showProgress={false}
-          />
-
-          <QualityMetricCard
-            icon={<Clock className="h-5 w-5" />}
-            title="Update Timeliness"
-            value="93.9% On Time"
-            target="Target: >90.0% On Time"
-            progress={93.9}
-            meetsTarget={true}
-          />
-        </div>
-      </div>
-
-      <hr />
-      <Separator className="my-6" />
-
-
     </div>
   );
 }

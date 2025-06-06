@@ -7,6 +7,8 @@ import { ModuleRegistry } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import sampleData from '../../jsons/Planning/JF_censored.json';
+import SideBar from '@/components/Sidebar/SideBar';
+import { useSidebar } from '@/context/sidebar/SidebarContext';
 
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 
@@ -320,42 +322,57 @@ const Norms = () => {
 
     const { height, width } = calculateTableDimensions();
 
+    const { isSidebarOpen, toggleSidebar } = useSidebar(); // Get sidebar state and toggle function
+
+
     return (
-        <div className="p-4">
-            <h1 className="text-2xl font-bold mb-4">Norms (Service Level: {accuracyLevel})</h1>
+        <div>
+            <div className="flex">
+                <div
+                    className={`transition-all duration-300 ${isSidebarOpen ? "w-64" : "w-16"
+                        } fixed`}>
+                    <SideBar />
+                </div>
 
-            {/* Plotly Graph */}
-            <Plot
-                data={plotData}
-                layout={layout}
-                style={{ width: '100%', height: '400px' }}
-                config={{ responsive: true }}
-            />
+                <div className={`main transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-16"} w-full`}>
+                    <div className="p-4">
+                        <h1 className="text-2xl font-bold mb-4">Norms (Service Level: {accuracyLevel})</h1>
 
-            {/* Ag-Grid Table with dynamic height */}
-            {/* Ag-Grid Table with dynamic dimensions */}
-            <div
-                className="ag-theme-alpine mb-16"
-                style={{
-                    height: `${height}px`,
-                    width: `${width}px`,
-                    border: '1px solid #d1d5db',
-                    minWidth: '300px' // ensure minimum readable width
-                }}
-            >
-                <AgGridReact
-                    columnDefs={columnDefs}
-                    rowData={tableData || []}
-                    defaultColDef={defaultColDef}
-                    modules={[ClientSideRowModelModule]}
-                    onGridReady={params => setGridApi(params.api)}
-                    pagination={true}
-                    paginationPageSize={10}
-                    suppressCellFocus={true}
-                    headerHeight={40}
-                    rowHeight={35}
-                    suppressHorizontalScroll={true}
-                />
+                        {/* Plotly Graph */}
+                        <Plot
+                            data={plotData}
+                            layout={layout}
+                            style={{ width: '100%', height: '400px' }}
+                            config={{ responsive: true }}
+                        />
+
+                        {/* Ag-Grid Table with dynamic height */}
+                        {/* Ag-Grid Table with dynamic dimensions */}
+                        <div
+                            className="ag-theme-alpine mb-16"
+                            style={{
+                                height: `${height}px`,
+                                width: `${width}px`,
+                                border: '1px solid #d1d5db',
+                                minWidth: '300px' // ensure minimum readable width
+                            }}
+                        >
+                            <AgGridReact
+                                columnDefs={columnDefs}
+                                rowData={tableData || []}
+                                defaultColDef={defaultColDef}
+                                modules={[ClientSideRowModelModule]}
+                                onGridReady={params => setGridApi(params.api)}
+                                pagination={true}
+                                paginationPageSize={10}
+                                suppressCellFocus={true}
+                                headerHeight={40}
+                                rowHeight={35}
+                                suppressHorizontalScroll={true}
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

@@ -13,6 +13,10 @@ import { SidebarProvider } from './context/sidebar/SidebarContext';
 import { ForecastProvider } from './context/ForecastContext/ForecastContext';
 
 import MainPage from './pages/Main/MainPage';
+import Ingestion from './pages/Ingestion/Ingestion';
+import Reporting from './pages/Reporting/Reporting';
+import ErrorAnalysis from './pages/Error Analysis/ErrorAnalysis';
+import Norms from './pages/Norms/Norms';
 
 const App = () => {
   return (
@@ -22,10 +26,17 @@ const App = () => {
         <SidebarProvider>
           <Routes>
             {/* <Route path='/' element={<Login />} /> */}
-            <Route path='/teresa' element={<Teresa />} />
-            <Route path='/neptune' element={<MarketMixModelling />} />
+            {/* <Route path='/teresa' element={<Teresa />} /> */}
+            {/* <Route path='/neptune' element={<MarketMixModelling />} /> */}
             {/* <Route path="/supplychaintower" element={<SupplyChainTower />} /> */}
-            <Route path="/" element={<MainPage />} />
+            <Route path="/" element={<Overall />} />
+            <Route path="/overall" element={<Overall />} />
+            <Route path="/ingestion" element={<Ingestion />} />
+            <Route path="/planning" element={<Planning />} />
+            <Route path="/reporting" element={<Reporting />} />
+            <Route path="/errorAnalysis" element={<ErrorAnalysis />} />
+            <Route path="/norms" element={<Norms />} />
+            <Route path="/supplyChain" element={<SupplyChainTower />} />
           </Routes>
         </SidebarProvider>
       </ForecastProvider>

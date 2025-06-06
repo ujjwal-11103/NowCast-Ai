@@ -1,22 +1,21 @@
-// src/context/SidebarContext.jsx
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState } from 'react';
 
 const SidebarContext = createContext();
 
+export const useSidebar = () => {
+  return useContext(SidebarContext);
+};
+
 export const SidebarProvider = ({ children }) => {
-  const [selectedNav, setSelectedNav] = useState("Overall");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  const toggleSidebar = () => setIsSidebarOpen(prev => !prev);
+  console.log("Toggle", isSidebarOpen);
+
 
   return (
-    <SidebarContext.Provider value={{ selectedNav, setSelectedNav }}>
+    <SidebarContext.Provider value={{ isSidebarOpen, toggleSidebar }}>
       {children}
     </SidebarContext.Provider>
   );
-};
-
-export const useSidebar = () => {
-  const context = useContext(SidebarContext);
-  if (!context) {
-    throw new Error("useSidebar must be used within SidebarProvider");
-  }
-  return context;
 };
