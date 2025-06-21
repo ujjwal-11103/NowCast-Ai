@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/table"
 import WaterfallSection from './WaterfallSection'
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { useSidebar } from '@/context/sidebar/SidebarContext'
 
 const ForecastTable = ({ data, selections }) => {
     // Define the hierarchy levels in order from most general to most specific
@@ -131,123 +132,154 @@ const ForecastTable = ({ data, selections }) => {
         });
     };
 
+    const { isSidebarOpen, toggleSidebar } = useSidebar(); // Get sidebar state and toggle function
+
+    // logic for submit buttons
+
+    const [activeInputs, setActiveInputs] = useState({});
+
+    // Helper function to update active inputs
+    const handleInputFocus = (itemName, team, month, field) => {
+        setActiveInputs(prev => ({
+            ...prev,
+            [`${itemName}-${team}-${month}`]: true
+        }));
+    };
+
 
     return (
-        <div className="space-y-4">
-            {/* Main Data Table */}
-            <div className="flex gap-4">
-                {/* Main Data Table */}
-                <div className="w-[calc(100%-12rem)] rounded-md border border-gray-200">
-                    <Table>
-                        <TableHeader className="bg-gray-50">
-                            <TableRow>
-                                <TableHead className="border-r border-gray-200">{itemLevel}</TableHead>
-                                <TableHead colSpan={2} className="text-center border-r border-gray-200">Last Year Values</TableHead>
-                                <TableHead colSpan={2} className="text-center border-r border-gray-200">Baseline Forecast</TableHead>
-                            </TableRow>
-                            <TableRow>
-                                <TableHead className="border-r border-gray-200"></TableHead>
-                                <TableHead className="text-center border-r border-gray-200">Jan</TableHead>
-                                <TableHead className="text-center border-r border-gray-200">Feb</TableHead>
-                                <TableHead className="text-center border-r border-gray-200">Jan</TableHead>
-                                <TableHead className="text-center">Feb</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {tableData.map((row) => (
-                                <TableRow key={row.name} className="hover:bg-gray-50">
-                                    <TableCell className="font-medium border-r border-gray-200">{row.name}</TableCell>
-                                    <TableCell className="text-right border-r border-gray-200">{Math.round(row.LYJan)}</TableCell>
-                                    <TableCell className="text-right border-r border-gray-200">{Math.round(row.LYFeb)}</TableCell>
-                                    <TableCell className="text-right border-r border-gray-200">{Math.round(row.ForecastJan)}</TableCell>
-                                    <TableCell className="text-right">{Math.round(row.ForecastFeb)}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-
-                {/* Consensus Table */}
-                {/* Consensus Table - updated to use consensusValues */}
-                <div className="w-48 rounded-md border border-gray-200">
-                    <Table>
-                        <TableHeader className="bg-gray-50">
-                            <TableRow>
-                                <TableHead colSpan={2} className="text-center">Consensus</TableHead>
-                            </TableRow>
-                            <TableRow>
-                                <TableHead className="text-center border-r border-gray-200">Jan</TableHead>
-                                <TableHead className="text-center">Feb</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {tableData.map((row) => (
-                                <TableRow key={row.name} className="hover:bg-gray-50">
-                                    <TableCell className="text-right border-r border-gray-200">
-                                        {consensusValues[row.name]?.jan || Math.round(row.ForecastJan)}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        {consensusValues[row.name]?.feb || Math.round(row.ForecastFeb)}
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-            </div>
-
-            {/* Teams Input Section */}
-
-            <ScrollArea className="w-[76vw] whitespace-nowrap rounded-md border">
-
+        <div className={`space-y-4 ${isSidebarOpen ? "w-[76vw]" : "w-[90vw]"}`}>
+            <ScrollArea className="w-100 whitespace-nowrap rounded-md border">
                 <div className="rounded-md border border-gray-200">
                     <Table>
                         <TableHeader className="bg-gray-50">
+                            {/* First Header Row */}
                             <TableRow>
-                                <TableHead className="border-r border-gray-200 min-w-[150px]">{itemLevel}</TableHead>
-
-                                {/* Sales Team */}
-                                <TableHead colSpan={6} className="text-center border-r border-gray-200">Sales Team</TableHead>
-
-                                {/* Marketing Team */}
-                                <TableHead colSpan={6} className="text-center border-r border-gray-200">Marketing Team</TableHead>
-
-                                {/* Finance Team */}
-                                <TableHead colSpan={6} className="text-center">Finance Team</TableHead>
+                                <TableHead className="border-r border-gray-200 sticky left-0 bg-gray-50 z-10 min-w-[150px]">
+                                    {itemLevel}
+                                </TableHead>
+                                <TableHead colSpan={2} className="text-center border-r border-gray-200">
+                                    Last Year Values
+                                </TableHead>
+                                <TableHead colSpan={2} className="text-center border-r border-gray-200">
+                                    Baseline Forecast
+                                </TableHead>
+                                <TableHead colSpan={2} className="text-center border-r border-gray-200">
+                                    Consensus
+                                </TableHead>
+                                <TableHead colSpan={6} className="text-center border-r border-gray-200">
+                                    Sales Team
+                                </TableHead>
+                                <TableHead colSpan={6} className="text-center border-r border-gray-200">
+                                    Marketing Team
+                                </TableHead>
+                                <TableHead colSpan={6} className="text-center">
+                                    Finance Team
+                                </TableHead>
                             </TableRow>
+
+                            {/* Second Header Row */}
                             <TableRow>
-                                <TableHead className="border-r border-gray-200 min-w-[150px]"></TableHead>
+                                <TableHead className="border-r border-gray-200 sticky left-0 bg-gray-50 z-10 min-w-[150px]"></TableHead>
+
+                                {/* Last Year */}
+                                <TableHead className="text-center border-r border-gray-200">Jan</TableHead>
+                                <TableHead className="text-center border-r border-gray-200">Feb</TableHead>
+
+                                {/* Baseline Forecast */}
+                                <TableHead className="text-center border-r border-gray-200">Jan</TableHead>
+                                <TableHead className="text-center border-r border-gray-200">Feb</TableHead>
+
+                                {/* Consensus */}
+                                <TableHead className="text-center border-r border-gray-200">Jan</TableHead>
+                                <TableHead className="text-center border-r border-gray-200">Feb</TableHead>
 
                                 {/* Sales Team */}
-                                <TableHead className="border-r border-gray-200 min-w-[80px]">Jan</TableHead>
-                                <TableHead className="border-r border-gray-200 min-w-[120px]">Comment</TableHead>
-                                <TableHead className="border-r border-gray-200 min-w-[120px]">Owner</TableHead>
-                                <TableHead className="border-r border-gray-200 min-w-[80px]">Feb</TableHead>
-                                <TableHead className="border-r border-gray-200 min-w-[120px]">Comment</TableHead>
-                                <TableHead className="border-r border-gray-200 min-w-[120px]">Owner</TableHead>
+                                <TableHead colSpan={3} className="text-center border-r border-gray-200">Jan</TableHead>
+                                <TableHead colSpan={3} className="text-center border-r border-gray-200">Feb</TableHead>
 
                                 {/* Marketing Team */}
-                                <TableHead className="border-r border-gray-200 min-w-[80px]">Jan</TableHead>
-                                <TableHead className="border-r border-gray-200 min-w-[120px]">Comment</TableHead>
-                                <TableHead className="border-r border-gray-200 min-w-[120px]">Owner</TableHead>
-                                <TableHead className="border-r border-gray-200 min-w-[80px]">Feb</TableHead>
-                                <TableHead className="border-r border-gray-200 min-w-[120px]">Comment</TableHead>
-                                <TableHead className="border-r border-gray-200 min-w-[120px]">Owner</TableHead>
+                                <TableHead colSpan={3} className="text-center border-r border-gray-200">Jan</TableHead>
+                                <TableHead colSpan={3} className="text-center border-r border-gray-200">Feb</TableHead>
 
                                 {/* Finance Team */}
-                                <TableHead className="border-r border-gray-200 min-w-[80px]">Jan</TableHead>
-                                <TableHead className="border-r border-gray-200 min-w-[120px]">Comment</TableHead>
-                                <TableHead className="border-r border-gray-200 min-w-[120px]">Owner</TableHead>
-                                <TableHead className="border-r border-gray-200 min-w-[80px]">Feb</TableHead>
-                                <TableHead className="border-r border-gray-200 min-w-[120px]">Comment</TableHead>
-                                <TableHead className="border-r border-gray-200 min-w-[120px]">Owner</TableHead>
+                                <TableHead colSpan={3} className="text-center border-r border-gray-200">Jan</TableHead>
+                                <TableHead colSpan={3} className="text-center">Feb</TableHead>
+                            </TableRow>
+
+                            {/* Third Header Row */}
+                            <TableRow>
+                                <TableHead className="border-r border-gray-200 sticky left-0 bg-gray-50 z-10 min-w-[150px]"></TableHead>
+
+                                {/* Last Year */}
+                                <TableHead className="text-center border-r border-gray-200"></TableHead>
+                                <TableHead className="text-center border-r border-gray-200"></TableHead>
+
+                                {/* Baseline Forecast */}
+                                <TableHead className="text-center border-r border-gray-200"></TableHead>
+                                <TableHead className="text-center border-r border-gray-200"></TableHead>
+
+                                {/* Consensus */}
+                                <TableHead className="text-center border-r border-gray-200"></TableHead>
+                                <TableHead className="text-center border-r border-gray-200"></TableHead>
+
+                                {/* Sales Team */}
+                                <TableHead className="text-center border-r border-gray-200 min-w-[80px]">Value</TableHead>
+                                <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Comment</TableHead>
+                                <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Owner</TableHead>
+                                <TableHead className="text-center border-r border-gray-200 min-w-[80px]">Value</TableHead>
+                                <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Comment</TableHead>
+                                <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Owner</TableHead>
+
+                                {/* Marketing Team */}
+                                <TableHead className="text-center border-r border-gray-200 min-w-[80px]">Value</TableHead>
+                                <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Comment</TableHead>
+                                <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Owner</TableHead>
+                                <TableHead className="text-center border-r border-gray-200 min-w-[80px]">Value</TableHead>
+                                <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Comment</TableHead>
+                                <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Owner</TableHead>
+
+                                {/* Finance Team */}
+                                <TableHead className="text-center border-r border-gray-200 min-w-[80px]">Value</TableHead>
+                                <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Comment</TableHead>
+                                <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Owner</TableHead>
+                                <TableHead className="text-center border-r border-gray-200 min-w-[80px]">Value</TableHead>
+                                <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Comment</TableHead>
+                                <TableHead className="text-center min-w-[120px]">Owner</TableHead>
                             </TableRow>
                         </TableHeader>
 
                         <TableBody>
                             {tableData.map((row) => (
                                 <TableRow key={row.name} className="hover:bg-gray-50">
-                                    <TableCell className="font-medium border-r border-gray-200 min-w-[150px]">{row.name}</TableCell>
+                                    {/* Item Level */}
+                                    <TableCell className="font-medium border-r border-gray-200 sticky left-0 bg-white z-10 min-w-[150px]">
+                                        {row.name}
+                                    </TableCell>
+
+                                    {/* Last Year Values */}
+                                    <TableCell className="text-right border-r border-gray-200">
+                                        {Math.round(row.LYJan)}
+                                    </TableCell>
+                                    <TableCell className="text-right border-r border-gray-200">
+                                        {Math.round(row.LYFeb)}
+                                    </TableCell>
+
+                                    {/* Baseline Forecast */}
+                                    <TableCell className="text-right border-r border-gray-200">
+                                        {Math.round(row.ForecastJan)}
+                                    </TableCell>
+                                    <TableCell className="text-right border-r border-gray-200">
+                                        {Math.round(row.ForecastFeb)}
+                                    </TableCell>
+
+                                    {/* Consensus */}
+                                    <TableCell className="text-right border-r border-gray-200">
+                                        {consensusValues[row.name]?.jan || Math.round(row.ForecastJan)}
+                                    </TableCell>
+                                    <TableCell className="text-right border-r border-gray-200">
+                                        {consensusValues[row.name]?.feb || Math.round(row.ForecastFeb)}
+                                    </TableCell>
 
                                     {/* Sales Team */}
                                     <TableCell className="border-r border-gray-200 min-w-[80px]">
@@ -255,6 +287,7 @@ const ForecastTable = ({ data, selections }) => {
                                             type="number"
                                             className="w-full p-1 border border-gray-300 rounded"
                                             onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'value', e.target.value)}
+                                            onFocus={() => handleInputFocus(row.name, 'sales', 'jan', 'value')}
                                         />
                                     </TableCell>
                                     <TableCell className="border-r border-gray-200 min-w-[120px]">
@@ -262,20 +295,38 @@ const ForecastTable = ({ data, selections }) => {
                                             type="text"
                                             className="w-full p-1 border border-gray-300 rounded"
                                             onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'comment', e.target.value)}
+                                            onFocus={() => handleInputFocus(row.name, 'sales', 'jan', 'comment')}
                                         />
                                     </TableCell>
-                                    <TableCell className="border-r border-gray-200 min-w-[120px]">
+                                    <TableCell className="border-r border-gray-200 min-w-[120px] relative">
                                         <input
                                             type="text"
                                             className="w-full p-1 border border-gray-300 rounded"
                                             onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'owner', e.target.value)}
+                                            onFocus={() => handleInputFocus(row.name, 'sales', 'jan', 'owner')}
                                         />
+                                        {activeInputs[`${row.name}-sales-jan`] && (
+                                            <button
+                                                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-2 py-1 rounded text-xs"
+                                                onClick={() => {
+                                                    console.log('Submitting sales jan data for', row.name);
+                                                    setActiveInputs(prev => ({
+                                                        ...prev,
+                                                        [`${row.name}-sales-jan`]: false
+                                                    }));
+                                                }}
+                                            >
+                                                Submit
+                                            </button>
+                                        )}
                                     </TableCell>
+
                                     <TableCell className="border-r border-gray-200 min-w-[80px]">
                                         <input
                                             type="number"
                                             className="w-full p-1 border border-gray-300 rounded"
                                             onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'value', e.target.value)}
+                                            onFocus={() => handleInputFocus(row.name, 'sales', 'feb', 'value')}
                                         />
                                     </TableCell>
                                     <TableCell className="border-r border-gray-200 min-w-[120px]">
@@ -283,14 +334,30 @@ const ForecastTable = ({ data, selections }) => {
                                             type="text"
                                             className="w-full p-1 border border-gray-300 rounded"
                                             onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'comment', e.target.value)}
+                                            onFocus={() => handleInputFocus(row.name, 'sales', 'feb', 'comment')}
                                         />
                                     </TableCell>
-                                    <TableCell className="border-r border-gray-200 min-w-[120px]">
+                                    <TableCell className="border-r border-gray-200 min-w-[120px] relative">
                                         <input
                                             type="text"
                                             className="w-full p-1 border border-gray-300 rounded"
                                             onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'owner', e.target.value)}
+                                            onFocus={() => handleInputFocus(row.name, 'sales', 'feb', 'owner')}
                                         />
+                                        {activeInputs[`${row.name}-sales-feb`] && (
+                                            <button
+                                                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-2 py-1 rounded text-xs"
+                                                onClick={() => {
+                                                    console.log('Submitting sales feb data for', row.name);
+                                                    setActiveInputs(prev => ({
+                                                        ...prev,
+                                                        [`${row.name}-sales-feb`]: false
+                                                    }));
+                                                }}
+                                            >
+                                                Submit
+                                            </button>
+                                        )}
                                     </TableCell>
 
                                     {/* Marketing Team */}
@@ -299,6 +366,7 @@ const ForecastTable = ({ data, selections }) => {
                                             type="number"
                                             className="w-full p-1 border border-gray-300 rounded"
                                             onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'value', e.target.value)}
+                                            onFocus={() => handleInputFocus(row.name, 'marketing', 'jan', 'value')}
                                         />
                                     </TableCell>
                                     <TableCell className="border-r border-gray-200 min-w-[120px]">
@@ -306,20 +374,38 @@ const ForecastTable = ({ data, selections }) => {
                                             type="text"
                                             className="w-full p-1 border border-gray-300 rounded"
                                             onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'comment', e.target.value)}
+                                            onFocus={() => handleInputFocus(row.name, 'marketing', 'jan', 'comment')}
                                         />
                                     </TableCell>
-                                    <TableCell className="border-r border-gray-200 min-w-[120px]">
+                                    <TableCell className="border-r border-gray-200 min-w-[120px] relative">
                                         <input
                                             type="text"
                                             className="w-full p-1 border border-gray-300 rounded"
                                             onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'owner', e.target.value)}
+                                            onFocus={() => handleInputFocus(row.name, 'marketing', 'jan', 'owner')}
                                         />
+                                        {activeInputs[`${row.name}-marketing-jan`] && (
+                                            <button
+                                                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-2 py-1 rounded text-xs"
+                                                onClick={() => {
+                                                    console.log('Submitting marketing jan data for', row.name);
+                                                    setActiveInputs(prev => ({
+                                                        ...prev,
+                                                        [`${row.name}-marketing-jan`]: false
+                                                    }));
+                                                }}
+                                            >
+                                                Submit
+                                            </button>
+                                        )}
                                     </TableCell>
+
                                     <TableCell className="border-r border-gray-200 min-w-[80px]">
                                         <input
                                             type="number"
                                             className="w-full p-1 border border-gray-300 rounded"
                                             onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'value', e.target.value)}
+                                            onFocus={() => handleInputFocus(row.name, 'marketing', 'feb', 'value')}
                                         />
                                     </TableCell>
                                     <TableCell className="border-r border-gray-200 min-w-[120px]">
@@ -327,14 +413,30 @@ const ForecastTable = ({ data, selections }) => {
                                             type="text"
                                             className="w-full p-1 border border-gray-300 rounded"
                                             onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'comment', e.target.value)}
+                                            onFocus={() => handleInputFocus(row.name, 'marketing', 'feb', 'comment')}
                                         />
                                     </TableCell>
-                                    <TableCell className="border-r border-gray-200 min-w-[120px]">
+                                    <TableCell className="border-r border-gray-200 min-w-[120px] relative">
                                         <input
                                             type="text"
                                             className="w-full p-1 border border-gray-300 rounded"
                                             onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'owner', e.target.value)}
+                                            onFocus={() => handleInputFocus(row.name, 'marketing', 'feb', 'owner')}
                                         />
+                                        {activeInputs[`${row.name}-marketing-feb`] && (
+                                            <button
+                                                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-2 py-1 rounded text-xs"
+                                                onClick={() => {
+                                                    console.log('Submitting marketing feb data for', row.name);
+                                                    setActiveInputs(prev => ({
+                                                        ...prev,
+                                                        [`${row.name}-marketing-feb`]: false
+                                                    }));
+                                                }}
+                                            >
+                                                Submit
+                                            </button>
+                                        )}
                                     </TableCell>
 
                                     {/* Finance Team */}
@@ -343,6 +445,7 @@ const ForecastTable = ({ data, selections }) => {
                                             type="number"
                                             className="w-full p-1 border border-gray-300 rounded"
                                             onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'value', e.target.value)}
+                                            onFocus={() => handleInputFocus(row.name, 'finance', 'jan', 'value')}
                                         />
                                     </TableCell>
                                     <TableCell className="border-r border-gray-200 min-w-[120px]">
@@ -350,20 +453,38 @@ const ForecastTable = ({ data, selections }) => {
                                             type="text"
                                             className="w-full p-1 border border-gray-300 rounded"
                                             onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'comment', e.target.value)}
+                                            onFocus={() => handleInputFocus(row.name, 'finance', 'jan', 'comment')}
                                         />
                                     </TableCell>
-                                    <TableCell className="border-r border-gray-200 min-w-[120px]">
+                                    <TableCell className="border-r border-gray-200 min-w-[120px] relative">
                                         <input
                                             type="text"
                                             className="w-full p-1 border border-gray-300 rounded"
                                             onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'owner', e.target.value)}
+                                            onFocus={() => handleInputFocus(row.name, 'finance', 'jan', 'owner')}
                                         />
+                                        {activeInputs[`${row.name}-finance-jan`] && (
+                                            <button
+                                                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-2 py-1 rounded text-xs"
+                                                onClick={() => {
+                                                    console.log('Submitting finance jan data for', row.name);
+                                                    setActiveInputs(prev => ({
+                                                        ...prev,
+                                                        [`${row.name}-finance-jan`]: false
+                                                    }));
+                                                }}
+                                            >
+                                                Submit
+                                            </button>
+                                        )}
                                     </TableCell>
+
                                     <TableCell className="border-r border-gray-200 min-w-[80px]">
                                         <input
                                             type="number"
                                             className="w-full p-1 border border-gray-300 rounded"
                                             onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'value', e.target.value)}
+                                            onFocus={() => handleInputFocus(row.name, 'finance', 'feb', 'value')}
                                         />
                                     </TableCell>
                                     <TableCell className="border-r border-gray-200 min-w-[120px]">
@@ -371,20 +492,35 @@ const ForecastTable = ({ data, selections }) => {
                                             type="text"
                                             className="w-full p-1 border border-gray-300 rounded"
                                             onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'comment', e.target.value)}
+                                            onFocus={() => handleInputFocus(row.name, 'finance', 'feb', 'comment')}
                                         />
                                     </TableCell>
-                                    <TableCell className="min-w-[120px]">
+                                    <TableCell className="min-w-[120px] relative">
                                         <input
                                             type="text"
                                             className="w-full p-1 border border-gray-300 rounded"
                                             onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'owner', e.target.value)}
+                                            onFocus={() => handleInputFocus(row.name, 'finance', 'feb', 'owner')}
                                         />
+                                        {activeInputs[`${row.name}-finance-feb`] && (
+                                            <button
+                                                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-2 py-1 rounded text-xs"
+                                                onClick={() => {
+                                                    console.log('Submitting finance feb data for', row.name);
+                                                    setActiveInputs(prev => ({
+                                                        ...prev,
+                                                        [`${row.name}-finance-feb`]: false
+                                                    }));
+                                                }}
+                                            >
+                                                Submit
+                                            </button>
+                                        )}
                                     </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
-
                 </div>
                 <ScrollBar orientation="horizontal" />
             </ScrollArea>
@@ -394,7 +530,7 @@ const ForecastTable = ({ data, selections }) => {
                 consensusValues={consensusValues}
                 teamInputs={teamInputs}
             />
-        </div >
+        </div>
 
 
 
