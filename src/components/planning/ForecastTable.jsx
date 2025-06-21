@@ -139,7 +139,7 @@ const ForecastTable = ({ data, selections }) => {
     const [activeInputs, setActiveInputs] = useState({});
 
     // Helper function to update active inputs
-    const handleInputFocus = (itemName, team, month, field) => {
+    const handleInputFocus = (itemName, team, month) => {
         setActiveInputs(prev => ({
             ...prev,
             [`${itemName}-${team}-${month}`]: true
@@ -281,241 +281,292 @@ const ForecastTable = ({ data, selections }) => {
                                         {consensusValues[row.name]?.feb || Math.round(row.ForecastFeb)}
                                     </TableCell>
 
-                                    {/* Sales Team */}
-                                    <TableCell className="border-r border-gray-200 min-w-[80px]">
-                                        <input
-                                            type="number"
-                                            className="w-full p-1 border border-gray-300 rounded"
-                                            onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'value', e.target.value)}
-                                            onFocus={() => handleInputFocus(row.name, 'sales', 'jan', 'value')}
-                                        />
-                                    </TableCell>
-                                    <TableCell className="border-r border-gray-200 min-w-[120px]">
-                                        <input
-                                            type="text"
-                                            className="w-full p-1 border border-gray-300 rounded"
-                                            onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'comment', e.target.value)}
-                                            onFocus={() => handleInputFocus(row.name, 'sales', 'jan', 'comment')}
-                                        />
-                                    </TableCell>
-                                    <TableCell className="border-r border-gray-200 min-w-[120px] relative">
-                                        <input
-                                            type="text"
-                                            className="w-full p-1 border border-gray-300 rounded"
-                                            onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'owner', e.target.value)}
-                                            onFocus={() => handleInputFocus(row.name, 'sales', 'jan', 'owner')}
-                                        />
-                                        {activeInputs[`${row.name}-sales-jan`] && (
-                                            <button
-                                                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-2 py-1 rounded text-xs"
-                                                onClick={() => {
-                                                    console.log('Submitting sales jan data for', row.name);
-                                                    setActiveInputs(prev => ({
-                                                        ...prev,
-                                                        [`${row.name}-sales-jan`]: false
-                                                    }));
-                                                }}
-                                            >
-                                                Submit
-                                            </button>
-                                        )}
-                                    </TableCell>
-
-                                    <TableCell className="border-r border-gray-200 min-w-[80px]">
-                                        <input
-                                            type="number"
-                                            className="w-full p-1 border border-gray-300 rounded"
-                                            onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'value', e.target.value)}
-                                            onFocus={() => handleInputFocus(row.name, 'sales', 'feb', 'value')}
-                                        />
-                                    </TableCell>
-                                    <TableCell className="border-r border-gray-200 min-w-[120px]">
-                                        <input
-                                            type="text"
-                                            className="w-full p-1 border border-gray-300 rounded"
-                                            onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'comment', e.target.value)}
-                                            onFocus={() => handleInputFocus(row.name, 'sales', 'feb', 'comment')}
-                                        />
-                                    </TableCell>
-                                    <TableCell className="border-r border-gray-200 min-w-[120px] relative">
-                                        <input
-                                            type="text"
-                                            className="w-full p-1 border border-gray-300 rounded"
-                                            onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'owner', e.target.value)}
-                                            onFocus={() => handleInputFocus(row.name, 'sales', 'feb', 'owner')}
-                                        />
-                                        {activeInputs[`${row.name}-sales-feb`] && (
-                                            <button
-                                                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-2 py-1 rounded text-xs"
-                                                onClick={() => {
-                                                    console.log('Submitting sales feb data for', row.name);
-                                                    setActiveInputs(prev => ({
-                                                        ...prev,
-                                                        [`${row.name}-sales-feb`]: false
-                                                    }));
-                                                }}
-                                            >
-                                                Submit
-                                            </button>
-                                        )}
+                                    {/* Sales Team - Jan */}
+                                    <TableCell colSpan={3} className="border-r border-gray-200 p-0">
+                                        <div className="flex flex-col">
+                                            <div className="flex">
+                                                <div className="flex-1 min-w-[80px] p-1">
+                                                    <input
+                                                        type="number"
+                                                        className="w-full p-1 border border-gray-300 rounded"
+                                                        onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'value', e.target.value)}
+                                                        onFocus={() => handleInputFocus(row.name, 'sales', 'jan')}
+                                                    />
+                                                </div>
+                                                <div className="flex-1 min-w-[120px] p-1">
+                                                    <input
+                                                        type="text"
+                                                        className="w-full p-1 border border-gray-300 rounded"
+                                                        onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'comment', e.target.value)}
+                                                        onFocus={() => handleInputFocus(row.name, 'sales', 'jan')}
+                                                    />
+                                                </div>
+                                                <div className="flex-1 min-w-[120px] p-1">
+                                                    <input
+                                                        type="text"
+                                                        className="w-full p-1 border border-gray-300 rounded"
+                                                        onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'owner', e.target.value)}
+                                                        onFocus={() => handleInputFocus(row.name, 'sales', 'jan')}
+                                                    />
+                                                </div>
+                                            </div>
+                                            {activeInputs[`${row.name}-sales-jan`] && (
+                                                <div className="p-1 border-t border-gray-200">
+                                                    <button
+                                                        className="w-full bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                                                        onClick={() => {
+                                                            console.log('Submitting sales jan data for', row.name);
+                                                            setActiveInputs(prev => ({
+                                                                ...prev,
+                                                                [`${row.name}-sales-jan`]: false
+                                                            }));
+                                                        }}
+                                                    >
+                                                        Submit
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
                                     </TableCell>
 
-                                    {/* Marketing Team */}
-                                    <TableCell className="border-r border-gray-200 min-w-[80px]">
-                                        <input
-                                            type="number"
-                                            className="w-full p-1 border border-gray-300 rounded"
-                                            onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'value', e.target.value)}
-                                            onFocus={() => handleInputFocus(row.name, 'marketing', 'jan', 'value')}
-                                        />
-                                    </TableCell>
-                                    <TableCell className="border-r border-gray-200 min-w-[120px]">
-                                        <input
-                                            type="text"
-                                            className="w-full p-1 border border-gray-300 rounded"
-                                            onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'comment', e.target.value)}
-                                            onFocus={() => handleInputFocus(row.name, 'marketing', 'jan', 'comment')}
-                                        />
-                                    </TableCell>
-                                    <TableCell className="border-r border-gray-200 min-w-[120px] relative">
-                                        <input
-                                            type="text"
-                                            className="w-full p-1 border border-gray-300 rounded"
-                                            onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'owner', e.target.value)}
-                                            onFocus={() => handleInputFocus(row.name, 'marketing', 'jan', 'owner')}
-                                        />
-                                        {activeInputs[`${row.name}-marketing-jan`] && (
-                                            <button
-                                                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-2 py-1 rounded text-xs"
-                                                onClick={() => {
-                                                    console.log('Submitting marketing jan data for', row.name);
-                                                    setActiveInputs(prev => ({
-                                                        ...prev,
-                                                        [`${row.name}-marketing-jan`]: false
-                                                    }));
-                                                }}
-                                            >
-                                                Submit
-                                            </button>
-                                        )}
-                                    </TableCell>
-
-                                    <TableCell className="border-r border-gray-200 min-w-[80px]">
-                                        <input
-                                            type="number"
-                                            className="w-full p-1 border border-gray-300 rounded"
-                                            onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'value', e.target.value)}
-                                            onFocus={() => handleInputFocus(row.name, 'marketing', 'feb', 'value')}
-                                        />
-                                    </TableCell>
-                                    <TableCell className="border-r border-gray-200 min-w-[120px]">
-                                        <input
-                                            type="text"
-                                            className="w-full p-1 border border-gray-300 rounded"
-                                            onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'comment', e.target.value)}
-                                            onFocus={() => handleInputFocus(row.name, 'marketing', 'feb', 'comment')}
-                                        />
-                                    </TableCell>
-                                    <TableCell className="border-r border-gray-200 min-w-[120px] relative">
-                                        <input
-                                            type="text"
-                                            className="w-full p-1 border border-gray-300 rounded"
-                                            onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'owner', e.target.value)}
-                                            onFocus={() => handleInputFocus(row.name, 'marketing', 'feb', 'owner')}
-                                        />
-                                        {activeInputs[`${row.name}-marketing-feb`] && (
-                                            <button
-                                                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-2 py-1 rounded text-xs"
-                                                onClick={() => {
-                                                    console.log('Submitting marketing feb data for', row.name);
-                                                    setActiveInputs(prev => ({
-                                                        ...prev,
-                                                        [`${row.name}-marketing-feb`]: false
-                                                    }));
-                                                }}
-                                            >
-                                                Submit
-                                            </button>
-                                        )}
+                                    {/* Sales Team - Feb */}
+                                    <TableCell colSpan={3} className="border-r border-gray-200 p-0">
+                                        <div className="flex flex-col">
+                                            <div className="flex">
+                                                <div className="flex-1 min-w-[80px] p-1">
+                                                    <input
+                                                        type="number"
+                                                        className="w-full p-1 border border-gray-300 rounded"
+                                                        onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'value', e.target.value)}
+                                                        onFocus={() => handleInputFocus(row.name, 'sales', 'feb')}
+                                                    />
+                                                </div>
+                                                <div className="flex-1 min-w-[120px] p-1">
+                                                    <input
+                                                        type="text"
+                                                        className="w-full p-1 border border-gray-300 rounded"
+                                                        onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'comment', e.target.value)}
+                                                        onFocus={() => handleInputFocus(row.name, 'sales', 'feb')}
+                                                    />
+                                                </div>
+                                                <div className="flex-1 min-w-[120px] p-1">
+                                                    <input
+                                                        type="text"
+                                                        className="w-full p-1 border border-gray-300 rounded"
+                                                        onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'owner', e.target.value)}
+                                                        onFocus={() => handleInputFocus(row.name, 'sales', 'feb')}
+                                                    />
+                                                </div>
+                                            </div>
+                                            {activeInputs[`${row.name}-sales-feb`] && (
+                                                <div className="p-1 border-t border-gray-200">
+                                                    <button
+                                                        className="w-full bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                                                        onClick={() => {
+                                                            console.log('Submitting sales feb data for', row.name);
+                                                            setActiveInputs(prev => ({
+                                                                ...prev,
+                                                                [`${row.name}-sales-feb`]: false
+                                                            }));
+                                                        }}
+                                                    >
+                                                        Submit
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
                                     </TableCell>
 
-                                    {/* Finance Team */}
-                                    <TableCell className="border-r border-gray-200 min-w-[80px]">
-                                        <input
-                                            type="number"
-                                            className="w-full p-1 border border-gray-300 rounded"
-                                            onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'value', e.target.value)}
-                                            onFocus={() => handleInputFocus(row.name, 'finance', 'jan', 'value')}
-                                        />
-                                    </TableCell>
-                                    <TableCell className="border-r border-gray-200 min-w-[120px]">
-                                        <input
-                                            type="text"
-                                            className="w-full p-1 border border-gray-300 rounded"
-                                            onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'comment', e.target.value)}
-                                            onFocus={() => handleInputFocus(row.name, 'finance', 'jan', 'comment')}
-                                        />
-                                    </TableCell>
-                                    <TableCell className="border-r border-gray-200 min-w-[120px] relative">
-                                        <input
-                                            type="text"
-                                            className="w-full p-1 border border-gray-300 rounded"
-                                            onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'owner', e.target.value)}
-                                            onFocus={() => handleInputFocus(row.name, 'finance', 'jan', 'owner')}
-                                        />
-                                        {activeInputs[`${row.name}-finance-jan`] && (
-                                            <button
-                                                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-2 py-1 rounded text-xs"
-                                                onClick={() => {
-                                                    console.log('Submitting finance jan data for', row.name);
-                                                    setActiveInputs(prev => ({
-                                                        ...prev,
-                                                        [`${row.name}-finance-jan`]: false
-                                                    }));
-                                                }}
-                                            >
-                                                Submit
-                                            </button>
-                                        )}
+                                    {/* Marketing Team - Jan */}
+                                    <TableCell colSpan={3} className="border-r border-gray-200 p-0">
+                                        <div className="flex flex-col">
+                                            <div className="flex">
+                                                <div className="flex-1 min-w-[80px] p-1">
+                                                    <input
+                                                        type="number"
+                                                        className="w-full p-1 border border-gray-300 rounded"
+                                                        onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'value', e.target.value)}
+                                                        onFocus={() => handleInputFocus(row.name, 'marketing', 'jan')}
+                                                    />
+                                                </div>
+                                                <div className="flex-1 min-w-[120px] p-1">
+                                                    <input
+                                                        type="text"
+                                                        className="w-full p-1 border border-gray-300 rounded"
+                                                        onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'comment', e.target.value)}
+                                                        onFocus={() => handleInputFocus(row.name, 'marketing', 'jan')}
+                                                    />
+                                                </div>
+                                                <div className="flex-1 min-w-[120px] p-1">
+                                                    <input
+                                                        type="text"
+                                                        className="w-full p-1 border border-gray-300 rounded"
+                                                        onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'owner', e.target.value)}
+                                                        onFocus={() => handleInputFocus(row.name, 'marketing', 'jan')}
+                                                    />
+                                                </div>
+                                            </div>
+                                            {activeInputs[`${row.name}-marketing-jan`] && (
+                                                <div className="p-1 border-t border-gray-200">
+                                                    <button
+                                                        className="w-full bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                                                        onClick={() => {
+                                                            console.log('Submitting marketing jan data for', row.name);
+                                                            setActiveInputs(prev => ({
+                                                                ...prev,
+                                                                [`${row.name}-marketing-jan`]: false
+                                                            }));
+                                                        }}
+                                                    >
+                                                        Submit
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
                                     </TableCell>
 
-                                    <TableCell className="border-r border-gray-200 min-w-[80px]">
-                                        <input
-                                            type="number"
-                                            className="w-full p-1 border border-gray-300 rounded"
-                                            onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'value', e.target.value)}
-                                            onFocus={() => handleInputFocus(row.name, 'finance', 'feb', 'value')}
-                                        />
+                                    {/* Marketing Team - Feb */}
+                                    <TableCell colSpan={3} className="border-r border-gray-200 p-0">
+                                        <div className="flex flex-col">
+                                            <div className="flex">
+                                                <div className="flex-1 min-w-[80px] p-1">
+                                                    <input
+                                                        type="number"
+                                                        className="w-full p-1 border border-gray-300 rounded"
+                                                        onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'value', e.target.value)}
+                                                        onFocus={() => handleInputFocus(row.name, 'marketing', 'feb')}
+                                                    />
+                                                </div>
+                                                <div className="flex-1 min-w-[120px] p-1">
+                                                    <input
+                                                        type="text"
+                                                        className="w-full p-1 border border-gray-300 rounded"
+                                                        onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'comment', e.target.value)}
+                                                        onFocus={() => handleInputFocus(row.name, 'marketing', 'feb')}
+                                                    />
+                                                </div>
+                                                <div className="flex-1 min-w-[120px] p-1">
+                                                    <input
+                                                        type="text"
+                                                        className="w-full p-1 border border-gray-300 rounded"
+                                                        onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'owner', e.target.value)}
+                                                        onFocus={() => handleInputFocus(row.name, 'marketing', 'feb')}
+                                                    />
+                                                </div>
+                                            </div>
+                                            {activeInputs[`${row.name}-marketing-feb`] && (
+                                                <div className="p-1 border-t border-gray-200">
+                                                    <button
+                                                        className="w-full bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                                                        onClick={() => {
+                                                            console.log('Submitting marketing feb data for', row.name);
+                                                            setActiveInputs(prev => ({
+                                                                ...prev,
+                                                                [`${row.name}-marketing-feb`]: false
+                                                            }));
+                                                        }}
+                                                    >
+                                                        Submit
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
                                     </TableCell>
-                                    <TableCell className="border-r border-gray-200 min-w-[120px]">
-                                        <input
-                                            type="text"
-                                            className="w-full p-1 border border-gray-300 rounded"
-                                            onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'comment', e.target.value)}
-                                            onFocus={() => handleInputFocus(row.name, 'finance', 'feb', 'comment')}
-                                        />
+
+                                    {/* Finance Team - Jan */}
+                                    <TableCell colSpan={3} className="border-r border-gray-200 p-0">
+                                        <div className="flex flex-col">
+                                            <div className="flex">
+                                                <div className="flex-1 min-w-[80px] p-1">
+                                                    <input
+                                                        type="number"
+                                                        className="w-full p-1 border border-gray-300 rounded"
+                                                        onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'value', e.target.value)}
+                                                        onFocus={() => handleInputFocus(row.name, 'finance', 'jan')}
+                                                    />
+                                                </div>
+                                                <div className="flex-1 min-w-[120px] p-1">
+                                                    <input
+                                                        type="text"
+                                                        className="w-full p-1 border border-gray-300 rounded"
+                                                        onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'comment', e.target.value)}
+                                                        onFocus={() => handleInputFocus(row.name, 'finance', 'jan')}
+                                                    />
+                                                </div>
+                                                <div className="flex-1 min-w-[120px] p-1">
+                                                    <input
+                                                        type="text"
+                                                        className="w-full p-1 border border-gray-300 rounded"
+                                                        onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'owner', e.target.value)}
+                                                        onFocus={() => handleInputFocus(row.name, 'finance', 'jan')}
+                                                    />
+                                                </div>
+                                            </div>
+                                            {activeInputs[`${row.name}-finance-jan`] && (
+                                                <div className="p-1 border-t border-gray-200">
+                                                    <button
+                                                        className="w-full bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                                                        onClick={() => {
+                                                            console.log('Submitting finance jan data for', row.name);
+                                                            setActiveInputs(prev => ({
+                                                                ...prev,
+                                                                [`${row.name}-finance-jan`]: false
+                                                            }));
+                                                        }}
+                                                    >
+                                                        Submit
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
                                     </TableCell>
-                                    <TableCell className="min-w-[120px] relative">
-                                        <input
-                                            type="text"
-                                            className="w-full p-1 border border-gray-300 rounded"
-                                            onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'owner', e.target.value)}
-                                            onFocus={() => handleInputFocus(row.name, 'finance', 'feb', 'owner')}
-                                        />
-                                        {activeInputs[`${row.name}-finance-feb`] && (
-                                            <button
-                                                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-2 py-1 rounded text-xs"
-                                                onClick={() => {
-                                                    console.log('Submitting finance feb data for', row.name);
-                                                    setActiveInputs(prev => ({
-                                                        ...prev,
-                                                        [`${row.name}-finance-feb`]: false
-                                                    }));
-                                                }}
-                                            >
-                                                Submit
-                                            </button>
-                                        )}
+
+                                    {/* Finance Team - Feb */}
+                                    <TableCell colSpan={3} className="p-0">
+                                        <div className="flex flex-col">
+                                            <div className="flex">
+                                                <div className="flex-1 min-w-[80px] p-1">
+                                                    <input
+                                                        type="number"
+                                                        className="w-full p-1 border border-gray-300 rounded"
+                                                        onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'value', e.target.value)}
+                                                        onFocus={() => handleInputFocus(row.name, 'finance', 'feb')}
+                                                    />
+                                                </div>
+                                                <div className="flex-1 min-w-[120px] p-1">
+                                                    <input
+                                                        type="text"
+                                                        className="w-full p-1 border border-gray-300 rounded"
+                                                        onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'comment', e.target.value)}
+                                                        onFocus={() => handleInputFocus(row.name, 'finance', 'feb')}
+                                                    />
+                                                </div>
+                                                <div className="flex-1 min-w-[120px] p-1">
+                                                    <input
+                                                        type="text"
+                                                        className="w-full p-1 border border-gray-300 rounded"
+                                                        onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'owner', e.target.value)}
+                                                        onFocus={() => handleInputFocus(row.name, 'finance', 'feb')}
+                                                    />
+                                                </div>
+                                            </div>
+                                            {activeInputs[`${row.name}-finance-feb`] && (
+                                                <div className="p-1 border-t border-gray-200">
+                                                    <button
+                                                        className="w-full bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                                                        onClick={() => {
+                                                            console.log('Submitting finance feb data for', row.name);
+                                                            setActiveInputs(prev => ({
+                                                                ...prev,
+                                                                [`${row.name}-finance-feb`]: false
+                                                            }));
+                                                        }}
+                                                    >
+                                                        Submit
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                             ))}

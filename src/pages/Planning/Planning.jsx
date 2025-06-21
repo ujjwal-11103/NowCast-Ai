@@ -25,7 +25,7 @@ const Planning = () => {
 
 
     const { forecastSum, forecastValue, yoyGrowth, parentLevelForecast, filters } = useForecast();
-    console.log("Filters:", filters.channel);
+    // console.log("Filters:", filters.channel);
 
     const formatForecastValue = (value, isCurrency = false, useIndianUnits = false) => {
         if (value === null || value === undefined) return "N/A";
