@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { ArrowDown, ArrowUp, DollarSign, ExternalLink, LineChart, Minus } from "lucide-react"
 import { Package } from 'lucide-react';
 import { ChartPie } from 'lucide-react';
+import { Filter, RefreshCw, Download, ChevronDown } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 
 
@@ -20,12 +22,13 @@ import data from "../../jsons/Planning/JF_censored.json"
 import { useSidebar } from "@/context/sidebar/SidebarContext";
 
 const Planning = () => {
-
-    const { isSidebarOpen, toggleSidebar } = useSidebar(); // Get sidebar state and toggle function
-
-
+    const { isSidebarOpen, toggleSidebar } = useSidebar();
     const { forecastSum, forecastValue, yoyGrowth, parentLevelForecast, filters } = useForecast();
-    // console.log("Filters:", filters.channel);
+    const [showFilters, setShowFilters] = useState(false);
+
+    const toggleFilters = () => {
+        setShowFilters(!showFilters);
+    };
 
     const formatForecastValue = (value, isCurrency = false, useIndianUnits = false) => {
         if (value === null || value === undefined) return "N/A";
@@ -52,30 +55,83 @@ const Planning = () => {
         }
     };
 
-
-
-
-
     return (
         <div>
             <div className="flex">
-                <div
-                    className={`transition-all duration-300 ${isSidebarOpen ? "w-64" : "w-16"
-                        } fixed`}>
+                <div className={`transition-all duration-300 ${isSidebarOpen ? "w-64" : "w-16"} fixed`}>
                     <SideBar />
                 </div>
 
-                <div className={`main transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-16"} w-full`}>
-                    <div className="h-full overflow-x-hidden">
-                        <header className="flex items-center justify-between border-b p-4">
-                            <h1 className="text-2xl font-bold text-[#0A2472]">Planning Module</h1>
-                        </header>
+                <div className={`main transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-16"} w-full bg-gray-50 p-6`}>
+                    <div className="max-w-7xl mx-auto space-y-6">
+                        {/* Header Section */}
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <h1 className="text-3xl font-bold text-indigo-600 mb-2">Planning Module</h1>
+                                <p className="text-gray-600">Make data-driven decisions with advanced forecasting</p>
+                            </div>
 
-                        <main className="p-6">
-                            <h2 className="mb-4 text-xl font-semibold">Forecasted Months: Jan - Feb '25</h2>
+                            <div className="flex gap-3">
+                                <Button
+                                    variant="outline"
+                                    onClick={toggleFilters}
+                                    className="flex items-center gap-2 border-gray-300 hover:bg-gray-100 transition-colors"
+                                >
+                                    <Filter className="w-4 h-4" />
+                                    Filters
+                                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
+                                </Button>
 
-                            <div className="mb-6">
-                                <div className="flex items-center gap-2 mb-4">
+                                <Button variant="outline" className="flex items-center gap-2 border-gray-300 hover:bg-gray-100 transition-colors">
+                                    <RefreshCw className="w-4 h-4" />
+                                    Refresh
+                                </Button>
+
+                            </div>
+                        </div>
+
+                        {/* Animated Filter Dropdowns */}
+                        <div className={`transition-all duration-300 ease-in-out ${showFilters ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+                            <Card className="p-6 bg-white border border-gray-200 shadow-sm">
+                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700">Time Period</label>
+                                        <Select>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Select period" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
+                                                <SelectItem value="jan-feb">Jan - Feb '25</SelectItem>
+                                                <SelectItem value="mar-apr">Mar - Apr '25</SelectItem>
+                                                <SelectItem value="may-jun">May - Jun '25</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    {/* Add your existing filter components here */}
+                                </div>
+                            </Card>
+                        </div>
+
+                        {/* Forecasted Period Header */}
+                        <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-lg transition-shadow duration-200">
+
+                            <div className="flex justify-between items-center">
+                                <div className="flex items-center gap-3">
+                                    <h2 className="text-xl font-semibold text-gray-800">Forecasted Months: Jan - Feb '25</h2>
+                                    <div className="w-4 h-4 rounded-full border-2 border-gray-400 flex items-center justify-center">
+                                        <span className="text-xs text-gray-500">?</span>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 text-sm text-gray-500">
+                                    <span>Last updated: Today at {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                    <RefreshCw className="w-4 h-4" />
+                                </div>
+                            </div>
+
+                            {/* Existing Filter Display */}
+                            <div className="">
+                                <div className="flex items-center gap-2">
                                     <span className="font-medium">Forecasted Sales for:</span>
                                     <div className="flex items-center gap-2">
                                         {["channel", "chain", "depot", "subCat", "sku"].map((key, index, array) => {
@@ -103,181 +159,114 @@ const Planning = () => {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                                <Card>
-                                    <CardContent className="p-6">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <Package className="h-6 w-6 text-blue-500" />
-                                            <span className="text-sm font-medium">Forecasted Volume</span>
+                            {/* Metrics Cards */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                {/* Forecasted Volume Card */}
+                                <Card className="p-6 bg-blue-50 border border-blue-100 hover:shadow-lg transition-all duration-200 hover:scale-105">
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <Package className="w-5 h-5 text-blue-600" />
+                                            <p className="text-sm font-medium text-blue-600">Forecasted Volume</p>
                                         </div>
-                                        <div className="flex items-baseline">
-                                            <span className="text-3xl font-bold text-[#0A2472]">
+                                        <div className="flex items-baseline gap-2">
+                                            <span className="text-3xl font-bold text-gray-900">
                                                 {formatForecastValue(forecastSum, false)}
                                             </span>
-
-                                            <span className="ml-1 text-lg font-medium text-[#0A2472]">Units</span>
+                                            <span className="text-sm text-gray-500">Units</span>
                                         </div>
-                                        <div className="mt-2 text-xs text-gray-500">Total predicted units</div>
-                                    </CardContent>
+                                        <p className="text-xs text-gray-600">Total predicted units</p>
+                                    </div>
                                 </Card>
 
-                                <Card>
-                                    <CardContent className="p-6">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <DollarSign className="h-6 w-6 text-blue-500" />
-                                            <span className="text-sm font-medium">Forecasted Value</span>
+                                {/* Forecasted Value Card */}
+                                <Card className="p-6 bg-green-50 border border-green-100 hover:shadow-lg transition-all duration-200 hover:scale-105">
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <DollarSign className="w-5 h-5 text-green-600" />
+                                            <p className="text-sm font-medium text-green-600">Forecasted Value</p>
                                         </div>
-                                        <div className="flex items-baseline">
-                                            <span className="text-3xl font-bold text-[#0A2472]">
+                                        <div className="flex items-baseline gap-2">
+                                            <span className="text-3xl font-bold text-gray-900">
                                                 {formatForecastValue(forecastValue, true, true)}
                                             </span>
-                                            {/* <span className="ml-1 text-lg font-medium">L</span> */}
                                         </div>
-                                        <div className="mt-2 text-xs text-gray-500">Total predicted revenue</div>
-                                    </CardContent>
+                                        <p className="text-xs text-gray-600">Total predicted revenue</p>
+                                    </div>
                                 </Card>
 
-                                <Card>
-                                    <CardContent className="p-6">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <LineChart className="h-6 w-6 text-green-500" size={24} />
-                                            <span className="text-sm font-medium">YoY Growth</span>
+                                {/* YoY Growth Card */}
+                                <Card className="p-6 bg-yellow-50 border border-yellow-100 hover:shadow-lg transition-all duration-200 hover:scale-105">
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <LineChart className="w-5 h-5 text-yellow-600" />
+                                            <p className="text-sm font-medium text-yellow-600">YoY Growth</p>
                                         </div>
-                                        <div className="flex justify-center gap-8">
-                                            {/* Volume */}
-                                            <div className="flex items-center gap-1">
-                                                {yoyGrowth == null ? (
-                                                    <Minus className="text-gray-400" size={16} />
-                                                ) : yoyGrowth < 0 ? (
-                                                    <ArrowDown className="text-red-500" size={16} />
-                                                ) : yoyGrowth > 0 ? (
-                                                    <ArrowUp className="text-green-500" size={16} />
-                                                ) : (
-                                                    <Minus className="text-gray-400" size={16} />
-                                                )}
-                                                <div className="flex flex-col">
-
-                                                    <span
-                                                        className={`font-medium ${yoyGrowth == null
-                                                            ? "text-gray-400"
-                                                            : yoyGrowth < 0
-                                                                ? "text-red-500"
-                                                                : yoyGrowth > 0
-                                                                    ? "text-green-500"
-                                                                    : "text-gray-400"
-                                                            }`}
-                                                    >
-                                                        {yoyGrowth != null ? `${Math.abs(yoyGrowth)}%` : "--"}
-                                                    </span>
-
-                                                    <span className="text-xs text-gray-500">(Volume)</span>
-                                                </div>
-                                            </div>
-
-                                            {/* Value */}
-                                            <div className="flex items-center gap-1">
-                                                {yoyGrowth == null ? (
-                                                    <Minus className="text-gray-400" size={16} />
-                                                ) : yoyGrowth < 0 ? (
-                                                    <ArrowDown className="text-red-500" size={16} />
-                                                ) : yoyGrowth > 0 ? (
-                                                    <ArrowUp className="text-green-500" size={16} />
-                                                ) : (
-                                                    <Minus className="text-gray-400" size={16} />
-                                                )}
-
-                                                <div className="flex flex-col">
-
-                                                    <span
-                                                        className={`font-medium ${yoyGrowth == null
-                                                            ? "text-gray-400"
-                                                            : yoyGrowth < 0
-                                                                ? "text-red-500"
-                                                                : yoyGrowth > 0
-                                                                    ? "text-green-500"
-                                                                    : "text-gray-400"
-                                                            }`}
-                                                    >
-                                                        {yoyGrowth != null ? `${Math.abs(yoyGrowth)}%` : "--"}
-                                                    </span>
-
-                                                    <span className="text-xs text-gray-500">(Value)</span>
-                                                </div>
-                                            </div>
+                                        <div className="flex items-baseline gap-2">
+                                            <span className={`text-3xl font-bold ${yoyGrowth == null ? "text-gray-900" : yoyGrowth < 0 ? "text-red-500" : "text-green-500"}`}>
+                                                {yoyGrowth != null ? `${yoyGrowth > 0 ? '+' : ''}${Math.abs(yoyGrowth)}%` : "N/A"}
+                                            </span>
                                         </div>
-
-
-                                        <div className="mt-2 text-xs text-gray-500">vs Jan+Feb 2024 Actuals</div>
-                                    </CardContent>
+                                        <p className="text-xs text-gray-600">vs Jan+Feb 2024 Actuals</p>
+                                    </div>
                                 </Card>
 
-                                <Card>
-                                    <CardContent className="p-6">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <ChartPie className="h-6 w-6 text-blue-500" />
-                                            <span className="text-sm font-medium">Total Volume</span>
+                                {/* Total Volume Card */}
+                                <Card className="p-6 bg-purple-50 border border-purple-100 hover:shadow-lg transition-all duration-200 hover:scale-105">
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <ChartPie className="w-5 h-5 text-purple-600" />
+                                            <p className="text-sm font-medium text-purple-600">Total Volume</p>
                                         </div>
-                                        <div className="flex items-baseline">
-                                            <span className="text-3xl font-bold text-[#0A2472]">
+                                        <div className="flex items-baseline gap-2">
+                                            <span className="text-3xl font-bold text-gray-900">
                                                 {parentLevelForecast !== null ? formatForecastValue(parentLevelForecast) : "N/A"}
                                             </span>
-                                            <span className="ml-1 text-lg font-medium text-[#0A2472]">Units</span>
+                                            <span className="text-sm text-gray-500">Units</span>
                                         </div>
-                                        <div className="mt-2 text-xs text-gray-500">
+                                        <p className="text-xs text-gray-600">
                                             Total volume for: {
                                                 (() => {
-                                                    // Find the last non-"All" filter value
                                                     const lastNonAllKey = ["sku", "subCat", "depot", "chain", "channel"]
                                                         .find(k => filters[k] && filters[k] !== "All");
                                                     return lastNonAllKey ? filters[lastNonAllKey] : "selected filters";
                                                 })()
                                             }
-                                        </div>
-                                    </CardContent>
+                                        </p>
+                                    </div>
                                 </Card>
                             </div>
+                        </Card>
 
-
-                            {/* Graph Part */}
-                            <div className="mb-8">
-                                <div className="flex items-center justify-between mb-2">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-xs text-gray-500">Legend</span>
-                                        <div className="flex items-center gap-1">
-                                            <div className="h-1 w-6 bg-gray-400 rounded"></div>
-                                            <span className="text-xs">Actual Sales</span>
-                                        </div>
-                                        <div className="flex items-center gap-1">
-                                            <div className="h-1 w-6 bg-green-400 rounded"></div>
-                                            <span className="text-xs">Forecast</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="rounded-lg flex items-center justify-center">
-                                    {/* graph */}
-                                    <SalesTrendChart />
-                                </div>
+                        {/* Sales Trend Chart Section */}
+                        <Card className="p-6 bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-200">
+                            <div className="flex justify-between items-center">
+                                <h3 className="text-lg font-semibold text-gray-800">Sales Trend & Forecast</h3>
                             </div>
 
-                            <div className="mb-8">
-                                <ForecastTable
-                                    data={data}
-                                    selections={[
-                                        { field: 'Channel', value: filters.channel },
-                                        { field: 'Chain', value: filters.chain },
-                                        { field: 'Depot', value: filters.depot },
-                                        { field: 'SubCat', value: filters.subCat },
-                                        { field: 'SKU', value: filters.sku }
-                                    ]}
-                                />
+                            {/* Chart */}
+                            <div className="rounded-lg">
+                                <SalesTrendChart />
                             </div>
+                        </Card>
 
-                        </main>
+                        {/* Forecast Table */}
+                        <div className="mb-8">
+                            <ForecastTable
+                                data={data}
+                                selections={[
+                                    { field: 'Channel', value: filters.channel },
+                                    { field: 'Chain', value: filters.chain },
+                                    { field: 'Depot', value: filters.depot },
+                                    { field: 'SubCat', value: filters.subCat },
+                                    { field: 'SKU', value: filters.sku }
+                                ]}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default Planning
+export default Planning;

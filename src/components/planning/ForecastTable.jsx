@@ -10,6 +10,8 @@ import {
 import WaterfallSection from './WaterfallSection'
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { useSidebar } from '@/context/sidebar/SidebarContext'
+import { Card, CardContent } from "@/components/ui/card"
+
 
 import { ChevronDown } from 'lucide-react';
 import WaterfallChart from './WaterfallChart'
@@ -165,490 +167,532 @@ const ForecastTable = ({ data, selections }) => {
 
 
     return (
-        <div className={`space-y-4 ${isSidebarOpen ? "w-[76vw]" : "w-[90vw]"}`}>
-            <ScrollArea className="w-100 whitespace-nowrap rounded-md border">
-                <div className="rounded-md border border-gray-200">
-                    <Table>
-                        <TableHeader className="bg-gray-50">
-                            {/* First Header Row */}
-                            <TableRow>
-                                <TableHead className="border-r border-gray-200 sticky left-0 bg-gray-50 z-10 min-w-[150px]">
-                                    {itemLevel}
-                                </TableHead>
-                                <TableHead colSpan={2} className="text-center border-r border-gray-200">
-                                    Last Year Values
-                                </TableHead>
-                                <TableHead colSpan={2} className="text-center border-r border-gray-200">
-                                    Baseline Forecast
-                                </TableHead>
-                                <TableHead colSpan={2} className="text-center border-r border-gray-200">
-                                    Consensus
-                                </TableHead>
-                                <TableHead colSpan={6} className="text-center border-r border-gray-200">
-                                    Sales Team
-                                </TableHead>
-                                <TableHead colSpan={6} className="text-center border-r border-gray-200">
-                                    Marketing Team
-                                </TableHead>
-                                <TableHead colSpan={6} className="text-center">
-                                    Finance Team
-                                </TableHead>
-                            </TableRow>
+        <div className={`space-y-4 ${isSidebarOpen ? "w-[76.6vw]" : "w-[90.6vw]"}`}>
+            <Card className="overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-200 p-0">
 
-                            {/* Second Header Row */}
-                            <TableRow>
-                                <TableHead className="border-r border-gray-200 sticky left-0 bg-gray-50 z-10 min-w-[150px]"></TableHead>
 
-                                {/* Last Year */}
-                                <TableHead className="text-center border-r border-gray-200">Jan</TableHead>
-                                <TableHead className="text-center border-r border-gray-200">Feb</TableHead>
+                <ScrollArea className="w-100 whitespace-nowrap rounded-b-md">
+                    <div className="p-4 bg-white border-b border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-800">Forecast Data & Team Comments</h3>
+                    </div>
+                    <div className="">
+                        <Table>
+                            <TableHeader className="bg-white">
+                                {/* First Header Row */}
+                                <TableRow>
+                                    <TableHead className="border-r border-gray-200 sticky left-0 bg-white z-10 min-w-[150px]">
+                                        {itemLevel}
+                                    </TableHead>
+                                    <TableHead colSpan={2} className="text-center border-r border-gray-200">
+                                        Last Year Values
+                                    </TableHead>
+                                    <TableHead colSpan={2} className="text-center border-r border-gray-200">
+                                        Baseline Forecast
+                                    </TableHead>
+                                    <TableHead colSpan={2} className="text-center border-r border-gray-200">
+                                        Consensus
+                                    </TableHead>
+                                    <TableHead colSpan={6} className="text-center border-r border-gray-200 bg-blue-50">
+                                        Sales Team
+                                    </TableHead>
+                                    <TableHead colSpan={6} className="text-center border-r border-gray-200 bg-green-50">
+                                        Marketing Team
+                                    </TableHead>
+                                    <TableHead colSpan={6} className="text-center bg-purple-50">
+                                        Finance Team
+                                    </TableHead>
+                                </TableRow>
 
-                                {/* Baseline Forecast */}
-                                <TableHead className="text-center border-r border-gray-200">Jan</TableHead>
-                                <TableHead className="text-center border-r border-gray-200">Feb</TableHead>
+                                {/* Second Header Row */}
+                                <TableRow>
+                                    <TableHead className="border-r border-gray-200 sticky left-0 bg-white z-10 min-w-[150px]"></TableHead>
 
-                                {/* Consensus */}
-                                <TableHead className="text-center border-r border-gray-200">Jan</TableHead>
-                                <TableHead className="text-center border-r border-gray-200">Feb</TableHead>
+                                    {/* Last Year */}
+                                    <TableHead className="text-center border-r border-gray-200">Jan</TableHead>
+                                    <TableHead className="text-center border-r border-gray-200">Feb</TableHead>
 
-                                {/* Sales Team */}
-                                <TableHead colSpan={3} className="text-center border-r border-gray-200">Jan</TableHead>
-                                <TableHead colSpan={3} className="text-center border-r border-gray-200">Feb</TableHead>
+                                    {/* Baseline Forecast */}
+                                    <TableHead className="text-center border-r border-gray-200">Jan</TableHead>
+                                    <TableHead className="text-center border-r border-gray-200">Feb</TableHead>
 
-                                {/* Marketing Team */}
-                                <TableHead colSpan={3} className="text-center border-r border-gray-200">Jan</TableHead>
-                                <TableHead colSpan={3} className="text-center border-r border-gray-200">Feb</TableHead>
+                                    {/* Consensus */}
+                                    <TableHead className="text-center border-r border-gray-200">Jan</TableHead>
+                                    <TableHead className="text-center border-r border-gray-200">Feb</TableHead>
 
-                                {/* Finance Team */}
-                                <TableHead colSpan={3} className="text-center border-r border-gray-200">Jan</TableHead>
-                                <TableHead colSpan={3} className="text-center">Feb</TableHead>
-                            </TableRow>
+                                    {/* Sales Team */}
+                                    <TableHead colSpan={3} className="text-center border-r border-gray-200">Jan</TableHead>
+                                    <TableHead colSpan={3} className="text-center border-r border-gray-200">Feb</TableHead>
 
-                            {/* Third Header Row */}
-                            <TableRow>
-                                <TableHead className="border-r border-gray-200 sticky left-0 bg-gray-50 z-10 min-w-[150px]"></TableHead>
+                                    {/* Marketing Team */}
+                                    <TableHead colSpan={3} className="text-center border-r border-gray-200">Jan</TableHead>
+                                    <TableHead colSpan={3} className="text-center border-r border-gray-200">Feb</TableHead>
 
-                                {/* Last Year */}
-                                <TableHead className="text-center border-r border-gray-200"></TableHead>
-                                <TableHead className="text-center border-r border-gray-200"></TableHead>
+                                    {/* Finance Team */}
+                                    <TableHead colSpan={3} className="text-center border-r border-gray-200">Jan</TableHead>
+                                    <TableHead colSpan={3} className="text-center">Feb</TableHead>
+                                </TableRow>
 
-                                {/* Baseline Forecast */}
-                                <TableHead className="text-center border-r border-gray-200"></TableHead>
-                                <TableHead className="text-center border-r border-gray-200"></TableHead>
+                                {/* Third Header Row */}
+                                <TableRow>
+                                    <TableHead className="border-r border-gray-200 sticky left-0 bg-white z-10 min-w-[150px]"></TableHead>
 
-                                {/* Consensus */}
-                                <TableHead className="text-center border-r border-gray-200"></TableHead>
-                                <TableHead className="text-center border-r border-gray-200"></TableHead>
+                                    {/* Last Year */}
+                                    <TableHead className="text-center border-r border-gray-200"></TableHead>
+                                    <TableHead className="text-center border-r border-gray-200"></TableHead>
 
-                                {/* Sales Team */}
-                                <TableHead className="text-center border-r border-gray-200 min-w-[80px]">Value</TableHead>
-                                <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Comment</TableHead>
-                                <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Owner</TableHead>
-                                <TableHead className="text-center border-r border-gray-200 min-w-[80px]">Value</TableHead>
-                                <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Comment</TableHead>
-                                <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Owner</TableHead>
+                                    {/* Baseline Forecast */}
+                                    <TableHead className="text-center border-r border-gray-200"></TableHead>
+                                    <TableHead className="text-center border-r border-gray-200"></TableHead>
 
-                                {/* Marketing Team */}
-                                <TableHead className="text-center border-r border-gray-200 min-w-[80px]">Value</TableHead>
-                                <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Comment</TableHead>
-                                <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Owner</TableHead>
-                                <TableHead className="text-center border-r border-gray-200 min-w-[80px]">Value</TableHead>
-                                <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Comment</TableHead>
-                                <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Owner</TableHead>
+                                    {/* Consensus */}
+                                    <TableHead className="text-center border-r border-gray-200"></TableHead>
+                                    <TableHead className="text-center border-r border-gray-200"></TableHead>
 
-                                {/* Finance Team */}
-                                <TableHead className="text-center border-r border-gray-200 min-w-[80px]">Value</TableHead>
-                                <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Comment</TableHead>
-                                <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Owner</TableHead>
-                                <TableHead className="text-center border-r border-gray-200 min-w-[80px]">Value</TableHead>
-                                <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Comment</TableHead>
-                                <TableHead className="text-center min-w-[120px]">Owner</TableHead>
-                            </TableRow>
-                        </TableHeader>
+                                    {/* Sales Team */}
+                                    <TableHead className="text-center border-r border-gray-200 min-w-[80px]">Value</TableHead>
+                                    <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Comment</TableHead>
+                                    <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Owner</TableHead>
+                                    <TableHead className="text-center border-r border-gray-200 min-w-[80px]">Value</TableHead>
+                                    <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Comment</TableHead>
+                                    <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Owner</TableHead>
 
-                        <TableBody>
-                            {tableData.map((row) => (
-                                <>
-                                    {/* Main Data Row */}
-                                    <TableRow key={row.name} className="hover:bg-gray-50">
-                                        {/* Item Level - Make clickable */}
-                                        <TableCell className="font-medium border-r border-gray-200 sticky left-0 bg-white z-10 min-w-[150px]">
-                                            <button
-                                                onClick={() => toggleItemExpansion(row.name)}
-                                                className="flex items-center w-full text-left"
-                                            >
-                                                {row.name}
-                                                <ChevronDown
-                                                    className={`ml-2 h-4 w-4 transition-transform ${expandedItems[row.name] ? 'rotate-180' : ''
-                                                        }`}
-                                                />
-                                            </button>
-                                        </TableCell>
+                                    {/* Marketing Team */}
+                                    <TableHead className="text-center border-r border-gray-200 min-w-[80px]">Value</TableHead>
+                                    <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Comment</TableHead>
+                                    <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Owner</TableHead>
+                                    <TableHead className="text-center border-r border-gray-200 min-w-[80px]">Value</TableHead>
+                                    <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Comment</TableHead>
+                                    <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Owner</TableHead>
 
-                                        {/* Last Year Values */}
-                                        <TableCell className="text-right border-r border-gray-200">
-                                            {Math.round(row.LYJan)}
-                                        </TableCell>
-                                        <TableCell className="text-right border-r border-gray-200">
-                                            {Math.round(row.LYFeb)}
-                                        </TableCell>
+                                    {/* Finance Team */}
+                                    <TableHead className="text-center border-r border-gray-200 min-w-[80px]">Value</TableHead>
+                                    <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Comment</TableHead>
+                                    <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Owner</TableHead>
+                                    <TableHead className="text-center border-r border-gray-200 min-w-[80px]">Value</TableHead>
+                                    <TableHead className="text-center border-r border-gray-200 min-w-[120px]">Comment</TableHead>
+                                    <TableHead className="text-center min-w-[120px]">Owner</TableHead>
+                                </TableRow>
+                            </TableHeader>
 
-                                        {/* Baseline Forecast */}
-                                        <TableCell className="text-right border-r border-gray-200">
-                                            {Math.round(row.ForecastJan)}
-                                        </TableCell>
-                                        <TableCell className="text-right border-r border-gray-200">
-                                            {Math.round(row.ForecastFeb)}
-                                        </TableCell>
+                            <TableBody>
+                                {tableData.map((row) => (
+                                    <>
+                                        {/* Main Data Row */}
+                                        <TableRow key={row.name} className="bg-white hover:bg-gray-50 group">
+                                            {/* Item Level - Make clickable */}
+                                            <TableCell className="sticky left-0 bg-white group-hover:bg-gray-50 z-10 min-w-[180px] border-r border-gray-200">
+                                                <button
+                                                    onClick={() => toggleItemExpansion(row.name)}
+                                                    className="flex items-center w-full text-left font-medium text-gray-800 hover:text-indigo-600 transition-colors"
+                                                >
+                                                    {row.name}
+                                                    <ChevronDown
+                                                        className={`ml-2 h-4 w-4 transition-transform ${expandedItems[row.name] ? 'rotate-180' : ''
+                                                            }`}
+                                                    />
+                                                </button>
+                                            </TableCell>
 
-                                        {/* Consensus */}
-                                        <TableCell className="text-right border-r border-gray-200">
-                                            {consensusValues[row.name]?.jan || Math.round(row.ForecastJan)}
-                                        </TableCell>
-                                        <TableCell className="text-right border-r border-gray-200">
-                                            {consensusValues[row.name]?.feb || Math.round(row.ForecastFeb)}
-                                        </TableCell>
+                                            {/* Last Year Values */}
+                                            <TableCell className="text-right border-r border-gray-200 font-mono">
+                                                {Math.round(row.LYJan).toLocaleString()}
+                                            </TableCell>
+                                            <TableCell className="text-right border-r border-gray-200 font-mono">
+                                                {Math.round(row.LYFeb).toLocaleString()}
+                                            </TableCell>
 
-                                        {/* Sales Team - Jan */}
-                                        <TableCell colSpan={3} className="border-r border-gray-200 p-0">
-                                            <div className="flex flex-col">
-                                                <div className="flex">
-                                                    <div className="flex-1 min-w-[80px] p-1">
-                                                        <input
-                                                            type="number"
-                                                            className="w-full p-1 border border-gray-300 rounded"
-                                                            onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'value', e.target.value)}
-                                                            onFocus={() => handleInputFocus(row.name, 'sales', 'jan')}
-                                                        />
-                                                    </div>
-                                                    <div className="flex-1 min-w-[120px] p-1">
-                                                        <input
-                                                            type="text"
-                                                            className="w-full p-1 border border-gray-300 rounded"
-                                                            onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'comment', e.target.value)}
-                                                            onFocus={() => handleInputFocus(row.name, 'sales', 'jan')}
-                                                        />
-                                                    </div>
-                                                    <div className="flex-1 min-w-[120px] p-1">
-                                                        <input
-                                                            type="text"
-                                                            className="w-full p-1 border border-gray-300 rounded"
-                                                            onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'owner', e.target.value)}
-                                                            onFocus={() => handleInputFocus(row.name, 'sales', 'jan')}
-                                                        />
-                                                    </div>
-                                                </div>
-                                                {activeInputs[`${row.name}-sales-jan`] && (
-                                                    <div className="p-1 border-t border-gray-200">
-                                                        <button
-                                                            className="w-full bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
-                                                            onClick={() => {
-                                                                console.log('Submitting sales jan data for', row.name);
-                                                                setActiveInputs(prev => ({
-                                                                    ...prev,
-                                                                    [`${row.name}-sales-jan`]: false
-                                                                }));
-                                                            }}
-                                                        >
-                                                            Submit
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </TableCell>
+                                            {/* Baseline Forecast */}
+                                            <TableCell className="text-right border-r border-gray-200 font-mono">
+                                                {Math.round(row.ForecastJan).toLocaleString()}
+                                            </TableCell>
+                                            <TableCell className="text-right border-r border-gray-200 font-mono">
+                                                {Math.round(row.ForecastFeb).toLocaleString()}
+                                            </TableCell>
 
-                                        {/* Sales Team - Feb */}
-                                        <TableCell colSpan={3} className="border-r border-gray-200 p-0">
-                                            <div className="flex flex-col">
-                                                <div className="flex">
-                                                    <div className="flex-1 min-w-[80px] p-1">
-                                                        <input
-                                                            type="number"
-                                                            className="w-full p-1 border border-gray-300 rounded"
-                                                            onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'value', e.target.value)}
-                                                            onFocus={() => handleInputFocus(row.name, 'sales', 'feb')}
-                                                        />
-                                                    </div>
-                                                    <div className="flex-1 min-w-[120px] p-1">
-                                                        <input
-                                                            type="text"
-                                                            className="w-full p-1 border border-gray-300 rounded"
-                                                            onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'comment', e.target.value)}
-                                                            onFocus={() => handleInputFocus(row.name, 'sales', 'feb')}
-                                                        />
-                                                    </div>
-                                                    <div className="flex-1 min-w-[120px] p-1">
-                                                        <input
-                                                            type="text"
-                                                            className="w-full p-1 border border-gray-300 rounded"
-                                                            onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'owner', e.target.value)}
-                                                            onFocus={() => handleInputFocus(row.name, 'sales', 'feb')}
-                                                        />
-                                                    </div>
-                                                </div>
-                                                {activeInputs[`${row.name}-sales-feb`] && (
-                                                    <div className="p-1 border-t border-gray-200">
-                                                        <button
-                                                            className="w-full bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
-                                                            onClick={() => {
-                                                                console.log('Submitting sales feb data for', row.name);
-                                                                setActiveInputs(prev => ({
-                                                                    ...prev,
-                                                                    [`${row.name}-sales-feb`]: false
-                                                                }));
-                                                            }}
-                                                        >
-                                                            Submit
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </TableCell>
+                                            {/* Consensus */}
+                                            <TableCell className="text-right border-r border-gray-200 font-mono">
+                                                {consensusValues[row.name]?.jan.toLocaleString() || Math.round(row.ForecastJan).toLocaleString()}
+                                            </TableCell>
+                                            <TableCell className="text-right border-r border-gray-200 font-mono">
+                                                {consensusValues[row.name]?.feb.toLocaleString() || Math.round(row.ForecastFeb).toLocaleString()}
+                                            </TableCell>
 
-                                        {/* Marketing Team - Jan */}
-                                        <TableCell colSpan={3} className="border-r border-gray-200 p-0">
-                                            <div className="flex flex-col">
-                                                <div className="flex">
-                                                    <div className="flex-1 min-w-[80px] p-1">
-                                                        <input
-                                                            type="number"
-                                                            className="w-full p-1 border border-gray-300 rounded"
-                                                            onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'value', e.target.value)}
-                                                            onFocus={() => handleInputFocus(row.name, 'marketing', 'jan')}
-                                                        />
-                                                    </div>
-                                                    <div className="flex-1 min-w-[120px] p-1">
-                                                        <input
-                                                            type="text"
-                                                            className="w-full p-1 border border-gray-300 rounded"
-                                                            onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'comment', e.target.value)}
-                                                            onFocus={() => handleInputFocus(row.name, 'marketing', 'jan')}
-                                                        />
-                                                    </div>
-                                                    <div className="flex-1 min-w-[120px] p-1">
-                                                        <input
-                                                            type="text"
-                                                            className="w-full p-1 border border-gray-300 rounded"
-                                                            onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'owner', e.target.value)}
-                                                            onFocus={() => handleInputFocus(row.name, 'marketing', 'jan')}
-                                                        />
-                                                    </div>
-                                                </div>
-                                                {activeInputs[`${row.name}-marketing-jan`] && (
-                                                    <div className="p-1 border-t border-gray-200">
-                                                        <button
-                                                            className="w-full bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
-                                                            onClick={() => {
-                                                                console.log('Submitting marketing jan data for', row.name);
-                                                                setActiveInputs(prev => ({
-                                                                    ...prev,
-                                                                    [`${row.name}-marketing-jan`]: false
-                                                                }));
-                                                            }}
-                                                        >
-                                                            Submit
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </TableCell>
+                                            {/* Sales Team - Jan */}
+                                            <TableCell colSpan={3} className="border-r border-gray-200 p-0">
+                                                <div className="flex flex-col">
+                                                    <div className="flex">
+                                                        <div className="flex-1 min-w-[100px] p-1">
+                                                            <input
+                                                                type="number"
+                                                                className="w-full p-2 text-sm border rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 border-blue-200"
+                                                                onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'value', e.target.value)}
+                                                                onFocus={() => handleInputFocus(row.name, 'sales', 'jan')}
+                                                                placeholder="Value"
 
-                                        {/* Marketing Team - Feb */}
-                                        <TableCell colSpan={3} className="border-r border-gray-200 p-0">
-                                            <div className="flex flex-col">
-                                                <div className="flex">
-                                                    <div className="flex-1 min-w-[80px] p-1">
-                                                        <input
-                                                            type="number"
-                                                            className="w-full p-1 border border-gray-300 rounded"
-                                                            onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'value', e.target.value)}
-                                                            onFocus={() => handleInputFocus(row.name, 'marketing', 'feb')}
-                                                        />
-                                                    </div>
-                                                    <div className="flex-1 min-w-[120px] p-1">
-                                                        <input
-                                                            type="text"
-                                                            className="w-full p-1 border border-gray-300 rounded"
-                                                            onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'comment', e.target.value)}
-                                                            onFocus={() => handleInputFocus(row.name, 'marketing', 'feb')}
-                                                        />
-                                                    </div>
-                                                    <div className="flex-1 min-w-[120px] p-1">
-                                                        <input
-                                                            type="text"
-                                                            className="w-full p-1 border border-gray-300 rounded"
-                                                            onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'owner', e.target.value)}
-                                                            onFocus={() => handleInputFocus(row.name, 'marketing', 'feb')}
-                                                        />
-                                                    </div>
-                                                </div>
-                                                {activeInputs[`${row.name}-marketing-feb`] && (
-                                                    <div className="p-1 border-t border-gray-200">
-                                                        <button
-                                                            className="w-full bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
-                                                            onClick={() => {
-                                                                console.log('Submitting marketing feb data for', row.name);
-                                                                setActiveInputs(prev => ({
-                                                                    ...prev,
-                                                                    [`${row.name}-marketing-feb`]: false
-                                                                }));
-                                                            }}
-                                                        >
-                                                            Submit
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </TableCell>
-
-                                        {/* Finance Team - Jan */}
-                                        <TableCell colSpan={3} className="border-r border-gray-200 p-0">
-                                            <div className="flex flex-col">
-                                                <div className="flex">
-                                                    <div className="flex-1 min-w-[80px] p-1">
-                                                        <input
-                                                            type="number"
-                                                            className="w-full p-1 border border-gray-300 rounded"
-                                                            onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'value', e.target.value)}
-                                                            onFocus={() => handleInputFocus(row.name, 'finance', 'jan')}
-                                                        />
-                                                    </div>
-                                                    <div className="flex-1 min-w-[120px] p-1">
-                                                        <input
-                                                            type="text"
-                                                            className="w-full p-1 border border-gray-300 rounded"
-                                                            onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'comment', e.target.value)}
-                                                            onFocus={() => handleInputFocus(row.name, 'finance', 'jan')}
-                                                        />
-                                                    </div>
-                                                    <div className="flex-1 min-w-[120px] p-1">
-                                                        <input
-                                                            type="text"
-                                                            className="w-full p-1 border border-gray-300 rounded"
-                                                            onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'owner', e.target.value)}
-                                                            onFocus={() => handleInputFocus(row.name, 'finance', 'jan')}
-                                                        />
-                                                    </div>
-                                                </div>
-                                                {activeInputs[`${row.name}-finance-jan`] && (
-                                                    <div className="p-1 border-t border-gray-200">
-                                                        <button
-                                                            className="w-full bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
-                                                            onClick={() => {
-                                                                console.log('Submitting finance jan data for', row.name);
-                                                                setActiveInputs(prev => ({
-                                                                    ...prev,
-                                                                    [`${row.name}-finance-jan`]: false
-                                                                }));
-                                                            }}
-                                                        >
-                                                            Submit
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </TableCell>
-
-                                        {/* Finance Team - Feb */}
-                                        <TableCell colSpan={3} className="p-0">
-                                            <div className="flex flex-col">
-                                                <div className="flex">
-                                                    <div className="flex-1 min-w-[80px] p-1">
-                                                        <input
-                                                            type="number"
-                                                            className="w-full p-1 border border-gray-300 rounded"
-                                                            onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'value', e.target.value)}
-                                                            onFocus={() => handleInputFocus(row.name, 'finance', 'feb')}
-                                                        />
-                                                    </div>
-                                                    <div className="flex-1 min-w-[120px] p-1">
-                                                        <input
-                                                            type="text"
-                                                            className="w-full p-1 border border-gray-300 rounded"
-                                                            onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'comment', e.target.value)}
-                                                            onFocus={() => handleInputFocus(row.name, 'finance', 'feb')}
-                                                        />
-                                                    </div>
-                                                    <div className="flex-1 min-w-[120px] p-1">
-                                                        <input
-                                                            type="text"
-                                                            className="w-full p-1 border border-gray-300 rounded"
-                                                            onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'owner', e.target.value)}
-                                                            onFocus={() => handleInputFocus(row.name, 'finance', 'feb')}
-                                                        />
-                                                    </div>
-                                                </div>
-                                                {activeInputs[`${row.name}-finance-feb`] && (
-                                                    <div className="p-1 border-t border-gray-200">
-                                                        <button
-                                                            className="w-full bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
-                                                            onClick={() => {
-                                                                console.log('Submitting finance feb data for', row.name);
-                                                                setActiveInputs(prev => ({
-                                                                    ...prev,
-                                                                    [`${row.name}-finance-feb`]: false
-                                                                }));
-                                                            }}
-                                                        >
-                                                            Submit
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-
-                                    {/* Waterfall Charts Row - Only shown when expanded */}
-                                    {expandedItems[row.name] && (
-                                        <TableRow className="bg-gray-50">
-                                            <TableCell colSpan={17} className="p-0">
-                                                <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    {/* January Waterfall */}
-                                                    <div className="border rounded-lg overflow-hidden">
-                                                        <div className="px-4 py-3 bg-gray-100 font-medium">
-                                                            {row.name} - Jan Waterfall
+                                                            />
                                                         </div>
-                                                        <div className="p-4">
-                                                            <WaterfallChart
-                                                                data={[
-                                                                    { label: "Forecast", value: row.ForecastJan },
-                                                                    { label: "Sales", value: teamInputs[row.name]?.sales?.jan?.value || 0 },
-                                                                    { label: "Marketing", value: teamInputs[row.name]?.marketing?.jan?.value || 0 },
-                                                                    { label: "Finance", value: teamInputs[row.name]?.finance?.jan?.value || 0 },
-                                                                    { label: "Consensus", value: consensusValues[row.name]?.jan }
-                                                                ]}
+                                                        <div className="flex-1 min-w-[150px] p-1">
+                                                            <input
+                                                                type="text"
+                                                                className="w-full p-2 text-sm border rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 border-blue-200"
+                                                                onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'comment', e.target.value)}
+                                                                onFocus={() => handleInputFocus(row.name, 'sales', 'jan')}
+                                                                placeholder="Comment"
+
+                                                            />
+                                                        </div>
+                                                        <div className="flex-1 min-w-[120px] p-1">
+                                                            <input
+                                                                type="text"
+                                                                className="w-full p-2 text-sm border rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 border-blue-200"
+                                                                onChange={(e) => handleTeamInputChange(row.name, 'sales', 'jan', 'owner', e.target.value)}
+                                                                onFocus={() => handleInputFocus(row.name, 'sales', 'jan')}
+                                                                placeholder="Owner"
+
                                                             />
                                                         </div>
                                                     </div>
-
-                                                    {/* February Waterfall */}
-                                                    <div className="border rounded-lg overflow-hidden">
-                                                        <div className="px-4 py-3 bg-gray-100 font-medium">
-                                                            {row.name} - Feb Waterfall
+                                                    {activeInputs[`${row.name}-sales-jan`] && (
+                                                        <div className="p-1 border-t border-gray-200">
+                                                            <button
+                                                                className="w-full bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                                                                onClick={() => {
+                                                                    console.log('Submitting sales jan data for', row.name);
+                                                                    setActiveInputs(prev => ({
+                                                                        ...prev,
+                                                                        [`${row.name}-sales-jan`]: false
+                                                                    }));
+                                                                }}
+                                                            >
+                                                                Submit
+                                                            </button>
                                                         </div>
-                                                        <div className="p-4">
-                                                            <WaterfallChart
-                                                                data={[
-                                                                    { label: "Forecast", value: row.ForecastFeb },
-                                                                    { label: "Sales", value: teamInputs[row.name]?.sales?.feb?.value || 0 },
-                                                                    { label: "Marketing", value: teamInputs[row.name]?.marketing?.feb?.value || 0 },
-                                                                    { label: "Finance", value: teamInputs[row.name]?.finance?.feb?.value || 0 },
-                                                                    { label: "Consensus", value: consensusValues[row.name]?.feb }
-                                                                ]}
+                                                    )}
+                                                </div>
+                                            </TableCell>
+
+                                            {/* Sales Team - Feb */}
+                                            <TableCell colSpan={3} className="border-r border-gray-200 p-0">
+                                                <div className="flex flex-col">
+                                                    <div className="flex">
+                                                        <div className="flex-1 min-w-[100px] p-1">
+                                                            <input
+                                                                type="number"
+                                                                className="w-full p-2 text-sm border rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 border-blue-200"
+                                                                onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'value', e.target.value)}
+                                                                onFocus={() => handleInputFocus(row.name, 'sales', 'feb')}
+                                                                placeholder="Value"
+
+                                                            />
+                                                        </div>
+                                                        <div className="flex-1 min-w-[150px] p-1">
+                                                            <input
+                                                                type="text"
+                                                                className="w-full p-2 text-sm border rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 border-blue-200"
+                                                                onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'comment', e.target.value)}
+                                                                onFocus={() => handleInputFocus(row.name, 'sales', 'feb')}
+                                                                placeholder="Comment"
+
+                                                            />
+                                                        </div>
+                                                        <div className="flex-1 min-w-[120px] p-1">
+                                                            <input
+                                                                type="text"
+                                                                className="w-full p-2 text-sm border rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 border-blue-200"
+                                                                onChange={(e) => handleTeamInputChange(row.name, 'sales', 'feb', 'owner', e.target.value)}
+                                                                onFocus={() => handleInputFocus(row.name, 'sales', 'feb')}
+                                                                placeholder="Owner"
+
                                                             />
                                                         </div>
                                                     </div>
+                                                    {activeInputs[`${row.name}-sales-feb`] && (
+                                                        <div className="p-1 border-t border-gray-200">
+                                                            <button
+                                                                className="w-full bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                                                                onClick={() => {
+                                                                    console.log('Submitting sales feb data for', row.name);
+                                                                    setActiveInputs(prev => ({
+                                                                        ...prev,
+                                                                        [`${row.name}-sales-feb`]: false
+                                                                    }));
+                                                                }}
+                                                            >
+                                                                Submit
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+
+                                            {/* Marketing Team - Jan */}
+                                            <TableCell colSpan={3} className="border-r border-gray-200 p-0">
+                                                <div className="flex flex-col">
+                                                    <div className="flex">
+                                                        <div className="flex-1 min-w-[80px] p-1">
+                                                            <input
+                                                                type="number"
+                                                                className="w-full p-2 text-sm border rounded-md focus:ring-2 focus:ring-green-300 focus:border-green-500 border-green-200"
+                                                                onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'value', e.target.value)}
+                                                                onFocus={() => handleInputFocus(row.name, 'marketing', 'jan')}
+                                                                placeholder="Value"
+
+                                                            />
+                                                        </div>
+                                                        <div className="flex-1 min-w-[120px] p-1">
+                                                            <input
+                                                                type="text"
+                                                                className="w-full p-2 text-sm border rounded-md focus:ring-2 focus:ring-green-300 focus:border-green-500 border-green-200"
+                                                                onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'comment', e.target.value)}
+                                                                onFocus={() => handleInputFocus(row.name, 'marketing', 'jan')}
+                                                                placeholder="Comment"
+
+                                                            />
+                                                        </div>
+                                                        <div className="flex-1 min-w-[120px] p-1">
+                                                            <input
+                                                                type="text"
+                                                                className="w-full p-2 text-sm border rounded-md focus:ring-2 focus:ring-green-300 focus:border-green-500 border-green-200"
+                                                                onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'jan', 'owner', e.target.value)}
+                                                                onFocus={() => handleInputFocus(row.name, 'marketing', 'jan')}
+                                                                placeholder="Owner"
+
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    {activeInputs[`${row.name}-marketing-jan`] && (
+                                                        <div className="p-1 border-t border-gray-200">
+                                                            <button
+                                                                className="w-full bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                                                                onClick={() => {
+                                                                    console.log('Submitting marketing jan data for', row.name);
+                                                                    setActiveInputs(prev => ({
+                                                                        ...prev,
+                                                                        [`${row.name}-marketing-jan`]: false
+                                                                    }));
+                                                                }}
+                                                            >
+                                                                Submit
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+
+                                            {/* Marketing Team - Feb */}
+                                            <TableCell colSpan={3} className="border-r border-gray-200 p-0">
+                                                <div className="flex flex-col">
+                                                    <div className="flex">
+                                                        <div className="flex-1 min-w-[80px] p-1">
+                                                            <input
+                                                                type="number"
+                                                                className="w-full p-2 text-sm border rounded-md focus:ring-2 focus:ring-green-300 focus:border-green-500 border-green-200"
+                                                                onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'value', e.target.value)}
+                                                                onFocus={() => handleInputFocus(row.name, 'marketing', 'feb')}
+                                                                placeholder="Value"
+
+                                                            />
+                                                        </div>
+                                                        <div className="flex-1 min-w-[120px] p-1">
+                                                            <input
+                                                                type="text"
+                                                                className="w-full p-2 text-sm border rounded-md focus:ring-2 focus:ring-green-300 focus:border-green-500 border-green-200"
+                                                                onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'comment', e.target.value)}
+                                                                onFocus={() => handleInputFocus(row.name, 'marketing', 'feb')}
+                                                                placeholder="Comment"
+
+                                                            />
+                                                        </div>
+                                                        <div className="flex-1 min-w-[120px] p-1">
+                                                            <input
+                                                                type="text"
+                                                                className="w-full p-2 text-sm border rounded-md focus:ring-2 focus:ring-green-300 focus:border-green-500 border-green-200"
+                                                                onChange={(e) => handleTeamInputChange(row.name, 'marketing', 'feb', 'owner', e.target.value)}
+                                                                onFocus={() => handleInputFocus(row.name, 'marketing', 'feb')}
+                                                                placeholder="Owner"
+
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    {activeInputs[`${row.name}-marketing-feb`] && (
+                                                        <div className="p-1 border-t border-gray-200">
+                                                            <button
+                                                                className="w-full bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                                                                onClick={() => {
+                                                                    console.log('Submitting marketing feb data for', row.name);
+                                                                    setActiveInputs(prev => ({
+                                                                        ...prev,
+                                                                        [`${row.name}-marketing-feb`]: false
+                                                                    }));
+                                                                }}
+                                                            >
+                                                                Submit
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+
+                                            {/* Finance Team - Jan */}
+                                            <TableCell colSpan={3} className="border-r border-gray-200 p-0">
+                                                <div className="flex flex-col">
+                                                    <div className="flex">
+                                                        <div className="flex-1 min-w-[80px] p-1">
+                                                            <input
+                                                                type="number"
+                                                                className="w-full p-2 text-sm border rounded-md focus:ring-2 focus:ring-purple-300 focus:border-purple-500 border-purple-200"
+                                                                onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'value', e.target.value)}
+                                                                onFocus={() => handleInputFocus(row.name, 'finance', 'jan')}
+                                                                placeholder="Value"
+                                                            />
+                                                        </div>
+                                                        <div className="flex-1 min-w-[120px] p-1">
+                                                            <input
+                                                                type="text"
+                                                                className="w-full p-2 text-sm border rounded-md focus:ring-2 focus:ring-purple-300 focus:border-purple-500 border-purple-200"
+                                                                onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'comment', e.target.value)}
+                                                                onFocus={() => handleInputFocus(row.name, 'finance', 'jan')}
+                                                                placeholder="Comment"
+
+                                                            />
+                                                        </div>
+                                                        <div className="flex-1 min-w-[120px] p-1">
+                                                            <input
+                                                                type="text"
+                                                                className="w-full p-2 text-sm border rounded-md focus:ring-2 focus:ring-purple-300 focus:border-purple-500 border-purple-200"
+                                                                onChange={(e) => handleTeamInputChange(row.name, 'finance', 'jan', 'owner', e.target.value)}
+                                                                onFocus={() => handleInputFocus(row.name, 'finance', 'jan')}
+                                                                placeholder="Owner"
+
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    {activeInputs[`${row.name}-finance-jan`] && (
+                                                        <div className="p-1 border-t border-gray-200">
+                                                            <button
+                                                                className="w-full bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                                                                onClick={() => {
+                                                                    console.log('Submitting finance jan data for', row.name);
+                                                                    setActiveInputs(prev => ({
+                                                                        ...prev,
+                                                                        [`${row.name}-finance-jan`]: false
+                                                                    }));
+                                                                }}
+                                                            >
+                                                                Submit
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+
+                                            {/* Finance Team - Feb */}
+                                            <TableCell colSpan={3} className="p-0">
+                                                <div className="flex flex-col">
+                                                    <div className="flex">
+                                                        <div className="flex-1 min-w-[80px] p-1">
+                                                            <input
+                                                                type="number"
+                                                                className="w-full p-2 text-sm border rounded-md focus:ring-2 focus:ring-purple-300 focus:border-purple-500 border-purple-200"
+                                                                onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'value', e.target.value)}
+                                                                onFocus={() => handleInputFocus(row.name, 'finance', 'feb')}
+                                                                placeholder="Value"
+
+                                                            />
+                                                        </div>
+                                                        <div className="flex-1 min-w-[120px] p-1">
+                                                            <input
+                                                                type="text"
+                                                                className="w-full p-2 text-sm border rounded-md focus:ring-2 focus:ring-purple-300 focus:border-purple-500 border-purple-200"
+                                                                onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'comment', e.target.value)}
+                                                                onFocus={() => handleInputFocus(row.name, 'finance', 'feb')}
+                                                                placeholder="Comment"
+
+                                                            />
+                                                        </div>
+                                                        <div className="flex-1 min-w-[120px] p-1">
+                                                            <input
+                                                                type="text"
+                                                                className="w-full p-2 text-sm border rounded-md focus:ring-2 focus:ring-purple-300 focus:border-purple-500 border-purple-200"
+                                                                onChange={(e) => handleTeamInputChange(row.name, 'finance', 'feb', 'owner', e.target.value)}
+                                                                onFocus={() => handleInputFocus(row.name, 'finance', 'feb')}
+                                                                placeholder="Owner"
+
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    {activeInputs[`${row.name}-finance-feb`] && (
+                                                        <div className="p-1 border-t border-gray-200">
+                                                            <button
+                                                                className="w-full bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                                                                onClick={() => {
+                                                                    console.log('Submitting finance feb data for', row.name);
+                                                                    setActiveInputs(prev => ({
+                                                                        ...prev,
+                                                                        [`${row.name}-finance-feb`]: false
+                                                                    }));
+                                                                }}
+                                                            >
+                                                                Submit
+                                                            </button>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </TableCell>
                                         </TableRow>
-                                    )}
-                                </>
-                            ))}
-                        </TableBody >
-                    </Table>
-                </div>
-                <ScrollBar orientation="horizontal" />
-            </ScrollArea>
+
+                                        {/* Waterfall Charts Row - Only shown when expanded */}
+                                        {expandedItems[row.name] && (
+                                            <TableRow className="bg-white">
+                                                <TableCell colSpan={17} className="p-0">
+                                                    <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                        {/* January Waterfall */}
+                                                        <div className="border rounded-lg overflow-hidden">
+                                                            <div className="px-4 py-3 bg-gray-100 font-medium">
+                                                                {row.name} - Jan Waterfall
+                                                            </div>
+                                                            <div className="p-4">
+                                                                <WaterfallChart
+                                                                    data={[
+                                                                        { label: "Forecast", value: row.ForecastJan },
+                                                                        { label: "Sales", value: teamInputs[row.name]?.sales?.jan?.value || 0 },
+                                                                        { label: "Marketing", value: teamInputs[row.name]?.marketing?.jan?.value || 0 },
+                                                                        { label: "Finance", value: teamInputs[row.name]?.finance?.jan?.value || 0 },
+                                                                        { label: "Consensus", value: consensusValues[row.name]?.jan }
+                                                                    ]}
+                                                                />
+                                                            </div>
+                                                        </div>
+
+                                                        {/* February Waterfall */}
+                                                        <div className="border rounded-lg overflow-hidden">
+                                                            <div className="px-4 py-3 bg-gray-100 font-medium">
+                                                                {row.name} - Feb Waterfall
+                                                            </div>
+                                                            <div className="p-4">
+                                                                <WaterfallChart
+                                                                    data={[
+                                                                        { label: "Forecast", value: row.ForecastFeb },
+                                                                        { label: "Sales", value: teamInputs[row.name]?.sales?.feb?.value || 0 },
+                                                                        { label: "Marketing", value: teamInputs[row.name]?.marketing?.feb?.value || 0 },
+                                                                        { label: "Finance", value: teamInputs[row.name]?.finance?.feb?.value || 0 },
+                                                                        { label: "Consensus", value: consensusValues[row.name]?.feb }
+                                                                    ]}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        )}
+                                    </>
+                                ))}
+                            </TableBody >
+                        </Table>
+                    </div>
+                    <ScrollBar orientation="horizontal" />
+                </ScrollArea>
+            </Card>
 
 
             {/* Previosuly there was a separate component for displaying waterfall charts but later integrated this in the above table  */}
