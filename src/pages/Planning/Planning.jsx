@@ -20,6 +20,7 @@ import ForecastTable from "@/components/planning/ForecastTable";
 
 import data from "../../jsons/Planning/JF_censored.json"
 import { useSidebar } from "@/context/sidebar/SidebarContext";
+import Filters from "@/components/planning/Filters";
 
 const Planning = () => {
     const { isSidebarOpen, toggleSidebar } = useSidebar();
@@ -91,27 +92,9 @@ const Planning = () => {
                         </div>
 
                         {/* Animated Filter Dropdowns */}
-                        <div className={`transition-all duration-300 ease-in-out ${showFilters ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
-                            <Card className="p-6 bg-white border border-gray-200 shadow-sm">
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium text-gray-700">Time Period</label>
-                                        <Select>
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select period" />
-                                            </SelectTrigger>
-                                            <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
-                                                <SelectItem value="jan-feb">Jan - Feb '25</SelectItem>
-                                                <SelectItem value="mar-apr">Mar - Apr '25</SelectItem>
-                                                <SelectItem value="may-jun">May - Jun '25</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-
-                                    {/* Add your existing filter components here */}
-                                </div>
-                            </Card>
-                        </div>
+                        <Filters
+                            showFilters={showFilters}
+                        />
 
                         {/* Forecasted Period Header */}
                         <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-lg transition-shadow duration-200">

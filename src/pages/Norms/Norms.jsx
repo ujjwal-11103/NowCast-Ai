@@ -9,6 +9,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import sampleData from '../../jsons/Planning/JF_censored.json';
 import SideBar from '@/components/Sidebar/SideBar';
 import { useSidebar } from '@/context/sidebar/SidebarContext';
+import Filters from '@/components/planning/Filters';
 
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 
@@ -337,6 +338,10 @@ const Norms = () => {
                 <div className={`main transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-16"} w-full`}>
                     <div className="p-4">
                         <h1 className="text-2xl font-bold mb-4">Norms (Service Level: {accuracyLevel})</h1>
+
+                        <Filters
+                            showFilters={true}
+                        />
 
                         {/* Plotly Graph */}
                         <Plot
