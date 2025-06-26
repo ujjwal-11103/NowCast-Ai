@@ -82,9 +82,9 @@ const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => 
     const tableData = Object.values(groupedData).map(item => ({
         ...item,
         //previosuly there was a cloumn for L2FL2A so calculating here 
-        L2FL2A: (item.LYJan + item.LYFeb) > 0
-            ? ((item.ForecastJan + item.ForecastFeb) / (item.LYJan + item.LYFeb)).toFixed(2)
-            : 'N/A'
+        // L2FL2A: (item.LYJan + item.LYFeb) > 0
+        //     ? ((item.ForecastJan + item.ForecastFeb) / (item.LYJan + item.LYFeb)).toFixed(2)
+        //     : 'N/A'
     }))
     console.log("tableData", tableData);
 

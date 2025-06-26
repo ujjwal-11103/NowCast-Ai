@@ -35,8 +35,8 @@ const PivotTableComponent = ({ tableData, onClose }) => {
         ...item,
         LYTotal: item.LYJan + item.LYFeb,
         ForecastTotal: item.ForecastJan + item.ForecastFeb,
-        Variance: (item.ForecastJan + item.ForecastFeb) - (item.LYJan + item.LYFeb),
-        VariancePct: ((item.ForecastJan + item.ForecastFeb) / (item.LYJan + item.LYFeb) - 1) * 100
+        // Variance: (item.ForecastJan + item.ForecastFeb) - (item.LYJan + item.LYFeb),
+        // VariancePct: ((item.ForecastJan + item.ForecastFeb) / (item.LYJan + item.LYFeb) - 1) * 100
     }));
 
     const pivotData = formatPivotData(processedData);
