@@ -1,4 +1,4 @@
-import { React, useState } from 'react'
+import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import {
     Table,
     TableHeader,
@@ -11,13 +11,14 @@ import WaterfallSection from './WaterfallSection'
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { useSidebar } from '@/context/sidebar/SidebarContext'
 import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 
 
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Table2 } from 'lucide-react';
 import WaterfallChart from './WaterfallChart'
 
 
-const ForecastTable = ({ data, selections }) => {
+const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => {
     // Define the hierarchy levels in order from most general to most specific
     const hierarchyLevels = ['Channel', 'Chain', 'Depot', 'SubCat', 'SKU']
 
@@ -85,6 +86,8 @@ const ForecastTable = ({ data, selections }) => {
             ? ((item.ForecastJan + item.ForecastFeb) / (item.LYJan + item.LYFeb)).toFixed(2)
             : 'N/A'
     }))
+    console.log("tableData", tableData);
+
 
     // State to track team inputs and consensus values
     const [teamInputs, setTeamInputs] = useState({});
@@ -163,18 +166,28 @@ const ForecastTable = ({ data, selections }) => {
         }));
     };
 
-
-
+    // Expose the table data via ref
+    useImperativeHandle(ref, () => ({
+        getTableData: () => tableData,
+        getFilteredData: () => filteredData,
+        getGroupedData: () => groupedData
+    }));
 
     return (
         <div className={`space-y-4 ${isSidebarOpen ? "w-[76.6vw]" : "w-[90.6vw]"}`}>
             <Card className="overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-200 p-0">
-
-
+                <div className="p-4 bg-white border-b border-gray-200 flex justify-between items-center">
+                    <h3 className="text-lg font-semibold text-gray-800">Forecast Data & Team Comments</h3>
+                    <Button
+                        variant="outline"
+                        onClick={() => onPivotRequest(tableData)}
+                        className="flex items-center gap-2 border-gray-300 hover:bg-gray-100 transition-colors"
+                    >
+                        <Table2 className="w-4 h-4" />
+                        Pivot Analysis
+                    </Button>
+                </div>
                 <ScrollArea className="w-100 whitespace-nowrap rounded-b-md">
-                    <div className="p-4 bg-white border-b border-gray-200">
-                        <h3 className="text-lg font-semibold text-gray-800">Forecast Data & Team Comments</h3>
-                    </div>
                     <div className="">
                         <Table>
                             <TableHeader className="bg-white">
@@ -706,6 +719,8 @@ const ForecastTable = ({ data, selections }) => {
 
 
     )
-}
+});
+
+ForecastTable.displayName = 'ForecastTable';
 
 export default ForecastTable

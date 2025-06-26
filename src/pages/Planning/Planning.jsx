@@ -21,11 +21,17 @@ import ForecastTable from "@/components/planning/ForecastTable";
 import data from "../../jsons/Planning/JF_censored.json"
 import { useSidebar } from "@/context/sidebar/SidebarContext";
 import Filters from "@/components/planning/Filters";
+import PivotTableComponent from "@/components/planning/PivotTableComponent";
+
+
 
 const Planning = () => {
     const { isSidebarOpen, toggleSidebar } = useSidebar();
     const { forecastSum, forecastValue, yoyGrowth, parentLevelForecast, filters } = useForecast();
     const [showFilters, setShowFilters] = useState(false);
+
+    const [showPivotTable, setShowPivotTable] = useState(false);
+    const [pivotData, setPivotData] = useState([]);
 
     const toggleFilters = () => {
         setShowFilters(!showFilters);
@@ -83,10 +89,11 @@ const Planning = () => {
                                     <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
                                 </Button>
 
-                                <Button variant="outline" className="flex items-center gap-2 border-gray-300 hover:bg-gray-100 transition-colors">
+                                {/* <Button variant="outline"
+                                    className="flex items-center gap-2 border-gray-300 hover:bg-gray-100 transition-colors">
                                     <RefreshCw className="w-4 h-4" />
                                     Refresh
-                                </Button>
+                                </Button> */}
 
                             </div>
                         </div>
@@ -243,8 +250,20 @@ const Planning = () => {
                                     { field: 'SubCat', value: filters.subCat },
                                     { field: 'SKU', value: filters.sku }
                                 ]}
+                                onPivotRequest={(tableData) => {
+                                    setPivotData(tableData);
+                                    setShowPivotTable(true);
+                                }}
                             />
                         </div>
+
+                        {/* // Pivot */}
+                        {showPivotTable && (
+                            <PivotTableComponent
+                                tableData={pivotData}
+                                onClose={() => setShowPivotTable(false)}
+                            />
+                        )}
                     </div>
                 </div>
             </div>
