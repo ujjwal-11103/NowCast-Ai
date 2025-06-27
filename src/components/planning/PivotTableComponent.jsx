@@ -7,56 +7,49 @@ import { Card, CardContent } from "@/components/ui/card";
 import Plot from 'react-plotly.js';
 import createPlotlyRenderers from 'react-pivottable/PlotlyRenderers';
 
-// Create a custom number formatter
-const formatNumber = (num) => {
-    if (typeof num !== 'number') return num;
-    return new Intl.NumberFormat('en-US', {
-        maximumFractionDigits: 0,
-        minimumFractionDigits: 0
-    }).format(num);
-};
-
-// Create pre-formatted data
-const formatPivotData = (data) => {
-    return data.map(item => {
-        const formattedItem = {};
-        for (const key in item) {
-            formattedItem[key] = typeof item[key] === 'number' ? formatNumber(item[key]) : item[key];
-        }
-        return formattedItem;
-    });
-};
-
 const PivotTableComponent = ({ tableData, onClose }) => {
     const [pivotState, setPivotState] = useState({});
 
-    // Prepare and format data
+    // Prepare data without formatting yet
     const processedData = tableData.map(item => ({
         ...item,
         LYTotal: item.LYJan + item.LYFeb,
         ForecastTotal: item.ForecastJan + item.ForecastFeb,
-        // Variance: (item.ForecastJan + item.ForecastFeb) - (item.LYJan + item.LYFeb),
-        // VariancePct: ((item.ForecastJan + item.ForecastFeb) / (item.LYJan + item.LYFeb) - 1) * 100
     }));
 
-    const pivotData = formatPivotData(processedData);
+    // Custom renderer to format numbers in display only
+    const formatNumber = (num) => {
+        if (typeof num !== 'number') return num;
+        return new Intl.NumberFormat('en-US', {
+            maximumFractionDigits: 0,
+            minimumFractionDigits: 0
+        }).format(num);
+    };
 
-    // Create renderers with forced number formatting
+    // Create renderers with custom number formatting
     const PlotlyRenderers = createPlotlyRenderers(Plot);
     const renderers = {
         ...PivotTableUI.defaultProps.renderers,
         ...PlotlyRenderers,
         Table: (props) => {
             const FormattedTable = PivotTableUI.defaultProps.renderers.Table;
-            return <FormattedTable {...props} />;
+            return (
+                <FormattedTable 
+                    {...props} 
+                    tableOptions={{
+                        ...props.tableOptions,
+                        cellRenderer: ({ value }) => {
+                            // Format only for display, keep original for calculations
+                            return typeof value === 'number' ? formatNumber(value) : value;
+                        }
+                    }}
+                />
+            );
         }
     };
 
     const downloadCSV = () => {
-        // CSV export implementation with formatted numbers
         let csvContent = "data:text/csv;charset=utf-8,";
-
-        // Get all unique fields from rows, cols, and vals
         const allFields = [
             ...new Set([
                 ...(pivotState.rows || []),
@@ -68,14 +61,16 @@ const PivotTableComponent = ({ tableData, onClose }) => {
         // Add headers
         csvContent += allFields.join(",") + "\r\n";
 
-        // Add data rows
-        pivotData.forEach(item => {
+        // Add data rows with formatted numbers
+        processedData.forEach(item => {
             const row = allFields.map(field => {
                 const value = item[field];
-                // Handle quoted values (if they contain commas)
-                return typeof value === 'string' && value.includes(',')
-                    ? `"${value}"`
-                    : value;
+                const formattedValue = typeof value === 'number' ? 
+                    formatNumber(value) : 
+                    value;
+                return typeof formattedValue === 'string' && formattedValue.includes(',') ?
+                    `"${formattedValue}"` :
+                    formattedValue;
             });
             csvContent += row.join(",") + "\r\n";
         });
@@ -114,7 +109,7 @@ const PivotTableComponent = ({ tableData, onClose }) => {
 
                 <div className="flex-1 overflow-auto">
                     <PivotTableUI
-                        data={pivotData}
+                        data={processedData}  // Use unformatted data for calculations
                         onChange={s => setPivotState(s)}
                         {...pivotState}
                         renderers={renderers}
