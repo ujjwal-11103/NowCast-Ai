@@ -1,0 +1,22 @@
+[2025-07-01 12:00:55.019 PM] [31merror[39m: 	[31m[GET] / - 500 - Cannot set property query of #<IncomingMessage> which has only a getter - TypeError: Cannot set property query of #<IncomingMessage> which has only a getter[39m
+[31m    at D:\NowCast backend\node_modules\express-mongo-sanitize\index.js:113:18[39m
+[31m    at Array.forEach (<anonymous>)[39m
+[31m    at D:\NowCast backend\node_modules\express-mongo-sanitize\index.js:110:44[39m
+[31m    at Layer.handleRequest (D:\NowCast backend\node_modules\router\lib\layer.js:152:17)[39m
+[31m    at trimPrefix (D:\NowCast backend\node_modules\router\index.js:342:13)[39m
+[31m    at D:\NowCast backend\node_modules\router\index.js:297:9[39m
+[31m    at processParams (D:\NowCast backend\node_modules\router\index.js:582:12)[39m
+[31m    at next (D:\NowCast backend\node_modules\router\index.js:291:5)[39m
+[31m    at file:///D:/NowCast%20backend/node_modules/express-rate-limit/dist/index.mjs:779:7[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+[2025-07-01 12:00:55.482 PM] [31merror[39m: 	[31m[GET] /favicon.ico - 500 - Cannot set property query of #<IncomingMessage> which has only a getter - TypeError: Cannot set property query of #<IncomingMessage> which has only a getter[39m
+[31m    at D:\NowCast backend\node_modules\express-mongo-sanitize\index.js:113:18[39m
+[31m    at Array.forEach (<anonymous>)[39m
+[31m    at D:\NowCast backend\node_modules\express-mongo-sanitize\index.js:110:44[39m
+[31m    at Layer.handleRequest (D:\NowCast backend\node_modules\router\lib\layer.js:152:17)[39m
+[31m    at trimPrefix (D:\NowCast backend\node_modules\router\index.js:342:13)[39m
+[31m    at D:\NowCast backend\node_modules\router\index.js:297:9[39m
+[31m    at processParams (D:\NowCast backend\node_modules\router\index.js:582:12)[39m
+[31m    at next (D:\NowCast backend\node_modules\router\index.js:291:5)[39m
+[31m    at file:///D:/NowCast%20backend/node_modules/express-rate-limit/dist/index.mjs:779:7[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
