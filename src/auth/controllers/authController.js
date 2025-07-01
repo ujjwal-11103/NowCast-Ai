@@ -5,7 +5,18 @@ import { sendResponse } from '../../utils/apiResponse.js';
 export const register = async (req, res, next) => {
   try {
     const { name, username, password } = req.body;
-    
+
+    // Check if user already exists
+    const existingUser = await User.findOne({
+      username: { $regex: new RegExp(`^${username}$`, 'i') } // Case-Insensitive Check: To prevent "john" and "John" being different users:
+    });
+    if (existingUser) {
+      throw new Error('Username already exists. Please login instead.');
+    }
+    if (existingUser) {
+      return sendResponse(res, 409, null, 'Username already exists. Please login instead.');
+    }
+
     const user = await User.create({ name, username, password });
     const token = user.generateAuthToken();
 
