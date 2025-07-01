@@ -16,7 +16,8 @@ app.use(express.json({ limit: '100kb' }));
 app.use(cookieParser());
 
 // Logging
-app.use(morgan('combined', { stream: { write: (message) => logger.info(message.trim()) } }));
+// app.use(morgan('combined', { stream: { write: (message) => logger.info(message.trim()) } }));
+app.use(morgan('dev', { stream: { write: (message) => logger.info(message.trim()) } }));
 
 // Enable CORS
 app.use(cors());
@@ -29,7 +30,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use(errorHandler);
 
 app.get('/', (req, res) => {
-  res.send('👋 Server is alive!');
+    res.send('👋 Server is alive!');
 });
 
 export default app;
