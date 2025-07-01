@@ -17,6 +17,7 @@ import Ingestion from './pages/Ingestion/Ingestion';
 import Reporting from './pages/Reporting/Reporting';
 import ErrorAnalysis from './pages/Error Analysis/ErrorAnalysis';
 import Norms from './pages/Norms/Norms';
+import AuthPage from './pages/auth/AuthPage';
 
 const App = () => {
   return (
@@ -29,7 +30,7 @@ const App = () => {
             {/* <Route path='/teresa' element={<Teresa />} /> */}
             {/* <Route path='/neptune' element={<MarketMixModelling />} /> */}
             {/* <Route path="/supplychaintower" element={<SupplyChainTower />} /> */}
-            <Route path="/" element={<Overall />} />
+            <Route path="/" element={<AuthPage />} />
             <Route path="/overall" element={<Overall />} />
             <Route path="/ingestion" element={<Ingestion />} />
             <Route path="/planning" element={<Planning />} />

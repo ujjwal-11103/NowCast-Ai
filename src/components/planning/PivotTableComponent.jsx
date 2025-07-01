@@ -34,8 +34,8 @@ const PivotTableComponent = ({ tableData, onClose }) => {
         Table: (props) => {
             const FormattedTable = PivotTableUI.defaultProps.renderers.Table;
             return (
-                <FormattedTable 
-                    {...props} 
+                <FormattedTable
+                    {...props}
                     tableOptions={{
                         ...props.tableOptions,
                         cellRenderer: ({ value }) => {
@@ -65,8 +65,8 @@ const PivotTableComponent = ({ tableData, onClose }) => {
         processedData.forEach(item => {
             const row = allFields.map(field => {
                 const value = item[field];
-                const formattedValue = typeof value === 'number' ? 
-                    formatNumber(value) : 
+                const formattedValue = typeof value === 'number' ?
+                    formatNumber(value) :
                     value;
                 return typeof formattedValue === 'string' && formattedValue.includes(',') ?
                     `"${formattedValue}"` :
