@@ -3,18 +3,45 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LogIn, Eye, EyeOff } from 'lucide-react';
+import axiosnew from '@/utils/axiosnew';
+import { toast } from "sonner"
+import { Navigate, useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
+
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     username: '',
     password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login attempt:', formData);
-    // Handle login logic here
+    setIsLoading(true);
+
+    try {
+      const response = await axiosnew.post('/api/v1/auth/login', formData);
+
+      // Store tokens
+      localStorage.setItem('token', response.data.data.token);
+      // localStorage.setItem('refreshToken', response.data.refreshToken);
+
+      console.log(response.data);
+
+      toast.success("Login Successful");
+
+      // Redirect or update app state here
+      navigate('/overall');
+    } catch (error) {
+      toast.error("Login Failed", {
+        description: error.response?.data?.message || "An error occurred",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -70,11 +97,17 @@ const LoginForm = () => {
       <Button
         type="submit"
         className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-2.5 transition-all duration-200 shadow-lg hover:shadow-xl"
+        disabled={isLoading}
       >
-        <LogIn size={18} className="mr-2" />
-        Sign In
+        {isLoading ? (
+          <span className="animate-pulse">Signing in...</span>
+        ) : (
+          <>
+            <LogIn size={18} className="mr-2" />
+            Sign In
+          </>
+        )}
       </Button>
-
       <div className="text-center">
         <button
           type="button"

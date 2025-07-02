@@ -22,9 +22,9 @@ import AuthPage from './pages/auth/AuthPage';
 const App = () => {
   return (
     <BrowserRouter>
-      <Toaster richColors />
       <ForecastProvider>
         <SidebarProvider>
+          <Toaster richColors position="top-right" />
           <Routes>
             {/* <Route path='/' element={<Login />} /> */}
             {/* <Route path='/teresa' element={<Teresa />} /> */}
