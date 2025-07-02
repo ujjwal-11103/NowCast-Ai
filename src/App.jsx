@@ -11,7 +11,9 @@ import Planning from './pages/Planning/Planning';
 
 import { SidebarProvider } from './context/sidebar/SidebarContext';
 import { ForecastProvider } from './context/ForecastContext/ForecastContext';
+import { AuthProvider } from './context/auth/AuthContext';
 
+import ProtectedRoute from './context/auth/ProtectedRoute';
 import MainPage from './pages/Main/MainPage';
 import Ingestion from './pages/Ingestion/Ingestion';
 import Reporting from './pages/Reporting/Reporting';
@@ -24,21 +26,63 @@ const App = () => {
     <BrowserRouter>
       <ForecastProvider>
         <SidebarProvider>
-          <Toaster richColors position="top-right" />
-          <Routes>
-            {/* <Route path='/' element={<Login />} /> */}
-            {/* <Route path='/teresa' element={<Teresa />} /> */}
-            {/* <Route path='/neptune' element={<MarketMixModelling />} /> */}
-            {/* <Route path="/supplychaintower" element={<SupplyChainTower />} /> */}
-            <Route path="/" element={<AuthPage />} />
-            <Route path="/overall" element={<Overall />} />
-            <Route path="/ingestion" element={<Ingestion />} />
-            <Route path="/planning" element={<Planning />} />
-            <Route path="/reporting" element={<Reporting />} />
-            <Route path="/errorAnalysis" element={<ErrorAnalysis />} />
-            <Route path="/norms" element={<Norms />} />
-            <Route path="/supplyChain" element={<SupplyChainTower />} />
-          </Routes>
+          <AuthProvider>
+
+            <Toaster richColors position="top-right" />
+            <Routes>
+
+              {/* <Route path='/' element={<Login />} /> */}
+              {/* <Route path='/teresa' element={<Teresa />} /> */}
+              {/* <Route path='/neptune' element={<MarketMixModelling />} /> */}
+              {/* <Route path="/supplychaintower" element={<SupplyChainTower />} /> */}
+
+              <Route path="/" element={<AuthPage />} />
+              
+              {/* Protected Routes */}
+              <Route path="/overall" element={
+                <ProtectedRoute>
+                  <Overall />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/ingestion" element={
+                <ProtectedRoute>
+                  <Ingestion />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/planning" element={
+                <ProtectedRoute>
+                  <Planning />
+                </ProtectedRoute>
+              } />
+
+              {/* Add all other protected routes similarly */}
+              <Route path="/reporting" element={
+                <ProtectedRoute>
+                  <Reporting />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/errorAnalysis" element={
+                <ProtectedRoute>
+                  <ErrorAnalysis />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/norms" element={
+                <ProtectedRoute>
+                  <Norms />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/supplyChain" element={
+                <ProtectedRoute>
+                  <SupplyChainTower />
+                </ProtectedRoute>
+              } />
+            </Routes>
+          </AuthProvider>
         </SidebarProvider>
       </ForecastProvider>
     </BrowserRouter>

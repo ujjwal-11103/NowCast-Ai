@@ -5,8 +5,12 @@ import {
     Menu, ChevronLeft, ChevronRight, Gauge, FilePlus, Calendar,
     BarChart2, AlertCircle, ClipboardList, ShoppingCart, LogOut   // ✅ new icon
 } from "lucide-react";
+import { useAuth } from "@/context/auth/AuthContext";
 
 const SideBar = () => {
+
+    const { logout } = useAuth();
+
     const navigate = useNavigate();
     const location = useLocation();
     const { isSidebarOpen, toggleSidebar } = useSidebar();
@@ -27,10 +31,10 @@ const SideBar = () => {
     const activeLabel =
         menuItems.find((i) => location.pathname.includes(i.path))?.label ?? "";
 
-    // ✅ simple logout stub – hook in your real logic here
+    // simple logout 
     const handleLogout = () => {
-        localStorage.clear();          // or remove only auth keys
-        navigate("/");            // redirect wherever makes sense
+        logout();
+        navigate("/");
     };
 
     return (

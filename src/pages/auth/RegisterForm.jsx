@@ -6,8 +6,11 @@ import { UserPlus, Eye, EyeOff } from 'lucide-react';
 import axiosnew from '@/utils/axiosnew';
 import { toast } from "sonner"
 import { Navigate, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/auth/AuthContext';
 
 const RegisterForm = () => {
+
+    const { login } = useAuth();
 
     const navigate = useNavigate();
 
@@ -26,9 +29,8 @@ const RegisterForm = () => {
         try {
             const response = await axiosnew.post('/api/v1/auth/register', formData);
 
-            // Store tokens
-            localStorage.setItem('token', response.data.data.token);
-            // localStorage.setItem('refreshToken', response.data.refreshToken);
+            // Store token and update auth state
+            login(response.data.data.token);
 
             console.log(response.data);
 

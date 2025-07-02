@@ -13,7 +13,7 @@ const AuthPage = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-purple-600/10"></div>
         <div className="relative z-10 text-center">
           <h1 className="text-6xl font-bold text-white mb-6 tracking-tight">
-            NowCast
+            NowCast Ai
           </h1>
           <p className="text-xl text-slate-300 font-light tracking-wide">
             forecasting made easy
