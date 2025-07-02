@@ -11,7 +11,7 @@ const ProtectedRoute = ({ children }) => {
         // Centered full‑screen spinner
         return (
             <div className="flex h-screen w-screen items-center justify-center bg-slate-900">
-                <Loader2 size={36} className="animate-spin text-blue-600" />
+                <Loader2 size={42} className="animate-spin text-blue-600" />
             </div>
         );
     }
