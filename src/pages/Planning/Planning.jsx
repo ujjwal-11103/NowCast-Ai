@@ -5,14 +5,12 @@ import { Package } from 'lucide-react';
 import { ChartPie } from 'lucide-react';
 import { Filter, RefreshCw, Download, ChevronDown } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
-
-
 import { Card, CardContent } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+
 import SideBar from "@/components/Sidebar/SideBar";
 import { useForecast } from "@/context/ForecastContext/ForecastContext";
 import SalesTrendChart from "@/components/planning/SalesTrendChart ";
@@ -36,6 +34,7 @@ const Planning = () => {
     const toggleFilters = () => {
         setShowFilters(!showFilters);
     };
+
 
     const formatForecastValue = (value, isCurrency = false, useIndianUnits = false) => {
         if (value === null || value === undefined) return "N/A";

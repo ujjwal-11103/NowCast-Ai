@@ -86,9 +86,8 @@ const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => 
         //     ? ((item.ForecastJan + item.ForecastFeb) / (item.LYJan + item.LYFeb)).toFixed(2)
         //     : 'N/A'
     }))
-    console.log("tableData", tableData);
-
-
+    
+    
     // State to track team inputs and consensus values
     const [teamInputs, setTeamInputs] = useState({});
     const [consensusValues, setConsensusValues] = useState(
@@ -100,6 +99,9 @@ const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => 
             return acc;
         }, {})
     );
+    console.log("old Consensus ", consensusValues);
+    console.log("tableData", tableData);
+
 
     // Handle input changes for team fields
     const handleTeamInputChange = (itemName, team, month, field, value) => {
@@ -138,7 +140,10 @@ const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => 
                 }
             }));
 
+            console.log("New Inputs ", newInputs);
+            console.log("New Consensus ", consensusValues);
             return newInputs;
+
         });
     };
 

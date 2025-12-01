@@ -24,6 +24,7 @@ const SideBar = () => {
         { label: "Error Analysis", path: "/erroranalysis", icon: AlertCircle },
         { label: "Norms", path: "/norms", icon: ClipboardList },
         { label: "Supply Chain", path: "/supplychain", icon: ShoppingCart },
+        // { label: "Token Pricing", path: "/pricing", icon: ShoppingCart },
     ];
 
     // Navigation helpers
