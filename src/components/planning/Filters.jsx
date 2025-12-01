@@ -9,13 +9,14 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import data from "../../jsons/Planning/JF_censored.json";
+// REMOVED: import data from "../../jsons/Planning/JF_censored.json"; 
 import priceData from "../../jsons/Planning/price_df_censored.json";
 import { useForecast } from "@/context/ForecastContext/ForecastContext";
 
 const Filters = ({ showFilters }) => {
 
     const {
+        globalData, // <--- NEW: Access the live data from Context
         setForecastSum,
         setForecastValue,
         setYoyGrowth,
@@ -23,7 +24,6 @@ const Filters = ({ showFilters }) => {
         setFilters,
         setAccuracyLevel
     } = useForecast();
-
 
     // State for dropdown selections
     const [selectedChannel, setSelectedChannel] = useState(null);
@@ -43,14 +43,16 @@ const Filters = ({ showFilters }) => {
 
     // Load unique channels initially
     useEffect(() => {
-        const channels = [...new Set(data.map(item => item.Channel))];
-        setChannelOptions(channels);
-    }, []);
+        if (globalData && globalData.length > 0) {
+            const channels = [...new Set(globalData.map(item => item.Channel))];
+            setChannelOptions(channels);
+        }
+    }, [globalData]); // Added globalData dependency
 
     // Handle chain selection
     useEffect(() => {
-        if (selectedChannel) {
-            const filtered = data.filter(item => item.Channel === selectedChannel);
+        if (selectedChannel && globalData) {
+            const filtered = globalData.filter(item => item.Channel === selectedChannel);
             setChainOptions([...new Set(filtered.map(item => item.Chain))]);
 
             // Reset downstream selections when channel changes
@@ -62,11 +64,11 @@ const Filters = ({ showFilters }) => {
             setSubCatOptions([]);
             setSkuOptions([]);
         }
-    }, [selectedChannel]);
+    }, [selectedChannel, globalData]);
 
     // Handle depot selection
     useEffect(() => {
-        if (selectedChain) {
+        if (selectedChain && globalData) {
             if (selectedChain === "All") {
                 // When "All" is selected for chain, set all downstream to "All" and clear options
                 setSelectedDepot("All");
@@ -76,7 +78,7 @@ const Filters = ({ showFilters }) => {
                 setSubCatOptions([]);
                 setSkuOptions([]);
             } else {
-                const filtered = data.filter(
+                const filtered = globalData.filter(
                     item => item.Channel === selectedChannel && item.Chain === selectedChain
                 );
                 setDepotOptions([...new Set(filtered.map(item => item.Depot))]);
@@ -87,11 +89,11 @@ const Filters = ({ showFilters }) => {
                 setSkuOptions([]);
             }
         }
-    }, [selectedChain, selectedChannel]);
+    }, [selectedChain, selectedChannel, globalData]);
 
     // Handle subcat selection
     useEffect(() => {
-        if (selectedDepot) {
+        if (selectedDepot && globalData) {
             if (selectedDepot === "All") {
                 // When "All" is selected for depot, set downstream to "All" and clear options
                 setSelectedSubCat("All");
@@ -99,7 +101,7 @@ const Filters = ({ showFilters }) => {
                 setSubCatOptions([]);
                 setSkuOptions([]);
             } else {
-                const filtered = data.filter(
+                const filtered = globalData.filter(
                     item =>
                         item.Channel === selectedChannel &&
                         item.Chain === selectedChain &&
@@ -111,17 +113,17 @@ const Filters = ({ showFilters }) => {
                 setSkuOptions([]);
             }
         }
-    }, [selectedDepot, selectedChannel, selectedChain]);
+    }, [selectedDepot, selectedChannel, selectedChain, globalData]);
 
     // Handle SKU selection
     useEffect(() => {
-        if (selectedSubCat) {
+        if (selectedSubCat && globalData) {
             if (selectedSubCat === "All") {
                 // When "All" is selected for subcat, set SKU to "All" and clear options
                 setSelectedSubSKU("All");
                 setSkuOptions([]);
             } else {
-                const filtered = data.filter(
+                const filtered = globalData.filter(
                     item =>
                         item.Channel === selectedChannel &&
                         item.Chain === selectedChain &&
@@ -132,13 +134,13 @@ const Filters = ({ showFilters }) => {
                 setSelectedSubSKU(null);
             }
         }
-    }, [selectedSubCat, selectedChannel, selectedChain, selectedDepot]);
+    }, [selectedSubCat, selectedChannel, selectedChain, selectedDepot, globalData]);
 
     // Calculate metrics based on selections
     useEffect(() => {
-        if (selectedChannel) {
+        if (selectedChannel && globalData) {
             // Filter data based on selections
-            let filteredData = data.filter(item => {
+            let filteredData = globalData.filter(item => {
                 if (item.Channel !== selectedChannel) return false;
                 if (selectedChain && selectedChain !== "All" && item.Chain !== selectedChain) return false;
                 if (selectedDepot && selectedDepot !== "All" && item.Depot !== selectedDepot) return false;
@@ -173,7 +175,7 @@ const Filters = ({ showFilters }) => {
             }
 
             // Calculate YoY Growth
-            let actuals2024 = data.filter(item => {
+            let actuals2024 = globalData.filter(item => {
                 // Apply the same filters as above but for 2024 data
                 if (selectedChannel && item.Channel !== selectedChannel) return false;
                 if (selectedChain && selectedChain !== "All" && item.Chain !== selectedChain) return false;
@@ -224,7 +226,7 @@ const Filters = ({ showFilters }) => {
                 };
             }
 
-            const parentLevelData = data.filter(item =>
+            const parentLevelData = globalData.filter(item =>
                 (parentFilter.Channel ? item.Channel === parentFilter.Channel : true) &&
                 (parentFilter.Chain ? item.Chain === parentFilter.Chain : true) &&
                 (parentFilter.Depot ? item.Depot === parentFilter.Depot : true) &&
@@ -242,7 +244,7 @@ const Filters = ({ showFilters }) => {
             setYoyGrowth(null);
             setParentLevelForecast(null);
         }
-    }, [selectedChannel, selectedChain, selectedDepot, selectedSubCat, selectedSubSKU]);
+    }, [selectedChannel, selectedChain, selectedDepot, selectedSubCat, selectedSubSKU, globalData]); // Added globalData
 
     useEffect(() => {
         setFilters({
@@ -263,9 +265,6 @@ const Filters = ({ showFilters }) => {
     // Determine if current page is Norms
     const location = useLocation();
     const isNormsPage = location.pathname === "/norms";
-    // console.log("isNormsPage", isNormsPage);
-
-
 
     return (
         <div className={`transition-all duration-300 ease-in-out ${showFilters ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>

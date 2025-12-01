@@ -20,12 +20,14 @@ import data from "../../jsons/Planning/JF_censored.json"
 import { useSidebar } from "@/context/sidebar/SidebarContext";
 import Filters from "@/components/planning/Filters";
 import PivotTableComponent from "@/components/planning/PivotTableComponent";
+import Chatbot from "@/components/Chatbot/Chatbot";
 
 
 
 const Planning = () => {
     const { isSidebarOpen, toggleSidebar } = useSidebar();
     const { forecastSum, forecastValue, yoyGrowth, parentLevelForecast, filters } = useForecast();
+    const { globalData } = useForecast(); // Get data from Context
     const [showFilters, setShowFilters] = useState(false);
 
     const [showPivotTable, setShowPivotTable] = useState(false);
@@ -241,7 +243,7 @@ const Planning = () => {
                         {/* Forecast Table */}
                         <div className="mb-8">
                             <ForecastTable
-                                data={data}
+                                data={globalData}
                                 selections={[
                                     { field: 'Channel', value: filters.channel },
                                     { field: 'Chain', value: filters.chain },
@@ -266,6 +268,7 @@ const Planning = () => {
                     </div>
                 </div>
             </div>
+            <Chatbot />
         </div>
     );
 };
