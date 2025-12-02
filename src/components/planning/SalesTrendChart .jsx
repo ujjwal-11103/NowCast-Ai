@@ -1,11 +1,10 @@
 import Plot from 'react-plotly.js';
-import rawData from "../../jsons/Planning/JF_censored.json";
 import { useMemo } from 'react';
 import { groupBy } from 'lodash';
 import { useForecast } from '@/context/ForecastContext/ForecastContext';
 
 const SalesTrendChart = () => {
-    const { filters } = useForecast();
+    const { filters, globalData } = useForecast();
 
     const { dates, actuals, forecasts } = useMemo(() => {
         // Determine which filters are set to "All" or have specific values
@@ -18,7 +17,7 @@ const SalesTrendChart = () => {
         };
 
         // Filter data based on the selected filters
-        const filteredData = rawData.filter((item) => {
+        const filteredData = globalData.filter((item) => {
             return (!filterConditions.channel || item.Channel === filterConditions.channel) &&
                 (!filterConditions.chain || item.Chain === filterConditions.chain) &&
                 (!filterConditions.depot || item.Depot === filterConditions.depot) &&
@@ -46,7 +45,7 @@ const SalesTrendChart = () => {
         );
 
         return { dates: sortedDates, actuals, forecasts };
-    }, [filters]);
+    }, [filters, globalData]);
 
     return (
         <Plot

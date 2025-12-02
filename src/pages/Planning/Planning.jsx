@@ -229,16 +229,27 @@ const Planning = () => {
                         </Card>
 
                         {/* Sales Trend Chart Section */}
-                        <Card className="p-6 bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-200">
-                            <div className="flex justify-between items-center">
-                                <h3 className="text-lg font-semibold text-gray-800">Sales Trend & Forecast</h3>
-                            </div>
+                        <div className="flex flex-col xl:flex-row gap-6 h-[600px]">
 
-                            {/* Chart */}
-                            <div className="rounded-lg">
-                                <SalesTrendChart />
+                            {/* Left Side: Sales Trend Chart */}
+                            {/* Added 'flex-1' to take up space and 'h-full' to match height */}
+                            <Card className="flex-1 flex flex-col p-6 bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-200 min-w-0">
+                                <div className="flex justify-between items-center mb-4 flex-none">
+                                    <h3 className="text-lg font-semibold text-gray-800">Sales Trend & Forecast</h3>
+                                </div>
+
+                                {/* Chart Container - Fills remaining height */}
+                                <div className="flex-1 min-h-0 w-full">
+                                    <SalesTrendChart />
+                                </div>
+                            </Card>
+
+                            {/* Right Side: Chatbot */}
+                            {/* Fixed width of 400px on large screens */}
+                            <div className="w-full xl:w-[400px] h-full flex-none">
+                                <Chatbot />
                             </div>
-                        </Card>
+                        </div>
 
                         {/* Forecast Table */}
                         <div className="mb-8">
@@ -268,7 +279,6 @@ const Planning = () => {
                     </div>
                 </div>
             </div>
-            <Chatbot />
         </div>
     );
 };
