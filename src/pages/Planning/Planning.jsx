@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { ArrowDown, ArrowUp, DollarSign, ExternalLink, LineChart, Minus } from "lucide-react"
+import { ArrowDown, ArrowUp, Calendar, DollarSign, ExternalLink, LineChart, Minus } from "lucide-react"
 import { Package } from 'lucide-react';
 import { ChartPie } from 'lucide-react';
 import { Filter, RefreshCw, Download, ChevronDown } from 'lucide-react';
@@ -109,7 +109,7 @@ const Planning = () => {
 
                             <div className="flex justify-between items-center">
                                 <div className="flex items-center gap-3">
-                                    <h2 className="text-xl font-semibold text-gray-800">Forecasted Months: Jan - Feb '25</h2>
+                                    <h2 className="text-xl font-semibold text-gray-800">Forecasted Months: Jan - Feb '24</h2>
                                     <div className="w-4 h-4 rounded-full border-2 border-gray-400 flex items-center justify-center">
                                         <span className="text-xs text-gray-500">?</span>
                                     </div>
@@ -201,12 +201,12 @@ const Planning = () => {
                                     </div>
                                 </Card>
 
-                                {/* Total Volume Card */}
+                                {/* Total Volume Card -> Change to YTD Volume */}
                                 <Card className="p-6 bg-purple-50 border border-purple-100 hover:shadow-lg transition-all duration-200 hover:scale-105">
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2">
-                                            <ChartPie className="w-5 h-5 text-purple-600" />
-                                            <p className="text-sm font-medium text-purple-600">Total Volume</p>
+                                            <Calendar className="w-5 h-5 text-purple-600" />
+                                            <p className="text-sm font-medium text-purple-600">YTD Volume (2024)</p>
                                         </div>
                                         <div className="flex items-baseline gap-2">
                                             <span className="text-3xl font-bold text-gray-900">
@@ -215,13 +215,7 @@ const Planning = () => {
                                             <span className="text-sm text-gray-500">Units</span>
                                         </div>
                                         <p className="text-xs text-gray-600">
-                                            Total volume for: {
-                                                (() => {
-                                                    const lastNonAllKey = ["sku", "subCat", "depot", "chain", "channel"]
-                                                        .find(k => filters[k] && filters[k] !== "All");
-                                                    return lastNonAllKey ? filters[lastNonAllKey] : "selected filters";
-                                                })()
-                                            }
+                                            Total Actuals for 2024
                                         </p>
                                     </div>
                                 </Card>

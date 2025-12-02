@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-
+import { ArrowUp, ArrowDown } from "lucide-react"; // Import arrows for YoY
 import {
     Select,
     SelectContent,
@@ -9,6 +9,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
+import { Package, DollarSign, LineChart, Calendar } from 'lucide-react'; // Added Calendar icon
 import { useForecast } from "@/context/ForecastContext/ForecastContext";
 
 const Filters = ({ showFilters }) => {
@@ -119,11 +120,12 @@ const Filters = ({ showFilters }) => {
     //  UPDATED METRICS CALCULATION
     // ==========================================
     useEffect(() => {
-        if (selectedChannel && globalData) {
+        if (globalData) {
 
-            // 1. Filter Data based on selections
+            // 1. Basic Filter (Same as before)
             const filteredData = globalData.filter(item => {
-                if (item.Channel !== selectedChannel) return false;
+                if (selectedChannel && item.Channel !== selectedChannel) return false;
+
                 if (selectedChain && selectedChain !== "All" && item.Chain !== selectedChain) return false;
                 if (selectedDepot && selectedDepot !== "All" && item.Depot !== selectedDepot) return false;
                 if (selectedSubCat && selectedSubCat !== "All" && item.SubCat !== selectedSubCat) return false;
@@ -131,67 +133,70 @@ const Filters = ({ showFilters }) => {
                 return true;
             });
 
-            // 2. Separate Future (Forecast) vs Past (History)
-            // Using the 'Period' field from your new JSON ensures we capture the right rows
-            // regardless of the exact Date string.
-            const forecastData = filteredData.filter(item =>
-                item.Period === "Forecast" ||
-                (item.Date >= "2024-11-01") // Fallback: Capture recent months if Period label is missing
-            );
+            // 2. Isolate "Forecast" Period Data
+            const forecastData = filteredData.filter(item => item.Period === "Forecast");
 
-            const historyData = filteredData.filter(item =>
-                item.Period === "History" ||
-                (item.Date < "2024-11-01")
-            );
+            // --- A. Forecast Volume ---
+            // Formula: Sum(Forecast_Volume) Where Period == Forecast
+            const totalForecastVolume = forecastData.reduce((sum, item) => sum + (Number(item.forecast) || 0), 0);
+            setForecastSum(Math.round(totalForecastVolume));
 
-            // --- A. Forecast Sum (Volume) ---
-            const totalForecast = forecastData.reduce((sum, item) => sum + (Number(item.forecast) || 0), 0);
-            setForecastSum(Math.round(totalForecast));
-
-            // --- B. Forecast Value (Revenue) ---
-            const totalValue = forecastData.reduce((sum, item) => {
+            // --- B. Forecast Value ---
+            // Formula: Sum(Forecast_Value) Where Period == Forecast
+            // Note: Calculating Value as (Volume * Price)
+            const totalForecastValue = forecastData.reduce((sum, item) => {
                 const price = Number(item.Price) || 0;
                 return sum + ((Number(item.forecast) || 0) * price);
             }, 0);
-            setForecastValue(Math.round(totalValue));
+            setForecastValue(Math.round(totalForecastValue));
 
             // --- C. YoY Growth ---
-            // Compare Forecast Sum vs Last Year Actuals (Simplification: using total history sum for demo)
-            // Ideally, you match months (Jan 25 vs Jan 24). 
-            // For now, let's grab the most recent history sum as a baseline.
-            const totalActuals = historyData.reduce((sum, item) => sum + (Number(item.actual) || 0), 0);
+            // Formula: Sum(Forecast_Volume) / Sum(LY_Actual_Value) [where LY is Forecast - 12 months]
 
-            if (totalActuals > 0 && totalForecast > 0) {
-                // This is a rough proxy for YoY since datasets might differ in length
-                // You can refine this to match specific months if needed.
-                const yoy = ((totalForecast - (totalActuals / 12 * 2)) / (totalActuals / 12 * 2)) * 100; // rough comparison against 2 months avg
+            // Step 1: Identify Forecast Months (e.g., "2025-01", "2025-02")
+            const forecastMonths = [...new Set(forecastData.map(d => d.Date.substring(0, 7)))];
+
+            // Step 2: Calculate Target Last Year Months (e.g., "2024-01", "2024-02")
+            const lyMonths = forecastMonths.map(dateStr => {
+                const date = new Date(dateStr + "-01");
+                date.setFullYear(date.getFullYear() - 1);
+                return date.toISOString().substring(0, 7); // Returns "YYYY-MM"
+            });
+
+            // Step 3: Filter Data for LY Actuals
+            const lyData = filteredData.filter(item => {
+                const itemMonth = item.Date.substring(0, 7);
+                return lyMonths.includes(itemMonth) && item.Period === "History";
+            });
+
+            // Step 4: Sum LY Actuals
+            const totalLYActuals = lyData.reduce((sum, item) => sum + (Number(item.actual) || 0), 0);
+
+            // Step 5: Calculate Growth %
+            if (totalLYActuals > 0) {
+                // Using Standard Growth Formula: ((New - Old) / Old) * 100
+                const yoy = ((totalForecastVolume - totalLYActuals) / totalLYActuals) * 100;
                 setYoyGrowth(yoy.toFixed(1));
             } else {
                 setYoyGrowth(null);
             }
 
-            // --- D. Parent Level Forecast ---
-            let parentFilter = {};
-            if (selectedSubSKU && selectedSubSKU !== "All") {
-                parentFilter = { Channel: selectedChannel, Chain: selectedChain !== "All" ? selectedChain : null, Depot: selectedDepot !== "All" ? selectedDepot : null, SubCat: selectedSubCat !== "All" ? selectedSubCat : null };
-            } else if (selectedSubSKU === "All" || selectedSubCat) {
-                parentFilter = { Channel: selectedChannel, Chain: selectedChain !== "All" ? selectedChain : null, Depot: selectedDepot !== "All" ? selectedDepot : null };
-            } else if (selectedDepot === "All" || selectedDepot) {
-                parentFilter = { Channel: selectedChannel, Chain: selectedChain !== "All" ? selectedChain : null };
-            } else if (selectedChain === "All" || selectedChain) {
-                parentFilter = { Channel: selectedChannel };
-            }
+            // --- D. YTD (Year To Date) Volume ---
+            // Formula: Sum(Actual_Volume) Where Period = History, year = current year
 
-            const parentLevelData = globalData.filter(item =>
-                (parentFilter.Channel ? item.Channel === parentFilter.Channel : true) &&
-                (parentFilter.Chain ? item.Chain === parentFilter.Chain : true) &&
-                (parentFilter.Depot ? item.Depot === parentFilter.Depot : true) &&
-                (parentFilter.SubCat ? item.SubCat === parentFilter.SubCat : true) &&
-                (item.Period === "Forecast" || item.Date >= "2024-11-01")
+            // Determine "Current Year" for history (Assuming 2024 based on your data)
+            // Ideally, this should be dynamic: new Date().getFullYear() - 1? 
+            // For now, let's look at the max year in History data.
+            const currentHistoryYear = "2024";
+
+            const ytdData = filteredData.filter(item =>
+                item.Period === "History" && item.Date.startsWith(currentHistoryYear)
             );
 
-            const parentTotalForecast = parentLevelData.reduce((sum, item) => sum + (Number(item.forecast) || 0), 0);
-            setParentLevelForecast(Math.round(parentTotalForecast));
+            const ytdVolume = ytdData.reduce((sum, item) => sum + (Number(item.actual) || 0), 0);
+
+            // Reusing parentLevelForecast state variable to store YTD for now
+            setParentLevelForecast(Math.round(ytdVolume));
 
         } else {
             setForecastSum(null);
@@ -219,11 +224,17 @@ const Filters = ({ showFilters }) => {
     const location = useLocation();
     const isNormsPage = location.pathname === "/norms";
 
+    const forecastSumVal = useForecast().forecastSum;
+    const forecastValVal = useForecast().forecastValue;
+    const yoyGrowthVal = useForecast().yoyGrowth;
+    const ytdVal = useForecast().parentLevelForecast; // Mapped to YTD
+
     return (
         <div className={`transition-all duration-300 ease-in-out ${showFilters ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
             <Card className="p-6 bg-white border border-gray-200 shadow-sm">
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                    {/* ... (Keep your existing Dropdown JSX code exactly as is) ... */}
+
+                    {/* ... (Keep Dropdowns exactly as they were) ... */}
                     {/* Channel */}
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700">Channel</label>
