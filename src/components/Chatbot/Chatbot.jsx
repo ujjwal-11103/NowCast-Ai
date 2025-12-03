@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, Sparkles } from "lucide-react"; // Removed X and MessageSquare icons
+import { Send, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -40,20 +40,36 @@ const Chatbot = () => {
 
             const data = await response.json();
 
+            console.log("Data ", data);
+
+
             if (data.status === "success") {
+                // Check if we actually have data to update
                 if (data.consensus_data && data.consensus_data.length > 0) {
+
+                    // 1. Pass the data to Context to update the Graph
                     updateForecastData(data.consensus_data);
+
+                    // 2. Show success message
                     setMessages(prev => [...prev, {
                         type: 'bot',
-                        text: `Success! I've updated ${data.affected_records} records based on your request.`
+                        text: `Success! I've updated ${data.affected_records} records. The charts have been refreshed.`
                     }]);
                 } else {
+                    // No records affected (maybe filters didn't match anything)
                     setMessages(prev => [...prev, {
                         type: 'bot',
-                        text: "I processed your request, but no records needed updating based on the filters."
+                        text: "I processed your request, but no matching records were found to update."
                     }]);
                 }
+            } else if (data.status === "warning") {
+                // Handle specific API warning state (like your example response)
+                setMessages(prev => [...prev, {
+                    type: 'bot',
+                    text: `Warning: ${data.message || "Could not complete request completely."}`
+                }]);
             } else {
+                // API returned an error status
                 setMessages(prev => [...prev, {
                     type: 'bot',
                     text: `Error: ${data.message || "Something went wrong."}`
@@ -71,19 +87,15 @@ const Chatbot = () => {
         }
     };
 
-    // REMOVED: The "isOpen" check and the floating Button return
-
     return (
-        // CHANGED: Removed 'fixed', 'bottom-6', etc. Added 'w-full h-full'.
         <Card className="w-full h-full flex flex-col border border-gray-200 shadow-sm overflow-hidden bg-white">
-            
+
             {/* Header */}
             <div className="p-4 bg-gradient-to-r from-blue-600 to-indigo-600 flex justify-between items-center flex-none">
                 <div className="flex items-center gap-2 text-white">
                     <Sparkles className="h-5 w-5" />
                     <h3 className="font-semibold">Intellimark Assistant</h3>
                 </div>
-                {/* REMOVED: Close (X) button */}
             </div>
 
             {/* Messages Area - Grow to fill space, Scrollable */}
@@ -92,8 +104,8 @@ const Chatbot = () => {
                     {messages.map((msg, idx) => (
                         <div key={idx} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                             <div className={`max-w-[85%] p-3 rounded-2xl text-sm shadow-sm ${msg.type === 'user'
-                                    ? 'bg-blue-600 text-white rounded-br-none'
-                                    : 'bg-white border border-gray-100 text-gray-800 rounded-bl-none'
+                                ? 'bg-blue-600 text-white rounded-br-none'
+                                : 'bg-white border border-gray-100 text-gray-800 rounded-bl-none'
                                 }`}>
                                 {msg.text}
                             </div>

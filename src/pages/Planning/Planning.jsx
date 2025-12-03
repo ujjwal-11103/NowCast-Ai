@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { ArrowDown, ArrowUp, Calendar, DollarSign, ExternalLink, LineChart, Minus } from "lucide-react"
+import { ArrowDown, ArrowUp, Calendar, DollarSign, ExternalLink, LineChart, Loader2, Minus } from "lucide-react"
 import { Package } from 'lucide-react';
 import { ChartPie } from 'lucide-react';
 import { Filter, RefreshCw, Download, ChevronDown } from 'lucide-react';
@@ -26,8 +26,16 @@ import Chatbot from "@/components/Chatbot/Chatbot";
 
 const Planning = () => {
     const { isSidebarOpen, toggleSidebar } = useSidebar();
-    const { forecastSum, forecastValue, yoyGrowth, parentLevelForecast, filters } = useForecast();
-    const { globalData } = useForecast(); // Get data from Context
+    const {
+        forecastSum,
+        forecastValue,
+        yoyGrowth,
+        parentLevelForecast,
+        filters,
+        globalData,
+        isLoading
+    } = useForecast();
+
     const [showFilters, setShowFilters] = useState(false);
 
     const [showPivotTable, setShowPivotTable] = useState(false);
@@ -62,6 +70,17 @@ const Planning = () => {
             return isCurrency ? `₹ ${formattedValue}` : `${formattedValue}`;
         }
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex h-screen items-center justify-center bg-gray-50">
+                <div className="flex flex-col items-center gap-2">
+                    <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                    <p className="text-gray-500 font-medium">Loading Forecast Data...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div>
