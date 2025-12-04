@@ -57,13 +57,13 @@ const Chatbot = () => {
 
             // Handle Response based on Mode
             if (activeMode === "default") {
-                // --- UPDATE CONSENSUS LOGIC ---
                 if (data.status === "success") {
                     if (data.consensus_data && data.consensus_data.length > 0) {
-                        updateForecastData(data.consensus_data);
+                        // PASS TWO ARGUMENTS: Data AND Metadata
+                        updateForecastData(data.consensus_data, data.change_details);
                         setMessages(prev => [...prev, {
                             type: 'bot',
-                            text: `Success! I've updated ${data.affected_records || data.consensus_data.length} records. The charts have been refreshed.`
+                            text: `Success! I've updated ${data.affected_records} records. The charts have been refreshed.`
                         }]);
                     } else {
                         setMessages(prev => [...prev, {

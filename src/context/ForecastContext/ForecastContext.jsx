@@ -51,18 +51,15 @@ export const ForecastProvider = ({ children }) => {
   }, []);
 
   // 2. FUNCTION TO UPDATE DATA FROM CHATBOT (FIXED DATE MATCHING)
-  const updateForecastData = (updatedRecords) => {
+  const updateForecastData = (updatedRecords, metadata) => { // Accept metadata
     if (!updatedRecords || updatedRecords.length === 0) return;
 
     console.log(`Merging ${updatedRecords.length} records from Chatbot...`);
 
     setGlobalData(prevData => {
 
-      // Helper to generate a truly unique ID for every single month
-      // We use the YYYY-MM-DD part of the date string to ensure match
       const getUniqueId = (k, d) => `${k}_${String(d).substring(0, 10)}`;
 
-      // 1. Create Map of updates using Key + Date
       const updatesMap = new Map(
         updatedRecords.map(item => [
           getUniqueId(item.key, item.Date),
@@ -70,9 +67,7 @@ export const ForecastProvider = ({ children }) => {
         ])
       );
 
-      // 2. Update Existing Rows
       const updatedExistingData = prevData.map(row => {
-        // Generate ID for current row
         const rowId = getUniqueId(row.key, row.Date);
 
         if (updatesMap.has(rowId)) {
@@ -80,10 +75,16 @@ export const ForecastProvider = ({ children }) => {
 
           return {
             ...row,
-            // Update ONLY this specific month
             ConsensusForecast: update.ConsensusForecast,
-            // Ensure Baseline doesn't change unless you want it to
             forecast: update.PredictedForecast !== undefined ? update.PredictedForecast : row.forecast,
+
+            // USE METADATA HERE
+            salesInput: metadata ? {
+              value: metadata.value, // e.g. 100
+              owner: metadata.owner, // e.g. CurrentUser
+              comment: metadata.reason // e.g. collapse
+            } : null,
+
             isEdited: true
           };
         }
