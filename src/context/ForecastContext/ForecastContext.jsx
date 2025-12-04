@@ -18,7 +18,7 @@ export const ForecastProvider = ({ children }) => {
     channel: null, chain: null, depot: null, subCat: null, sku: null,
   });
 
-  // 1. FETCH DATA FROM API ON MOUNT
+  // 1. FETCH DATA FROM API
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
@@ -30,24 +30,15 @@ export const ForecastProvider = ({ children }) => {
           const mappedData = result.data.map(item => ({
             ...item,
             Date: item.Date,
-            // Construct Key manually to ensure consistency
             key: `${item.Channel}_${item.Chain}_${item.Depot}_${item.SubCat}_${item.SKU}`,
-
-            // Map API fields to App State names
             actual: item.ActualForecsat !== null ? Number(item.ActualForecsat) : 0,
-
-            // Baseline = PredictedForecast
             forecast: item.PredictedForecast !== null ? Number(item.PredictedForecast) : 0,
-
-            // Consensus = ConsensusForecast (fallback to Predicted if missing)
-            ConsensusForecast: (item.ConsensusForecast !== undefined && item.ConsensusForecast !== null)
+            ConsensusForecast: (item.ConsensusForecast && item.ConsensusForecast !== 0)
               ? Number(item.ConsensusForecast)
-              : (Number(item.PredictedForecast) || 0),
-
+              : (item.PredictedForecast !== null ? Number(item.PredictedForecast) : 0),
             Price: Number(item.Price) || 0,
             isEdited: false
           }));
-
           setGlobalData(mappedData);
         }
       } catch (error) {
@@ -56,55 +47,60 @@ export const ForecastProvider = ({ children }) => {
         setIsLoading(false);
       }
     };
-
     fetchInitialData();
   }, []);
 
-  useEffect(() => {
-    console.log("initial data ", globalData);
-  }, [globalData])
-
-  // 2. FUNCTION TO UPDATE DATA FROM CHATBOT (FIXED MAPPING)
+  // 2. FUNCTION TO UPDATE DATA FROM CHATBOT (FIXED DATE MATCHING)
   const updateForecastData = (updatedRecords) => {
     if (!updatedRecords || updatedRecords.length === 0) return;
 
     console.log(`Merging ${updatedRecords.length} records from Chatbot...`);
 
     setGlobalData(prevData => {
-      const updatesMap = new Map(updatedRecords.map(item => [item.key, item]));
-      const existingKeys = new Set(prevData.map(row => row.key));
 
-      // A. Update Existing Rows
+      // Helper to generate a truly unique ID for every single month
+      // We use the YYYY-MM-DD part of the date string to ensure match
+      const getUniqueId = (k, d) => `${k}_${String(d).substring(0, 10)}`;
+
+      // 1. Create Map of updates using Key + Date
+      const updatesMap = new Map(
+        updatedRecords.map(item => [
+          getUniqueId(item.key, item.Date),
+          item
+        ])
+      );
+
+      // 2. Update Existing Rows
       const updatedExistingData = prevData.map(row => {
-        if (updatesMap.has(row.key)) {
-          const update = updatesMap.get(row.key);
+        // Generate ID for current row
+        const rowId = getUniqueId(row.key, row.Date);
+
+        if (updatesMap.has(rowId)) {
+          const update = updatesMap.get(rowId);
 
           return {
             ...row,
-            // --- CRITICAL FIX HERE ---
-            // 1. Update Consensus with the API's 'ConsensusForecast' field
+            // Update ONLY this specific month
             ConsensusForecast: update.ConsensusForecast,
-
-            // 2. Ensure Baseline (forecast) stays as 'PredictedForecast' (or row.forecast)
-            // (This keeps the Green Line static)
+            // Ensure Baseline doesn't change unless you want it to
             forecast: update.PredictedForecast !== undefined ? update.PredictedForecast : row.forecast,
-
-            // 3. Mark as edited to trigger Orange Line
             isEdited: true
           };
         }
         return row;
       });
 
-      // B. Add New Rows (Upsert)
+      // 3. Add New Rows (Upsert)
+      // Check existing keys using the Key+Date combination
+      const existingKeys = new Set(prevData.map(row => getUniqueId(row.key, row.Date)));
+
       const newRecords = updatedRecords
-        .filter(item => !existingKeys.has(item.key))
+        .filter(item => !existingKeys.has(getUniqueId(item.key, item.Date)))
         .map(item => ({
           ...item,
           actual: 0,
-          // Map correct fields for new records
-          forecast: item.PredictedForecast || 0, // Baseline
-          ConsensusForecast: item.ConsensusForecast || 0, // Consensus
+          forecast: item.PredictedForecast || 0,
+          ConsensusForecast: item.ConsensusForecast || 0,
           Price: item.Price || 0,
           Period: "Forecast",
           isEdited: true

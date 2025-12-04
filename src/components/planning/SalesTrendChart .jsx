@@ -34,15 +34,28 @@ const SalesTrendChart = () => {
             ...d,
             // Ensure Date is a valid ISO string for sorting
             Date: new Date(d.Date).toISOString(),
-            actual: Number(d.actual) || 0,
-            forecast: Number(d.forecast) || 0,
-            consensus: d.ConsensusForecast !== undefined ? Number(d.ConsensusForecast) : (Number(d.forecast) || 0)
+
+            // Actuals Logic: Show only if History or > 0
+            actual: (d.Period === "History" || d.actual > 0) ? Number(d.actual) : 0,
+
+            // --- INSERT YOUR LOGIC HERE ---
+
+            // Baseline Forecast (Green)
+            // Show value only if Period is "Forecast" OR Date is >= Oct 2024. Else null.
+            forecast: (d.Period === "Forecast" || d.Date >= "2024-10-01") ? Number(d.forecast) : null,
+
+            // Consensus (Orange)
+            // Show value only if Period is "Forecast" OR Date is >= Oct 2024. Else null.
+            consensus: (d.Period === "Forecast" || d.Date >= "2024-10-01")
+                ? (d.ConsensusForecast !== undefined ? Number(d.ConsensusForecast) : Number(d.forecast))
+                : null
+
+            // -----------------------------
         }));
 
         // 5. Group by Date
         const grouped = groupBy(cleaned, (d) => d.Date.substring(0, 10)); // Group by YYYY-MM-DD only
 
-        // --- CRITICAL FIX: ROBUST SORTING ---
         const sortedDates = Object.keys(grouped).sort((a, b) => {
             return new Date(a).getTime() - new Date(b).getTime();
         });
@@ -50,22 +63,35 @@ const SalesTrendChart = () => {
         // 6. Aggregate Data
         const actualsData = sortedDates.map(date => {
             // Hide Actuals line if there is no history data for this date
-            const hasHistory = grouped[date].some(d => d.Period === "History");
-            if (!hasHistory) return null;
+            // We check if ALL rows for this date have 0 actuals and represent forecast period
+            const dayData = grouped[date];
 
-            return grouped[date].reduce((sum, entry) => sum + entry.actual, 0);
+            // If any record has valid actual > 0 or is History, we sum it.
+            // Otherwise return null to break the blue line.
+            const hasValidActual = dayData.some(d => d.actual > 0 || d.Period === "History");
+
+            if (!hasValidActual) return null;
+            return dayData.reduce((sum, entry) => sum + (entry.actual || 0), 0);
         });
 
         const forecastsData = sortedDates.map(date => {
-            const sum = grouped[date].reduce((acc, item) => acc + item.forecast, 0);
-            // Only show if value exists (prevents flat line at 0)
-            return sum > 0 ? sum : null;
+            const dayData = grouped[date];
+
+            // If all rows have forecast as NULL for this date, return NULL
+            const allNull = dayData.every(d => d.forecast === null);
+            if (allNull) return null;
+
+            // Otherwise sum the valid numbers
+            return dayData.reduce((acc, item) => acc + (item.forecast || 0), 0);
         });
 
         const consensusData = sortedDates.map(date => {
-            const sum = grouped[date].reduce((acc, item) => acc + item.consensus, 0);
-            // Only show if value exists
-            return sum > 0 ? sum : null;
+            const dayData = grouped[date];
+
+            const allNull = dayData.every(d => d.consensus === null);
+            if (allNull) return null;
+
+            return dayData.reduce((acc, item) => acc + (item.consensus || 0), 0);
         });
 
         return {
@@ -77,7 +103,7 @@ const SalesTrendChart = () => {
         };
     }, [filters, globalData]);
 
-    // 7. Define Traces
+    // 7. Define Traces (Keep connectgaps: false)
     const chartTraces = [
         {
             x: chartDates,
