@@ -175,8 +175,8 @@ const Planning = () => {
                         </Card>
 
                         {/* Sales Trend Chart & Chatbot */}
-                        <div className="flex flex-col xl:flex-row gap-6 h-[600px]">
-                            <Card className="flex-1 flex flex-col p-6 bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-200 min-w-0">
+                        <div className="w-full h-[500px] mb-6">
+                            <Card className="w-full h-full flex flex-col p-6 bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-200">
                                 <div className="flex justify-between items-center mb-4 flex-none">
                                     <h3 className="text-lg font-semibold text-gray-800">Sales Trend & Forecast</h3>
                                 </div>
@@ -184,9 +184,11 @@ const Planning = () => {
                                     <SalesTrendChart />
                                 </div>
                             </Card>
-                            <div className="w-full xl:w-[400px] h-full flex-none">
-                                <Chatbot />
-                            </div>
+                        </div>
+
+                        {/* --- ROW 2: Chatbot (Full Width) --- */}
+                        <div className="w-full h-[600px]">
+                            <Chatbot />
                         </div>
 
                         {/* Forecast Table */}

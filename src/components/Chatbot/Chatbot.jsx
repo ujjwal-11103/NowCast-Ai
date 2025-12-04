@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, Sparkles, Zap, FileText, BarChart3 } from "lucide-react";
+import { Send, Sparkles, Zap, FileText, BarChart3, Bot, User, RefreshCcw } from "lucide-react";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -7,20 +9,31 @@ import { useForecast } from "@/context/ForecastContext/ForecastContext";
 
 const Chatbot = () => {
     const [input, setInput] = useState("");
+    // Initial message
     const [messages, setMessages] = useState([
-        { type: 'bot', text: 'I can help you simulate scenarios. Select a mode below or type a command.' }
+        { type: 'bot', text: 'Hello! I can help you simulate scenarios. Select a mode below or type a command.' }
     ]);
     const [isLoading, setIsLoading] = useState(false);
 
     // Mode State: "default" | "what-if" | "rca"
     const [activeMode, setActiveMode] = useState("default");
 
-    const messagesEndRef = useRef(null);
+    // CHANGED: Use a ref for the CONTAINER, not an element at the bottom
+    const chatContainerRef = useRef(null);
     const { updateForecastData, handleWhatIfScenario } = useForecast();
 
-    // Scroll to bottom whenever messages change
+    // CHANGED: Scroll logic to target only the container
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        if (chatContainerRef.current) {
+            const { scrollHeight, clientHeight } = chatContainerRef.current;
+            // Only scroll if content is taller than container
+            if (scrollHeight > clientHeight) {
+                chatContainerRef.current.scrollTo({
+                    top: scrollHeight,
+                    behavior: "smooth",
+                });
+            }
+        }
     }, [messages, isLoading]);
 
     const handleSend = async () => {
@@ -41,9 +54,6 @@ const Chatbot = () => {
                 payload = { prompt: userMessage.text };
             } else if (activeMode === "rca") {
                 apiUrl = 'http://20.235.178.245:5000/api/rca';
-                // RCA might not need a prompt, but we send it if the user typed something specific
-                // Or you can trigger it immediately upon button click if preferred.
-                // Assuming it takes a prompt for context:
                 payload = { include_sources: true, question: userMessage.text };
             }
 
@@ -59,11 +69,10 @@ const Chatbot = () => {
             if (activeMode === "default") {
                 if (data.status === "success") {
                     if (data.consensus_data && data.consensus_data.length > 0) {
-                        // PASS TWO ARGUMENTS: Data AND Metadata
                         updateForecastData(data.consensus_data, data.change_details);
                         setMessages(prev => [...prev, {
                             type: 'bot',
-                            text: `Success! I've updated ${data.affected_records} records. The charts have been refreshed.`
+                            text: `**Success!** \n\nI've updated **${data.affected_records} records**. The charts have been refreshed.`
                         }]);
                     } else {
                         setMessages(prev => [...prev, {
@@ -74,32 +83,28 @@ const Chatbot = () => {
                 } else {
                     setMessages(prev => [...prev, {
                         type: 'bot',
-                        text: `Error: ${data.message || "Something went wrong."}`
+                        text: `**Error:** ${data.message || "Something went wrong."}`
                     }]);
                 }
             }
             else if (activeMode === "what-if") {
-                // --- WHAT-IF LOGIC (Text Answer) ---
                 if (data.status === "success") {
-                    // 1. Show Analysis Text
                     setMessages(prev => [...prev, {
                         type: 'bot',
                         text: data.analysis || "Here is the analysis."
                     }]);
 
-                    // 2. Update Chart with Scenario Data (New_Forecast)
                     if (data.updated_records && data.updated_records.length > 0) {
-                        handleWhatIfScenario(data.updated_records); // <--- CALL CONTEXT
+                        handleWhatIfScenario(data.updated_records);
                     }
                 } else {
                     setMessages(prev => [...prev, {
                         type: 'bot',
-                        text: `Error: ${data.message}`
+                        text: `**Error:** ${data.message}`
                     }]);
                 }
             }
             else if (activeMode === "rca") {
-                // --- RCA LOGIC (Report) ---
                 if (data.status === "success") {
                     setMessages(prev => [...prev, {
                         type: 'bot',
@@ -108,7 +113,7 @@ const Chatbot = () => {
                 } else {
                     setMessages(prev => [...prev, {
                         type: 'bot',
-                        text: `Error: ${data.message}`
+                        text: `**Error:** ${data.message}`
                     }]);
                 }
             }
@@ -124,93 +129,152 @@ const Chatbot = () => {
         }
     };
 
+    // Helper to get Color Scheme based on Mode
+    const getModeColor = () => {
+        switch (activeMode) {
+            case 'what-if': return 'text-purple-600 bg-purple-100 border-purple-200';
+            case 'rca': return 'text-orange-600 bg-orange-100 border-orange-200';
+            default: return 'text-blue-600 bg-blue-100 border-blue-200';
+        }
+    };
+
     return (
-        <Card className="w-full h-full flex flex-col border border-gray-200 shadow-sm overflow-hidden bg-white">
+        <Card className="w-full h-full flex flex-col border border-gray-200 shadow-xl overflow-hidden bg-white rounded-xl">
 
             {/* Header */}
-            <div className="p-4 bg-gradient-to-r from-blue-600 to-indigo-600 flex justify-between items-center flex-none">
-                <div className="flex items-center gap-2 text-white">
-                    <Sparkles className="h-5 w-5" />
-                    <h3 className="font-semibold">Intellimark Assistant</h3>
+            <div className="p-4 bg-white border-b flex justify-between items-center flex-none">
+                <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-lg border ${getModeColor()}`}>
+                        {activeMode === 'default' && <BarChart3 className="h-5 w-5" />}
+                        {activeMode === 'what-if' && <Zap className="h-5 w-5" />}
+                        {activeMode === 'rca' && <FileText className="h-5 w-5" />}
+                    </div>
+                    <div>
+                        <h3 className="font-bold text-gray-800">Nowcast AI Bot</h3>
+                        <p className="text-xs text-gray-500 capitalize">{activeMode.replace('-', ' ')} Mode Active</p>
+                    </div>
                 </div>
             </div>
 
-            {/* Mode Selection Toggles */}
-            <div className="flex p-2 bg-gray-50 border-b gap-2 justify-center flex-none">
-                <Button
-                    variant={activeMode === "default" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setActiveMode("default")}
-                    className={activeMode === "default" ? "bg-blue-600 text-white" : "bg-white text-gray-700"}
-                >
-                    <BarChart3 className="w-4 h-4 mr-1" />
-                    Update
-                </Button>
-                <Button
-                    variant={activeMode === "what-if" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setActiveMode("what-if")}
-                    className={activeMode === "what-if" ? "bg-purple-600 text-white" : "bg-white text-gray-700"}
-                >
-                    <Zap className="w-4 h-4 mr-1" />
-                    What-If
-                </Button>
-                <Button
-                    variant={activeMode === "rca" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setActiveMode("rca")}
-                    className={activeMode === "rca" ? "bg-orange-500 text-white" : "bg-white text-gray-700"}
-                >
-                    <FileText className="w-4 h-4 mr-1" />
-                    RCA
-                </Button>
+            {/* Mode Toggles */}
+            <div className="flex p-2 bg-gray-50/50 border-b gap-2 justify-center flex-none">
+                {[
+                    { id: 'default', icon: RefreshCcw, label: 'Consensus', color: 'bg-blue-600' },
+                    { id: 'what-if', icon: Zap, label: 'What-If', color: 'bg-purple-600' },
+                    { id: 'rca', icon: FileText, label: 'RCA', color: 'bg-orange-500' }
+                ].map((mode) => (
+                    <Button
+                        key={mode.id}
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setActiveMode(mode.id)}
+                        className={`transition-all duration-200 ${activeMode === mode.id
+                            ? `${mode.color} text-white shadow-md hover:${mode.color} hover:text-white`
+                            : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-100"
+                            }`}
+                    >
+                        <mode.icon className="w-3.5 h-3.5 mr-2" />
+                        {mode.label}
+                    </Button>
+                ))}
             </div>
 
-            {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 bg-gray-50 min-h-0">
-                <div className="space-y-4">
-                    {messages.map((msg, idx) => (
-                        <div key={idx} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                            <div className={`max-w-[85%] p-3 rounded-2xl text-sm shadow-sm whitespace-pre-wrap ${msg.type === 'user'
-                                ? 'bg-blue-600 text-white rounded-br-none'
-                                : 'bg-white border border-gray-100 text-gray-800 rounded-bl-none'
+            {/* Messages Area - CHANGED: Attached ref here instead of bottom div */}
+            <div
+                ref={chatContainerRef}
+                className="flex-1 overflow-y-auto p-4 bg-slate-50 space-y-6 scroll-smooth"
+            >
+                {messages.map((msg, idx) => {
+                    const isUser = msg.type === 'user';
+                    return (
+                        <div key={idx} className={`flex gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
+                            {/* Bot Avatar */}
+                            {!isUser && (
+                                <div className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center flex-none shadow-sm">
+                                    <Sparkles className="w-4 h-4 text-indigo-500" />
+                                </div>
+                            )}
+
+                            {/* Message Bubble */}
+                            <div className={`max-w-[85%] rounded-2xl p-4 shadow-sm text-sm leading-relaxed 
+                                ${isUser
+                                    ? 'bg-blue-600 text-white rounded-br-none'
+                                    : 'bg-white border border-gray-100 text-gray-800 rounded-bl-none'
                                 }`}>
-                                {msg.text}
+                                {isUser ? (
+                                    <p className="whitespace-pre-wrap">{msg.text}</p>
+                                ) : (
+                                    /* MARKDOWN RENDERER FOR BOT */
+                                    <div className="markdown-content">
+                                        <ReactMarkdown
+                                            remarkPlugins={[remarkGfm]}
+                                            components={{
+                                                // Customize Markdown Elements
+                                                strong: ({ node, ...props }) => <span className="font-bold text-indigo-700" {...props} />,
+                                                em: ({ node, ...props }) => <span className="italic text-gray-600" {...props} />,
+                                                p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+                                                ul: ({ node, ...props }) => <ul className="list-disc pl-4 mb-2 space-y-1" {...props} />,
+                                                ol: ({ node, ...props }) => <ol className="list-decimal pl-4 mb-2 space-y-1" {...props} />,
+                                                li: ({ node, ...props }) => <li className="pl-1" {...props} />,
+                                            }}
+                                        >
+                                            {msg.text}
+                                        </ReactMarkdown>
+                                    </div>
+                                )}
                             </div>
+
+                            {/* User Avatar */}
+                            {isUser && (
+                                <div className="w-8 h-8 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center flex-none shadow-sm">
+                                    <User className="w-4 h-4 text-blue-600" />
+                                </div>
+                            )}
                         </div>
-                    ))}
-                    {isLoading && (
-                        <div className="flex justify-start">
-                            <div className="bg-white border p-3 rounded-2xl rounded-bl-none text-xs text-gray-500 italic flex items-center gap-2 shadow-sm">
-                                <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" />
-                                <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce delay-75" />
-                                <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce delay-150" />
-                                {activeMode === "default" ? "Updating Forecast..." : activeMode === "what-if" ? "Analyzing Scenario..." : "Running RCA..."}
-                            </div>
+                    );
+                })}
+
+                {/* Loading State */}
+                {isLoading && (
+                    <div className="flex gap-3 justify-start">
+                        <div className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center flex-none shadow-sm">
+                            <Bot className="w-4 h-4 text-gray-500 animate-pulse" />
                         </div>
-                    )}
-                    <div ref={messagesEndRef} />
-                </div>
+                        <div className="bg-white border border-gray-100 p-4 rounded-2xl rounded-bl-none shadow-sm flex items-center gap-2">
+                            <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" />
+                            <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce delay-75" />
+                            <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce delay-150" />
+                        </div>
+                    </div>
+                )}
+                {/* CHANGED: Removed the empty div reference here */}
             </div>
 
             {/* Input Area */}
             <div className="p-4 bg-white border-t flex-none">
-                <div className="flex gap-2">
+                <div className="relative flex items-center">
                     <Input
                         placeholder={
-                            activeMode === "default" ? "e.g. Increase forecast by 10% for GT" :
-                                activeMode === "what-if" ? "e.g. What if we raise prices?" :
-                                    "Ask about root causes..."
+                            activeMode === "default" ? "e.g. Increase forecast by 10% for GT..." :
+                                activeMode === "what-if" ? "e.g. What if we raise prices by 5%?..." :
+                                    "Ask why sales dropped last month..."
                         }
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                        className="focus-visible:ring-blue-600"
+                        className="pr-12 py-6 rounded-full border-gray-300 focus-visible:ring-indigo-500 focus-visible:ring-offset-0 bg-gray-50"
                     />
-                    <Button onClick={handleSend} disabled={isLoading} size="icon" className={`hover:opacity-90 ${activeMode === "default" ? "bg-blue-600" :
-                        activeMode === "what-if" ? "bg-purple-600" : "bg-orange-500"
-                        }`}>
-                        <Send className="h-4 w-4" />
+                    <Button
+                        onClick={handleSend}
+                        disabled={isLoading}
+                        size="icon"
+                        className={`absolute right-2 h-9 w-9 rounded-full shadow-sm transition-all
+                            ${activeMode === "default" ? "bg-blue-600 hover:bg-blue-700" :
+                                activeMode === "what-if" ? "bg-purple-600 hover:bg-purple-700" :
+                                    "bg-orange-500 hover:bg-orange-600"
+                            }`}
+                    >
+                        <Send className="h-4 w-4 text-white" />
                     </Button>
                 </div>
             </div>

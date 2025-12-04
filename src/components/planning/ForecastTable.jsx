@@ -392,7 +392,7 @@ const TeamInputCell = ({ row, team, month, activeInputs, handleInputFocus, handl
                             className={`w-full p-2 text-sm border rounded-md focus:ring-2 ${borderColors[colorClass]}`}
                             onChange={(e) => handleTeamInputChange(row.name, team, month, 'owner', e.target.value)}
                             onFocus={() => handleInputFocus(row.name, team, month)}
-                            placeholder="Ownr"
+                            placeholder="Owner"
                             value={owner} // Controlled input
                         />
                     </div>
@@ -400,7 +400,7 @@ const TeamInputCell = ({ row, team, month, activeInputs, handleInputFocus, handl
                 {activeInputs[`${row.name}-${team}-${month}`] && (
                     <div className="p-1 border-t border-gray-200">
                         <button className={`w-full text-white px-3 py-1 rounded text-sm ${btnColors[colorClass]}`} onClick={() => setActiveInputs(prev => ({ ...prev, [`${row.name}-${team}-${month}`]: false }))}>
-                            Submit
+                            Submit for review
                         </button>
                     </div>
                 )}
