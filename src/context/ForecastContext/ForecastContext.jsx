@@ -12,6 +12,12 @@ export const ForecastProvider = ({ children }) => {
   const [forecastValue, setForecastValue] = useState(null);
   const [yoyGrowth, setYoyGrowth] = useState(null);
   const [parentLevelForecast, setParentLevelForecast] = useState(null);
+
+  // --- NEW STATE VARIABLES ---
+  const [accuracy, setAccuracy] = useState(null);
+  const [bias, setBias] = useState(null);
+  // ---------------------------
+
   const [accuracyLevel, setAccuracyLevel] = useState("95%");
 
   const [filters, setFilters] = useState({
@@ -50,51 +56,39 @@ export const ForecastProvider = ({ children }) => {
     fetchInitialData();
   }, []);
 
-  // 2. FUNCTION TO UPDATE DATA FROM CHATBOT (FIXED DATE MATCHING)
-  const updateForecastData = (updatedRecords, metadata) => { // Accept metadata
+  // 2. UPDATE DATA FROM CHATBOT
+  const updateForecastData = (updatedRecords, metadata) => {
     if (!updatedRecords || updatedRecords.length === 0) return;
-
     console.log(`Merging ${updatedRecords.length} records from Chatbot...`);
 
     setGlobalData(prevData => {
-
       const getUniqueId = (k, d) => `${k}_${String(d).substring(0, 10)}`;
 
       const updatesMap = new Map(
-        updatedRecords.map(item => [
-          getUniqueId(item.key, item.Date),
-          item
-        ])
+        updatedRecords.map(item => [getUniqueId(item.key, item.Date), item])
       );
 
       const updatedExistingData = prevData.map(row => {
         const rowId = getUniqueId(row.key, row.Date);
-
         if (updatesMap.has(rowId)) {
           const update = updatesMap.get(rowId);
-
           return {
             ...row,
             ConsensusForecast: update.ConsensusForecast,
             forecast: update.PredictedForecast !== undefined ? update.PredictedForecast : row.forecast,
-
-            // USE METADATA HERE
             salesInput: metadata ? {
-              value: metadata.value, // e.g. 100
-              owner: metadata.owner, // e.g. CurrentUser
-              comment: metadata.reason // e.g. collapse
+              value: metadata.value,
+              owner: metadata.owner,
+              comment: metadata.reason
             } : null,
-
             isEdited: true
           };
         }
         return row;
       });
 
-      // 3. Add New Rows (Upsert)
-      // Check existing keys using the Key+Date combination
+      // Upsert logic for new rows
       const existingKeys = new Set(prevData.map(row => getUniqueId(row.key, row.Date)));
-
       const newRecords = updatedRecords
         .filter(item => !existingKeys.has(getUniqueId(item.key, item.Date)))
         .map(item => ({
@@ -104,7 +98,12 @@ export const ForecastProvider = ({ children }) => {
           ConsensusForecast: item.ConsensusForecast || 0,
           Price: item.Price || 0,
           Period: "Forecast",
-          isEdited: true
+          isEdited: true,
+          salesInput: metadata ? {
+            value: metadata.value,
+            owner: metadata.owner,
+            comment: metadata.reason
+          } : null
         }));
 
       return [...updatedExistingData, ...newRecords];
@@ -120,7 +119,9 @@ export const ForecastProvider = ({ children }) => {
       yoyGrowth, setYoyGrowth,
       parentLevelForecast, setParentLevelForecast,
       filters, setFilters,
-      accuracyLevel, setAccuracyLevel
+      accuracyLevel, setAccuracyLevel,
+      accuracy, setAccuracy, // Export new state
+      bias, setBias          // Export new state
     }}>
       {children}
     </ForecastContext.Provider>

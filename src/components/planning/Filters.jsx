@@ -21,7 +21,9 @@ const Filters = ({ showFilters }) => {
         setYoyGrowth,
         setParentLevelForecast,
         setFilters,
-        setAccuracyLevel
+        setAccuracyLevel,
+        setAccuracy,
+        setBias
     } = useForecast();
 
     // State for dropdown selections
@@ -122,10 +124,9 @@ const Filters = ({ showFilters }) => {
     useEffect(() => {
         if (globalData) {
 
-            // 1. Basic Filter (Same as before)
+            // 1. Filter Data
             const filteredData = globalData.filter(item => {
                 if (selectedChannel && item.Channel !== selectedChannel) return false;
-
                 if (selectedChain && selectedChain !== "All" && item.Chain !== selectedChain) return false;
                 if (selectedDepot && selectedDepot !== "All" && item.Depot !== selectedDepot) return false;
                 if (selectedSubCat && selectedSubCat !== "All" && item.SubCat !== selectedSubCat) return false;
@@ -133,17 +134,15 @@ const Filters = ({ showFilters }) => {
                 return true;
             });
 
-            // 2. Isolate "Forecast" Period Data
+            // 2. Forecast Period Data
             const forecastData = filteredData.filter(item => item.Period === "Forecast");
+            const historyData = filteredData.filter(item => item.Period === "History");
 
             // --- A. Forecast Volume ---
-            // Formula: Sum(Forecast_Volume) Where Period == Forecast
             const totalForecastVolume = forecastData.reduce((sum, item) => sum + (Number(item.forecast) || 0), 0);
             setForecastSum(Math.round(totalForecastVolume));
 
             // --- B. Forecast Value ---
-            // Formula: Sum(Forecast_Value) Where Period == Forecast
-            // Note: Calculating Value as (Volume * Price)
             const totalForecastValue = forecastData.reduce((sum, item) => {
                 const price = Number(item.Price) || 0;
                 return sum + ((Number(item.forecast) || 0) * price);
@@ -151,68 +150,73 @@ const Filters = ({ showFilters }) => {
             setForecastValue(Math.round(totalForecastValue));
 
             // --- C. YoY Growth ---
-            // Formula: Sum(Forecast_Volume) / Sum(LY_Actual_Value) [where LY is Forecast - 12 months]
-
-            // Step 1: Identify Forecast Months (e.g., "2025-01", "2025-02")
             const forecastMonths = [...new Set(forecastData.map(d => d.Date.substring(0, 7)))];
-
-            // Step 2: Calculate Target Last Year Months (e.g., "2024-01", "2024-02")
             const lyMonths = forecastMonths.map(dateStr => {
-                const date = new Date(dateStr + "-01");
-                date.setFullYear(date.getFullYear() - 1);
-                return date.toISOString().substring(0, 7); // Returns "YYYY-MM"
+                const year = parseInt(dateStr.substring(0, 4));
+                const month = dateStr.substring(5, 7);
+                return `${year - 1}-${month}`;
             });
-
-            // Step 3: Filter Data for LY Actuals
             const lyData = filteredData.filter(item => {
                 const itemMonth = item.Date.substring(0, 7);
                 return lyMonths.includes(itemMonth) && item.Period === "History";
             });
-
-            // Step 4: Sum LY Actuals
             const totalLYActuals = lyData.reduce((sum, item) => sum + (Number(item.actual) || 0), 0);
 
-            // Step 5: Calculate Growth %
             if (totalLYActuals > 0) {
-                // Using Standard Growth Formula: ((New - Old) / Old) * 100
                 const yoy = ((totalForecastVolume - totalLYActuals) / totalLYActuals) * 100;
                 setYoyGrowth(yoy.toFixed(1));
             } else {
                 setYoyGrowth(null);
             }
 
-            // --- D. YTD (Year To Date) Volume ---
-            // Formula: Sum(Actual_Volume) Where Period = History, year = current year
-
-            // Determine "Current Year" for history (Assuming 2024 based on your data)
-            // Ideally, this should be dynamic: new Date().getFullYear() - 1? 
-            // For now, let's look at the max year in History data.
+            // --- D. YTD Volume ---
             const currentHistoryYear = "2024";
-
-            const ytdData = filteredData.filter(item =>
-                item.Period === "History" && item.Date.startsWith(currentHistoryYear)
-            );
-
+            const ytdData = filteredData.filter(item => item.Period === "History" && item.Date.startsWith(currentHistoryYear));
             const ytdVolume = ytdData.reduce((sum, item) => sum + (Number(item.actual) || 0), 0);
-
-            // Reusing parentLevelForecast state variable to store YTD for now
             setParentLevelForecast(Math.round(ytdVolume));
 
+
+            // --- E. ACCURACY & BIAS (UPDATED: USING JUL-SEP 2024) ---
+
+            // Target months: July, August, September 2024
+            const targetMonths = ['2024-07', '2024-08', '2024-09'];
+
+            const accuracyData = filteredData.filter(item => {
+                // Extract YYYY-MM from item date
+                const dateStr = item.Date.substring(0, 7);
+                // Check if date matches our target months AND has valid actuals
+                return targetMonths.includes(dateStr) && item.actual > 0;
+            });
+
+            if (accuracyData.length > 0) {
+                // Sum up Actuals and Forecasts for these 3 months
+                const accSumActual = accuracyData.reduce((s, i) => s + (Number(i.actual) || 0), 0);
+                const accSumForecast = accuracyData.reduce((s, i) => s + (Number(i.forecast) || 0), 0);
+
+                // Formula: Accuracy = (1 - |Actual - Forecast| / Actual) * 100
+                // We use aggregations to calculate Weighted Accuracy (standard for KPIs)
+                const diff = Math.abs(accSumActual - accSumForecast);
+                const accVal = (1 - (diff / accSumActual)) * 100;
+                setAccuracy(accVal.toFixed(1));
+
+                // Formula: Bias = (Forecast / Actual - 1) * 100
+                const biasVal = ((accSumForecast / accSumActual) - 1) * 100;
+                setBias(biasVal.toFixed(1));
+            } else {
+                setAccuracy(null);
+                setBias(null);
+            }
+
         } else {
-            setForecastSum(null);
-            setForecastValue(null);
-            setYoyGrowth(null);
-            setParentLevelForecast(null);
+            // Reset all if no data
+            setForecastSum(null); setForecastValue(null); setYoyGrowth(null); setParentLevelForecast(null);
+            setAccuracy(null); setBias(null);
         }
     }, [selectedChannel, selectedChain, selectedDepot, selectedSubCat, selectedSubSKU, globalData]);
 
     useEffect(() => {
         setFilters({
-            channel: selectedChannel,
-            chain: selectedChain,
-            depot: selectedDepot,
-            subCat: selectedSubCat,
-            sku: selectedSubSKU,
+            channel: selectedChannel, chain: selectedChain, depot: selectedDepot, subCat: selectedSubCat, sku: selectedSubSKU,
         });
     }, [selectedChannel, selectedChain, selectedDepot, selectedSubCat, selectedSubSKU]);
 

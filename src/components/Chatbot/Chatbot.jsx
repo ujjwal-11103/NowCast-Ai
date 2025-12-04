@@ -37,8 +37,8 @@ const Chatbot = () => {
 
             // Switch API based on Mode
             if (activeMode === "what-if") {
-                apiUrl = 'http://20.235.178.245:5000/api/query';
-                payload = { question: userMessage.text };
+                apiUrl = 'http://20.235.178.245:5000/api/WhatIf';
+                payload = { prompt: userMessage.text };
             } else if (activeMode === "rca") {
                 apiUrl = 'http://20.235.178.245:5000/api/rca';
                 // RCA might not need a prompt, but we send it if the user typed something specific
