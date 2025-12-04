@@ -13,6 +13,7 @@ const SalesTrendChart = () => {
         chartConsensus,
         showConsensusLine
     } = useMemo(() => {
+        // 1. Safety Check
         if (!globalData) return { chartDates: [], chartActuals: [], chartForecasts: [], chartConsensus: [], showConsensusLine: false };
 
         // 2. Filter Data
@@ -28,35 +29,42 @@ const SalesTrendChart = () => {
         // 3. CHECK FOR UPDATES
         const hasConsensusData = filteredData.some(item => item.isEdited === true);
 
-        // 4. Group by Date FIRST (Before Cleaning)
-        // We need to sum up values for each date BEFORE we decide if it's null or 0.
-        // If we map to null too early, the sum might break.
-        const grouped = groupBy(filteredData, 'Date');
-        const sortedDates = Object.keys(grouped).sort((a, b) => new Date(a) - new Date(b));
+        // 4. Clean Data 
+        const cleaned = filteredData.map(d => ({
+            ...d,
+            // Ensure Date is a valid ISO string for sorting
+            Date: new Date(d.Date).toISOString(),
+            actual: Number(d.actual) || 0,
+            forecast: Number(d.forecast) || 0,
+            consensus: d.ConsensusForecast !== undefined ? Number(d.ConsensusForecast) : (Number(d.forecast) || 0)
+        }));
 
-        // 5. Aggregate and Clean
+        // 5. Group by Date
+        const grouped = groupBy(cleaned, (d) => d.Date.substring(0, 10)); // Group by YYYY-MM-DD only
+
+        // --- CRITICAL FIX: ROBUST SORTING ---
+        const sortedDates = Object.keys(grouped).sort((a, b) => {
+            return new Date(a).getTime() - new Date(b).getTime();
+        });
+
+        // 6. Aggregate Data
         const actualsData = sortedDates.map(date => {
-            // Sum up actuals for this date
-            const sum = grouped[date].reduce((acc, item) => acc + (Number(item.actual) || 0), 0);
-            // Logic: If sum is 0, return null so line breaks/stops. 
-            // Exception: If it's a valid 0 (e.g., no sales), you might want 0. 
-            // Usually for history, we want 0. For future, we want null.
-            // Let's assume Actuals should always show unless purely missing.
-            return sum;
+            // Hide Actuals line if there is no history data for this date
+            const hasHistory = grouped[date].some(d => d.Period === "History");
+            if (!hasHistory) return null;
+
+            return grouped[date].reduce((sum, entry) => sum + entry.actual, 0);
         });
 
         const forecastsData = sortedDates.map(date => {
-            const sum = grouped[date].reduce((acc, item) => acc + (Number(item.forecast) || 0), 0);
-            // FIX: If sum is 0, return NULL to hide the line.
+            const sum = grouped[date].reduce((acc, item) => acc + item.forecast, 0);
+            // Only show if value exists (prevents flat line at 0)
             return sum > 0 ? sum : null;
         });
 
         const consensusData = sortedDates.map(date => {
-            const sum = grouped[date].reduce((acc, item) => {
-                const val = item.ConsensusForecast !== undefined ? Number(item.ConsensusForecast) : (Number(item.forecast) || 0);
-                return acc + val;
-            }, 0);
-            // FIX: If sum is 0, return NULL to hide the line.
+            const sum = grouped[date].reduce((acc, item) => acc + item.consensus, 0);
+            // Only show if value exists
             return sum > 0 ? sum : null;
         });
 
@@ -69,7 +77,7 @@ const SalesTrendChart = () => {
         };
     }, [filters, globalData]);
 
-    // 6. Define Traces
+    // 7. Define Traces
     const chartTraces = [
         {
             x: chartDates,
@@ -78,7 +86,7 @@ const SalesTrendChart = () => {
             mode: 'lines+markers',
             name: 'Actual Sales',
             line: { color: '#3b82f6', width: 2 },
-            connectgaps: true // Keeps blue line connected even if there are 0s
+            connectgaps: false
         },
         {
             x: chartDates,
@@ -87,7 +95,7 @@ const SalesTrendChart = () => {
             mode: 'lines+markers',
             name: 'Baseline Forecast',
             line: { color: '#22c55e', dash: 'dot', width: 2 },
-            connectgaps: false // <--- CRITICAL: Do NOT connect gaps for Forecast
+            connectgaps: false
         }
     ];
 
@@ -99,7 +107,7 @@ const SalesTrendChart = () => {
             mode: 'lines+markers',
             name: 'Consensus (Chatbot)',
             line: { color: '#f97316', width: 2 },
-            connectgaps: false // <--- Do NOT connect gaps
+            connectgaps: false
         });
     }
 
@@ -124,7 +132,7 @@ const SalesTrendChart = () => {
     );
 };
 
-// Title Helper (No changes)
+// Title Helper
 function getChartTitle(filters) {
     const parts = [];
     if (filters.channel) parts.push(`Channel: ${filters.channel === "All" ? "All" : filters.channel}`);
