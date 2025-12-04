@@ -16,7 +16,7 @@ const Chatbot = () => {
     const [activeMode, setActiveMode] = useState("default");
 
     const messagesEndRef = useRef(null);
-    const { updateForecastData } = useForecast();
+    const { updateForecastData, handleWhatIfScenario } = useForecast();
 
     // Scroll to bottom whenever messages change
     useEffect(() => {
@@ -33,7 +33,7 @@ const Chatbot = () => {
 
         try {
             let apiUrl = 'http://20.235.178.245:5000/api/update-consensus';
-            let payload = { owner: "CurrentUser", prompt: userMessage.text };
+            let payload = { owner: "Rahul", prompt: userMessage.text };
 
             // Switch API based on Mode
             if (activeMode === "what-if") {
@@ -44,7 +44,7 @@ const Chatbot = () => {
                 // RCA might not need a prompt, but we send it if the user typed something specific
                 // Or you can trigger it immediately upon button click if preferred.
                 // Assuming it takes a prompt for context:
-                payload = { include_sources: true, prompt: userMessage.text };
+                payload = { include_sources: true, question: userMessage.text };
             }
 
             const response = await fetch(apiUrl, {
@@ -81,10 +81,16 @@ const Chatbot = () => {
             else if (activeMode === "what-if") {
                 // --- WHAT-IF LOGIC (Text Answer) ---
                 if (data.status === "success") {
+                    // 1. Show Analysis Text
                     setMessages(prev => [...prev, {
                         type: 'bot',
-                        text: data.answer || "Here is the analysis based on your scenario."
+                        text: data.analysis || "Here is the analysis."
                     }]);
+
+                    // 2. Update Chart with Scenario Data (New_Forecast)
+                    if (data.updated_records && data.updated_records.length > 0) {
+                        handleWhatIfScenario(data.updated_records); // <--- CALL CONTEXT
+                    }
                 } else {
                     setMessages(prev => [...prev, {
                         type: 'bot',

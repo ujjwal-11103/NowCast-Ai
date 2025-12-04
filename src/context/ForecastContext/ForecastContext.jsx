@@ -7,6 +7,7 @@ export const useForecast = () => useContext(ForecastContext);
 export const ForecastProvider = ({ children }) => {
   const [globalData, setGlobalData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [whatIfData, setWhatIfData] = useState([]);
 
   const [forecastSum, setForecastSum] = useState(null);
   const [forecastValue, setForecastValue] = useState(null);
@@ -110,10 +111,34 @@ export const ForecastProvider = ({ children }) => {
     });
   };
 
+  // 3. FUNCTION TO HANDLE WHAT-IF SCENARIO
+  const handleWhatIfScenario = (scenarioRecords) => {
+    if (!scenarioRecords || scenarioRecords.length === 0) return;
+
+    console.log("Processing What-If Scenario...", scenarioRecords.length);
+
+    // We map the API's 'New_Forecast' to a structure the chart can read
+    // We need to match these records to existing data to get dates/keys if needed,
+    // or just store them as a separate overlay layer.
+    // Based on the API response, 'updated_records' has Date, SKU, Depot etc.
+
+    const mappedScenario = scenarioRecords.map(item => ({
+      ...item,
+      // Construct Key to match chart grouping
+      key: `${item.Channel}_${item.Chain}_${item.Depot}_${item.SubCat}_${item.SKU}`,
+      // Handle Negative Forecast Rule
+      whatIfForecast: item.New_Forecast < 0 ? 0 : item.New_Forecast,
+      isScenario: true
+    }));
+
+    setWhatIfData(mappedScenario);
+  };
+
   return (
     <ForecastContext.Provider value={{
       globalData, setGlobalData, isLoading,
       updateForecastData,
+      whatIfData, setWhatIfData, handleWhatIfScenario, 
       forecastSum, setForecastSum,
       forecastValue, setForecastValue,
       yoyGrowth, setYoyGrowth,

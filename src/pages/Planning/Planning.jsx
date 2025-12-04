@@ -90,7 +90,7 @@ const Planning = () => {
                         {/* KPI Cards */}
                         <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-lg transition-shadow duration-200">
                             <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-xl font-semibold text-gray-800">Forecast Period: Nov '24 - Jan '25</h2>
+                                <h2 className="text-xl font-semibold text-gray-800">Forecast Period: Oct-Nov-Dec '24</h2>
                                 <div className="flex items-center gap-2 text-sm text-gray-500">
                                     <span>Last updated: Today</span>
                                     <RefreshCw className="w-4 h-4" />
