@@ -11,9 +11,6 @@ import WaterfallChart from './WaterfallChart'
 
 const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => {
 
-    console.log("global data ", data);
-
-
     // 1. Determine Hierarchy
     const getItemLevel = () => {
         const selectionMap = {}
@@ -43,8 +40,10 @@ const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => 
                 name: key,
                 LYOct: 0, LYNov: 0, LYDec: 0,
                 ForecastOct: 0, ForecastNov: 0, ForecastDec: 0,
-                // Store metadata if available on any item in group
-                salesInputOct: null, salesInputNov: null, salesInputDec: null
+                // Metadata storage
+                salesInputOct: null, salesInputNov: null, salesInputDec: null,
+                // Arrays to store raw items for accurate consensus diff calculation
+                itemsOct: [], itemsNov: [], itemsDec: []
             }
         }
 
@@ -54,16 +53,20 @@ const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => 
         if (item.Date.includes('2023-12')) acc[key].LYDec += Number(item.actual) || 0
 
         // Forecast Logic (2024) & Metadata Capture
+        // We accumulate the raw items into arrays so we can sum their ConsensusForecast later
         if (item.Date.includes('2024-10')) {
             acc[key].ForecastOct += Number(item.forecast) || 0;
+            acc[key].itemsOct.push(item);
             if (item.salesInput) acc[key].salesInputOct = item.salesInput;
         }
         if (item.Date.includes('2024-11')) {
             acc[key].ForecastNov += Number(item.forecast) || 0;
+            acc[key].itemsNov.push(item);
             if (item.salesInput) acc[key].salesInputNov = item.salesInput;
         }
         if (item.Date.includes('2024-12')) {
             acc[key].ForecastDec += Number(item.forecast) || 0;
+            acc[key].itemsDec.push(item);
             if (item.salesInput) acc[key].salesInputDec = item.salesInput;
         }
 
@@ -72,89 +75,76 @@ const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => 
 
     const tableData = Object.values(groupedData).map(item => ({ ...item }))
 
-    // State for Inputs and Consensus
     const [teamInputs, setTeamInputs] = useState({});
     const [consensusValues, setConsensusValues] = useState({});
 
     // --- AUTO-FILL & SYNC EFFECT ---
-    // This runs whenever 'data' changes (i.e. Chatbot updates Context)
+    // This runs whenever 'data' changes (Initial Load OR Chatbot Update)
     useEffect(() => {
-        const nextInputs = { ...teamInputs };
+        const nextInputs = {};
         const nextConsensus = {};
-        console.log("runned");
-
 
         tableData.forEach(row => {
+            // Helper to process a month
+            const processMonth = (items, baselineSum, salesInputMetadata) => {
+                // Default: Consensus = Baseline
+                let consensusSum = baselineSum;
+                let inputData = null;
 
-            console.log("row", row);
+                // If we have items for this month
+                if (items && items.length > 0) {
+                    // 1. Calculate the True Consensus from the Data (which API updated)
+                    // Note: We use 'ConsensusForecast' if available, else 'forecast'
+                    const dataConsensus = items.reduce((sum, item) =>
+                        sum + (item.ConsensusForecast !== undefined ? Number(item.ConsensusForecast) : Number(item.forecast)), 0);
 
-            // 1. Calculate Consensus Base (Forecast + Existing Inputs)
-            let conOct = row.ForecastOct;
-            let conNov = row.ForecastNov;
-            let conDec = row.ForecastDec;
+                    // 2. If Chatbot updated this row, we will have salesInputMetadata
+                    // OR if the Data Consensus differs from Baseline (Manual or API)
+                    if (salesInputMetadata) {
+                        // The Delta is what we show in the Input Box
+                        const delta = dataConsensus - baselineSum;
 
-            // 2. Check for API Updates (Metadata attached to row)
-            // If API sent updates, we populate the 'Sales' input fields
+                        inputData = {
+                            value: Math.round(delta), // Show +20, -50, etc.
+                            comment: salesInputMetadata.comment,
+                            owner: salesInputMetadata.owner
+                        };
 
-            // OCT
-            if (row.salesInputOct) {
-                if (!nextInputs[row.name]) nextInputs[row.name] = { sales: {}, marketing: {}, finance: {} };
-                nextInputs[row.name].sales = {
-                    ...nextInputs[row.name].sales,
-                    oct: {
-                        value: row.salesInputOct.value, // The delta
-                        comment: row.salesInputOct.comment,
-                        owner: row.salesInputOct.owner
+                        // Set Consensus to the Data Value
+                        consensusSum = dataConsensus;
                     }
-                };
-            }
-            // NOV
-            if (row.salesInputNov) {
+                }
+
+                return { consensus: consensusSum, input: inputData };
+            };
+
+            const octResult = processMonth(row.itemsOct, row.ForecastOct, row.salesInputOct);
+            const novResult = processMonth(row.itemsNov, row.ForecastNov, row.salesInputNov);
+            const decResult = processMonth(row.itemsDec, row.ForecastDec, row.salesInputDec);
+
+            // Update Inputs State (Only if inputData exists)
+            if (octResult.input || novResult.input || decResult.input) {
                 if (!nextInputs[row.name]) nextInputs[row.name] = { sales: {}, marketing: {}, finance: {} };
-                nextInputs[row.name].sales = {
-                    ...nextInputs[row.name].sales,
-                    nov: {
-                        value: row.salesInputNov.value,
-                        comment: row.salesInputNov.comment,
-                        owner: row.salesInputNov.owner
-                    }
-                };
-            }
-            // DEC
-            if (row.salesInputDec) {
-                if (!nextInputs[row.name]) nextInputs[row.name] = { sales: {}, marketing: {}, finance: {} };
-                nextInputs[row.name].sales = {
-                    ...nextInputs[row.name].sales,
-                    dec: {
-                        value: row.salesInputDec.value,
-                        comment: row.salesInputDec.comment,
-                        owner: row.salesInputDec.owner
-                    }
-                };
+                if (octResult.input) nextInputs[row.name].sales.oct = octResult.input;
+                if (novResult.input) nextInputs[row.name].sales.nov = novResult.input;
+                if (decResult.input) nextInputs[row.name].sales.dec = decResult.input;
             }
 
-            // 3. Calculate Final Consensus (Forecast + Inputs)
-            // We read from 'nextInputs' to ensure we capture both manual and API inputs
-            const getVal = (t, m) => parseFloat(nextInputs[row.name]?.[t]?.[m]?.value) || 0;
-
-            conOct += getVal('sales', 'oct') + getVal('marketing', 'oct') + getVal('finance', 'oct');
-            conNov += getVal('sales', 'nov') + getVal('marketing', 'nov') + getVal('finance', 'nov');
-            conDec += getVal('sales', 'dec') + getVal('marketing', 'dec') + getVal('finance', 'dec');
-
+            // Update Consensus State
             nextConsensus[row.name] = {
-                oct: Math.round(conOct),
-                nov: Math.round(conNov),
-                dec: Math.round(conDec)
+                oct: Math.round(octResult.consensus),
+                nov: Math.round(novResult.consensus),
+                dec: Math.round(decResult.consensus)
             };
         });
 
         setTeamInputs(nextInputs);
         setConsensusValues(nextConsensus);
 
-    }, [data, selections]); // Dependency on data ensures it updates when Chatbot acts
+    }, [data, selections]);
 
 
-    // Handle MANUAL input changes (User typing)
+    // Handle MANUAL input changes
     const handleTeamInputChange = (itemName, team, month, field, value) => {
         setTeamInputs(prev => {
             const newInputs = { ...prev };
@@ -164,24 +154,20 @@ const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => 
 
             newInputs[itemName][team][month][field] = value;
 
-            // Recalculate Consensus for this row immediately
+            // Recalculate Consensus for this row immediately (Client Side Calc)
             const row = tableData.find(r => r.name === itemName);
             if (row) {
                 const getVal = (t, m) => parseFloat(newInputs[itemName]?.[t]?.[m]?.value) || 0;
-
-                // Helper to recalc a specific month
                 const calcMonth = (m, base) => base + getVal('sales', m) + getVal('marketing', m) + getVal('finance', m);
 
                 setConsensusValues(curr => ({
                     ...curr,
                     [itemName]: {
-                        oct: Math.round(calcMonth('oct', row.ForecastOct)),
-                        nov: Math.round(calcMonth('nov', row.ForecastNov)),
-                        dec: Math.round(calcMonth('dec', row.ForecastDec))
+                        ...curr[itemName], // Keep other months
+                        [month]: Math.round(calcMonth(month, row[`Forecast${month.charAt(0).toUpperCase() + month.slice(1)}`]))
                     }
                 }));
             }
-
             return newInputs;
         });
     };
@@ -212,11 +198,11 @@ const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => 
                         <Table2 className="w-4 h-4" /> Pivot Analysis
                     </Button>
                 </div>
+
                 <ScrollArea className="w-100 whitespace-nowrap rounded-b-md">
                     <div>
                         <Table>
                             <TableHeader className="bg-white">
-                                {/* Keep your existing Headers exactly as you sent them */}
                                 <TableRow>
                                     <TableHead className="border-r border-gray-200 sticky left-0 bg-white z-10 min-w-[150px]">{itemLevel}</TableHead>
                                     <TableHead colSpan={3} className="text-center border-r border-gray-200">Last Year Values</TableHead>
@@ -226,30 +212,23 @@ const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => 
                                     <TableHead colSpan={9} className="text-center border-r border-gray-200 bg-green-50">Marketing Team</TableHead>
                                     <TableHead colSpan={9} className="text-center bg-purple-50">Finance Team</TableHead>
                                 </TableRow>
-                                {/* ... Row 2 and Row 3 Headers (Month Names and Input Labels) - Keep same as previous version ... */}
-                                {/* I am omitting them here for brevity, but assume they are identical to your provided code */}
                                 <TableRow>
                                     <TableHead className="border-r border-gray-200 sticky left-0 bg-white z-10 min-w-[150px]"></TableHead>
                                     <TableHead className="text-center border-r border-gray-200 font-semibold">Oct</TableHead>
                                     <TableHead className="text-center border-r border-gray-200 font-semibold">Nov</TableHead>
                                     <TableHead className="text-center border-r border-gray-200 font-semibold">Dec</TableHead>
-                                    {/* Forecast */}
                                     <TableHead className="text-center border-r border-gray-200">Oct</TableHead>
                                     <TableHead className="text-center border-r border-gray-200">Nov</TableHead>
                                     <TableHead className="text-center border-r border-gray-200">Dec</TableHead>
-                                    {/* Consensus */}
                                     <TableHead className="text-center border-r border-gray-200">Oct</TableHead>
                                     <TableHead className="text-center border-r border-gray-200">Nov</TableHead>
                                     <TableHead className="text-center border-r border-gray-200">Dec</TableHead>
-                                    {/* Sales */}
                                     <TableHead colSpan={3} className="text-center border-r border-gray-200">Oct</TableHead>
                                     <TableHead colSpan={3} className="text-center border-r border-gray-200">Nov</TableHead>
                                     <TableHead colSpan={3} className="text-center border-r border-gray-200">Dec</TableHead>
-                                    {/* Marketing */}
                                     <TableHead colSpan={3} className="text-center border-r border-gray-200">Oct</TableHead>
                                     <TableHead colSpan={3} className="text-center border-r border-gray-200">Nov</TableHead>
                                     <TableHead colSpan={3} className="text-center border-r border-gray-200">Dec</TableHead>
-                                    {/* Finance */}
                                     <TableHead colSpan={3} className="text-center border-r border-gray-200">Oct</TableHead>
                                     <TableHead colSpan={3} className="text-center border-r border-gray-200">Nov</TableHead>
                                     <TableHead colSpan={3} className="text-center">Dec</TableHead>
@@ -286,16 +265,16 @@ const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => 
 
                                             {/* Consensus Values (Calculated) */}
                                             <TableCell className="text-right border-r border-gray-200 font-mono font-semibold bg-yellow-50">
-                                                {consensusValues[row.name]?.oct.toLocaleString() || Math.round(row.ForecastOct).toLocaleString()}
+                                                {(consensusValues[row.name]?.oct ?? Math.round(row.ForecastOct)).toLocaleString()}
                                             </TableCell>
                                             <TableCell className="text-right border-r border-gray-200 font-mono font-semibold bg-yellow-50">
-                                                {consensusValues[row.name]?.nov.toLocaleString() || Math.round(row.ForecastNov).toLocaleString()}
+                                                {(consensusValues[row.name]?.nov ?? Math.round(row.ForecastNov)).toLocaleString()}
                                             </TableCell>
                                             <TableCell className="text-right border-r border-gray-200 font-mono font-semibold bg-yellow-50">
-                                                {consensusValues[row.name]?.dec.toLocaleString() || Math.round(row.ForecastDec).toLocaleString()}
+                                                {(consensusValues[row.name]?.dec ?? Math.round(row.ForecastDec)).toLocaleString()}
                                             </TableCell>
 
-                                            {/* Sales Inputs - now controlled by teamInputs state */}
+                                            {/* Sales Inputs */}
                                             {['oct', 'nov', 'dec'].map(month => (
                                                 <TeamInputCell
                                                     key={`sales-${month}`}
@@ -305,23 +284,15 @@ const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => 
                                                     handleTeamInputChange={handleTeamInputChange}
                                                     setActiveInputs={setActiveInputs}
                                                     colorClass="blue"
-                                                    // Pass values from state so they show up when API populates them
                                                     value={teamInputs[row.name]?.sales?.[month]?.value || ""}
                                                     comment={teamInputs[row.name]?.sales?.[month]?.comment || ""}
                                                     owner={teamInputs[row.name]?.sales?.[month]?.owner || ""}
                                                 />
                                             ))}
-
-                                            {/* Marketing & Finance Inputs (Manual for now) */}
-                                            {['oct', 'nov', 'dec'].map(month => (
-                                                <TeamInputCell key={`mkt-${month}`} row={row} team="marketing" month={month} activeInputs={activeInputs} handleInputFocus={handleInputFocus} handleTeamInputChange={handleTeamInputChange} setActiveInputs={setActiveInputs} colorClass="green" value="" comment="" owner="" />
-                                            ))}
-                                            {['oct', 'nov', 'dec'].map(month => (
-                                                <TeamInputCell key={`fin-${month}`} row={row} team="finance" month={month} activeInputs={activeInputs} handleInputFocus={handleInputFocus} handleTeamInputChange={handleTeamInputChange} setActiveInputs={setActiveInputs} colorClass="purple" value="" comment="" owner="" />
-                                            ))}
-
+                                            {/* Marketing & Finance Inputs */}
+                                            {['oct', 'nov', 'dec'].map(month => (<TeamInputCell key={`mkt-${month}`} row={row} team="marketing" month={month} activeInputs={activeInputs} handleInputFocus={handleInputFocus} handleTeamInputChange={handleTeamInputChange} setActiveInputs={setActiveInputs} colorClass="green" value="" comment="" owner="" />))}
+                                            {['oct', 'nov', 'dec'].map(month => (<TeamInputCell key={`fin-${month}`} row={row} team="finance" month={month} activeInputs={activeInputs} handleInputFocus={handleInputFocus} handleTeamInputChange={handleTeamInputChange} setActiveInputs={setActiveInputs} colorClass="purple" value="" comment="" owner="" />))}
                                         </TableRow>
-
                                         {/* Waterfall Charts */}
                                         {expandedItems[row.name] && (
                                             <TableRow className="bg-white">
@@ -357,51 +328,27 @@ const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => 
     )
 });
 
-// Updated Helper Component to accept 'value', 'comment', 'owner' props
+// Helper Component
 const TeamInputCell = ({ row, team, month, activeInputs, handleInputFocus, handleTeamInputChange, setActiveInputs, colorClass, value, comment, owner }) => {
     const borderColors = { blue: "border-blue-200 focus:ring-blue-300", green: "border-green-200 focus:ring-green-300", purple: "border-purple-200 focus:ring-purple-300" };
     const btnColors = { blue: "bg-blue-600", green: "bg-green-600", purple: "bg-purple-600" };
-
     return (
         <TableCell colSpan={3} className="border-r border-gray-200 p-0">
             <div className="flex flex-col">
                 <div className="flex">
                     <div className="flex-1 min-w-[80px] p-1">
-                        <input
-                            type="number"
-                            className={`w-full p-2 text-sm border rounded-md focus:ring-2 ${borderColors[colorClass]}`}
-                            onChange={(e) => handleTeamInputChange(row.name, team, month, 'value', e.target.value)}
-                            onFocus={() => handleInputFocus(row.name, team, month)}
-                            placeholder="Val"
-                            value={value} // Controlled input
-                        />
+                        <input type="number" className={`w-full p-2 text-sm border rounded-md focus:ring-2 ${borderColors[colorClass]}`} onChange={(e) => handleTeamInputChange(row.name, team, month, 'value', e.target.value)} onFocus={() => handleInputFocus(row.name, team, month)} placeholder="Val" value={value} />
                     </div>
                     <div className="flex-1 min-w-[120px] p-1">
-                        <input
-                            type="text"
-                            className={`w-full p-2 text-sm border rounded-md focus:ring-2 ${borderColors[colorClass]}`}
-                            onChange={(e) => handleTeamInputChange(row.name, team, month, 'comment', e.target.value)}
-                            onFocus={() => handleInputFocus(row.name, team, month)}
-                            placeholder="Cmnt"
-                            value={comment} // Controlled input
-                        />
+                        <input type="text" className={`w-full p-2 text-sm border rounded-md focus:ring-2 ${borderColors[colorClass]}`} onChange={(e) => handleTeamInputChange(row.name, team, month, 'comment', e.target.value)} onFocus={() => handleInputFocus(row.name, team, month)} placeholder="Cmnt" value={comment} />
                     </div>
                     <div className="flex-1 min-w-[120px] p-1">
-                        <input
-                            type="text"
-                            className={`w-full p-2 text-sm border rounded-md focus:ring-2 ${borderColors[colorClass]}`}
-                            onChange={(e) => handleTeamInputChange(row.name, team, month, 'owner', e.target.value)}
-                            onFocus={() => handleInputFocus(row.name, team, month)}
-                            placeholder="Owner"
-                            value={owner} // Controlled input
-                        />
+                        <input type="text" className={`w-full p-2 text-sm border rounded-md focus:ring-2 ${borderColors[colorClass]}`} onChange={(e) => handleTeamInputChange(row.name, team, month, 'owner', e.target.value)} onFocus={() => handleInputFocus(row.name, team, month)} placeholder="Ownr" value={owner} />
                     </div>
                 </div>
                 {activeInputs[`${row.name}-${team}-${month}`] && (
                     <div className="p-1 border-t border-gray-200">
-                        <button className={`w-full text-white px-3 py-1 rounded text-sm ${btnColors[colorClass]}`} onClick={() => setActiveInputs(prev => ({ ...prev, [`${row.name}-${team}-${month}`]: false }))}>
-                            Submit for review
-                        </button>
+                        <button className={`w-full text-white px-3 py-1 rounded text-sm ${btnColors[colorClass]}`} onClick={() => setActiveInputs(prev => ({ ...prev, [`${row.name}-${team}-${month}`]: false }))}>Submit</button>
                     </div>
                 )}
             </div>
