@@ -30,7 +30,7 @@ export const ForecastProvider = ({ children }) => {
     const fetchInitialData = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch("http://localhost:5000/api/planning/data");
+        const response = await fetch("http://20.235.178.245:3000/api/planning/data");
         const result = await response.json();
 
         if (result.success && result.data) {
@@ -38,7 +38,7 @@ export const ForecastProvider = ({ children }) => {
             ...item,
             Date: item.Date,
             key: `${item.Channel}_${item.Chain}_${item.Depot}_${item.SubCat}_${item.SKU}`,
-            actual: item.ActualForecsat !== null ? Number(item.ActualForecsat) : 0,
+            actual: item.ActualForecast !== null ? Number(item.ActualForecast) : 0,
             forecast: item.PredictedForecast !== null ? Number(item.PredictedForecast) : 0,
             ConsensusForecast: (item.ConsensusForecast && item.ConsensusForecast !== 0)
               ? Number(item.ConsensusForecast)
@@ -138,7 +138,7 @@ export const ForecastProvider = ({ children }) => {
     <ForecastContext.Provider value={{
       globalData, setGlobalData, isLoading,
       updateForecastData,
-      whatIfData, setWhatIfData, handleWhatIfScenario, 
+      whatIfData, setWhatIfData, handleWhatIfScenario,
       forecastSum, setForecastSum,
       forecastValue, setForecastValue,
       yoyGrowth, setYoyGrowth,
