@@ -69,7 +69,10 @@ const Chatbot = () => {
             if (activeMode === "default") {
                 if (data.status === "success") {
                     if (data.consensus_data && data.consensus_data.length > 0) {
-                        updateForecastData(data.consensus_data, data.change_details);
+                        // Extract filters from the parsed request
+                        const parsedFilters = data.parsed_request?.parsed_parameters?.filters;
+                        // PASS 3 ARGUMENTS: Data, Metadata, AND Filters
+                        updateForecastData(data.consensus_data, data.change_details, parsedFilters);
                         setMessages(prev => [...prev, {
                             type: 'bot',
                             text: `**Success!** \n\nI've updated **${data.affected_records} records**. The charts have been refreshed.`

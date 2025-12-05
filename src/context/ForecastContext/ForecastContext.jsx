@@ -59,15 +59,37 @@ export const ForecastProvider = ({ children }) => {
   }, []);
 
   // 2. UPDATE DATA FROM CHATBOT
-  const updateForecastData = (updatedRecords, metadata) => {
+  const updateForecastData = (updatedRecords, metadata, parsedFilters) => {
     if (!updatedRecords || updatedRecords.length === 0) return;
-    console.log(`Merging ${updatedRecords.length} records from Chatbot...`);
+
+    // --- NEW: CLIENT-SIDE FILTERING ---
+    let recordsToProcess = updatedRecords;
+
+    // Check if the user specifically requested SKUs
+    if (parsedFilters?.SKU && parsedFilters.SKU.length > 0) {
+      console.log(`Filtering update for requested SKUs: ${parsedFilters.SKU.join(", ")}`);
+
+      // Keep only records that match the requested SKUs
+      recordsToProcess = updatedRecords.filter(record =>
+        parsedFilters.SKU.includes(record.SKU)
+      );
+    }
+    // You can add similar logic for Depot, Chain, etc. if needed
+    // ----------------------------------
+
+    if (recordsToProcess.length === 0) {
+      console.warn("No records matched the requested SKU filter.");
+      return;
+    }
+
+    console.log(`Merging ${recordsToProcess.length} records from Chatbot...`);
 
     setGlobalData(prevData => {
       const getUniqueId = (k, d) => `${k}_${String(d).substring(0, 10)}`;
 
+      // Use 'recordsToProcess' instead of 'updatedRecords'
       const updatesMap = new Map(
-        updatedRecords.map(item => [getUniqueId(item.key, item.Date), item])
+        recordsToProcess.map(item => [getUniqueId(item.key, item.Date), item])
       );
 
       const updatedExistingData = prevData.map(row => {
@@ -89,11 +111,12 @@ export const ForecastProvider = ({ children }) => {
         return row;
       });
 
-      // Upsert logic for new rows
+      // Upsert logic
       const existingKeys = new Set(prevData.map(row => getUniqueId(row.key, row.Date)));
-      const newRecords = updatedRecords
+      const newRecords = recordsToProcess
         .filter(item => !existingKeys.has(getUniqueId(item.key, item.Date)))
         .map(item => ({
+          // ... (Same mapping as before) ...
           ...item,
           actual: 0,
           forecast: item.PredictedForecast || 0,
