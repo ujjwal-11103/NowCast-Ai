@@ -27,7 +27,8 @@ const LoginForm = () => {
     setIsLoading(true);
 
     try {
-      const response = await axiosnew.post('/api/v1/auth/login', formData);
+      // const response = await axiosnew.post('/api/v1/auth/login', formData);
+      const response = await axiosnew.post('https://nowcast-ai-backend.onrender.com/api/v1/auth/login', formData);
 
       // Store token and update auth state
       login(response.data.data.token);
