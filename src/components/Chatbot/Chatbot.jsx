@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useForecast } from "@/context/ForecastContext/ForecastContext";
 
-const Chatbot = () => {
+const Chatbot = ({ filters = {} }) => {
     const [input, setInput] = useState("");
     // Initial message
     const [messages, setMessages] = useState([
@@ -20,7 +20,7 @@ const Chatbot = () => {
 
     // CHANGED: Use a ref for the CONTAINER, not an element at the bottom
     const chatContainerRef = useRef(null);
-    const { updateForecastData, handleWhatIfScenario } = useForecast();
+    const { updateForecastData, handleWhatIfScenario, globalData } = useForecast();
 
     // CHANGED: Scroll logic to target only the container
     useEffect(() => {
@@ -45,17 +45,29 @@ const Chatbot = () => {
         setIsLoading(true);
 
         try {
+            // Clean filters: only include non-null and non-"All" values
+            const cleanFilters = Object.fromEntries(
+                Object.entries(filters).filter(([_, value]) => value && value !== "All")
+            );
+
+            // Generate key from filters (without channel and subCat): Chain_Depot_SKU
+            const key = `${cleanFilters.chain || '*'}_${cleanFilters.depot || '*'}_${cleanFilters.sku || '*'}`;
+
             let apiUrl = 'http://20.235.178.245:5000/api/update-consensus';
-            let payload = { owner: "Rahul", prompt: userMessage.text };
+            let payload = { owner: "Rahul", prompt: userMessage.text, filters: cleanFilters, key };
 
             // Switch API based on Mode
             if (activeMode === "what-if") {
                 apiUrl = 'http://20.235.178.245:5000/api/WhatIf';
-                payload = { prompt: userMessage.text };
+                payload = { prompt: userMessage.text, filters: cleanFilters, key };
             } else if (activeMode === "rca") {
                 apiUrl = 'http://20.235.178.245:5000/api/rca';
-                payload = { include_sources: true, question: userMessage.text };
+                payload = { include_sources: true, question: userMessage.text, filters: cleanFilters, key };
             }
+
+            // Print payload to console
+            console.log(`[${activeMode.toUpperCase()}] Sending Payload:`, payload);
+            console.log(`API URL: ${apiUrl}`);
 
             const response = await fetch(apiUrl, {
                 method: 'POST',

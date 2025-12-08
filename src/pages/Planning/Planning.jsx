@@ -40,8 +40,19 @@ const Planning = () => {
     const [showFilters, setShowFilters] = useState(false);
     const [showPivotTable, setShowPivotTable] = useState(false);
     const [pivotData, setPivotData] = useState([]);
+    const [chartToggle, setChartToggle] = useState({
+        oos: false,
+        seasonalityTrends: false
+    });
 
     const toggleFilters = () => setShowFilters(!showFilters);
+
+    const handleToggleChart = (toggleType) => {
+        setChartToggle(prev => ({
+            ...prev,
+            [toggleType]: !prev[toggleType]
+        }));
+    };
 
     const formatForecastValue = (value, isCurrency = false) => {
         if (value === null || value === undefined) return "N/A";
@@ -174,21 +185,46 @@ const Planning = () => {
                             </div>
                         </Card>
 
-                        {/* Sales Trend Chart & Chatbot */}
+                        {/* OOS Analysis Chart */}
                         <div className="w-full h-[500px] mb-6">
                             <Card className="w-full h-full flex flex-col p-6 bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-200">
                                 <div className="flex justify-between items-center mb-4 flex-none">
-                                    <h3 className="text-lg font-semibold text-gray-800">Sales Trend & Forecast</h3>
+                                    <h3 className="text-lg font-semibold text-gray-800">OOS Days Analysis</h3>
                                 </div>
+                                
+                                {/* Chart Toggle Buttons */}
+                                <div className="flex gap-3 mb-4 flex-none flex-wrap z-10">
+                                    <Button 
+                                        onClick={() => handleToggleChart('oos')}
+                                        className={`font-medium transition-all duration-200 ${
+                                            chartToggle.oos 
+                                                ? 'bg-red-600 hover:bg-red-700 text-white shadow-md' 
+                                                : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                                        }`}
+                                    >
+                                        OOS Days
+                                    </Button>
+                                    <Button 
+                                        onClick={() => handleToggleChart('seasonalityTrends')}
+                                        className={`font-medium transition-all duration-200 ${
+                                            chartToggle.seasonalityTrends 
+                                                ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-md' 
+                                                : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                                        }`}
+                                    >
+                                        Seasonality & Trend
+                                    </Button>
+                                </div>
+
                                 <div className="flex-1 min-h-0 w-full">
-                                    <SalesTrendChart />
+                                    <SalesTrendChart chartToggle={chartToggle} />
                                 </div>
                             </Card>
                         </div>
 
                         {/* --- ROW 2: Chatbot (Full Width) --- */}
                         <div className="w-full h-[600px]">
-                            <Chatbot />
+                            <Chatbot filters={filters} />
                         </div>
 
                         {/* Forecast Table */}

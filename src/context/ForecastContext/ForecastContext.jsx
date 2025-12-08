@@ -38,13 +38,17 @@ export const ForecastProvider = ({ children }) => {
           const mappedData = result.data.map(item => ({
             ...item,
             Date: item.Date,
-            key: `${item.Channel}_${item.Chain}_${item.Depot}_${item.SubCat}_${item.SKU}`,
+            key: `${item.Chain}_${item.Depot}_${item.SubCat}_${item.SKU}`,
             actual: item.ActualForecast !== null ? Number(item.ActualForecast) : 0,
             forecast: item.PredictedForecast !== null ? Number(item.PredictedForecast) : 0,
             ConsensusForecast: (item.ConsensusForecast && item.ConsensusForecast !== 0)
               ? Number(item.ConsensusForecast)
               : (item.PredictedForecast !== null ? Number(item.PredictedForecast) : 0),
             Price: Number(item.Price) || 0,
+            // OOS, Seasonality, and Trends data from API with correct field names
+            oosData: item['OOS Days'] !== null && item['OOS Days'] !== undefined ? Number(item['OOS Days']) : 0,
+            seasonalityData: item['Seasonal Break'] !== null && item['Seasonal Break'] !== undefined ? Number(item['Seasonal Break']) : 0,
+            trendsData: item['TrendAnalysis'] !== null && item['TrendAnalysis'] !== undefined ? Number(item['TrendAnalysis']) : 0,
             isEdited: false
           }));
           setGlobalData(mappedData);

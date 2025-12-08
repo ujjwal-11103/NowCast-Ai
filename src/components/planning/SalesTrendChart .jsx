@@ -3,14 +3,14 @@ import Plot from 'react-plotly.js';
 import { groupBy } from 'lodash';
 import { useForecast } from '@/context/ForecastContext/ForecastContext';
 
-const SalesTrendChart = () => {
+const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false } }) => {
     const { filters, globalData, whatIfData } = useForecast();
 
     const {
-        chartDates, chartActuals, chartForecasts, chartConsensus, chartWhatIf, // New Data Array
-        showConsensusLine, showWhatIfLine // New Flag
+        chartDates, chartActuals, chartForecasts, chartConsensus, chartWhatIf, chartOOS, chartSeasonality, chartTrends,
+        showConsensusLine, showWhatIfLine
     } = useMemo(() => {
-        if (!globalData) return { chartDates: [], chartActuals: [], chartForecasts: [], chartConsensus: [], chartWhatIf: [], showConsensusLine: false, showWhatIfLine: false };
+        if (!globalData) return { chartDates: [], chartActuals: [], chartForecasts: [], chartConsensus: [], chartWhatIf: [], chartOOS: [], chartSeasonality: [], chartTrends: [], showConsensusLine: false, showWhatIfLine: false };
 
         // 1. Helper to filter any dataset
         const filterLogic = (item) => {
@@ -60,11 +60,46 @@ const SalesTrendChart = () => {
 
         const consensusData = sortedDates.map(date => {
             const dayData = groupedGlobal[date] || [];
+            // Only show consensus for dates from October onwards (forecast period)
+            const dateObj = new Date(date);
+            const month = dateObj.getMonth(); // 0-11, so October = 9
+            const isOctoberOrLater = month >= 9; // October (9) onwards
+            
+            if (!isOctoberOrLater) return null;
+            
             const sum = dayData.reduce((acc, item) => {
-                const val = item.ConsensusForecast !== undefined ? Number(item.ConsensusForecast) : (Number(item.forecast) || 0);
-                return acc + val;
+                // Only count if item has been edited
+                if (item.isEdited) {
+                    const val = item.ConsensusForecast !== undefined ? Number(item.ConsensusForecast) : (Number(item.forecast) || 0);
+                    return acc + val;
+                }
+                return acc;
             }, 0);
             return sum > 0 ? sum : null;
+        });
+
+        // OOS Data - Using mapped OOS Days values from API
+        const oosData = sortedDates.map(date => {
+            const dayData = groupedGlobal[date] || [];
+            // Sum OOS Days values for the date
+            const sum = dayData.reduce((acc, item) => acc + (Number(item.oosData) || 0), 0);
+            return sum >= 0 ? sum : null;
+        });
+
+        // Seasonality Data - Using mapped Seasonal Break values from API
+        const seasonalityData = sortedDates.map(date => {
+            const dayData = groupedGlobal[date] || [];
+            // Sum Seasonal Break values for the date
+            const sum = dayData.reduce((acc, item) => acc + (Number(item.seasonalityData) || 0), 0);
+            return sum >= 0 ? sum : null;
+        });
+
+        // Trends Data - Using mapped TrendAnalysis values from API
+        const trendsData = sortedDates.map(date => {
+            const dayData = groupedGlobal[date] || [];
+            // Sum TrendAnalysis values for the date
+            const sum = dayData.reduce((acc, item) => acc + (Number(item.trendsData) || 0), 0);
+            return sum >= 0 ? sum : null;
         });
 
         // 7. What-If Aggregation
@@ -79,7 +114,8 @@ const SalesTrendChart = () => {
 
             // If specific What-If records exist for this date, sum them up
             if (whatIfDay && whatIfDay.length > 0) {
-                return whatIfDay.reduce((sum, item) => sum + item.whatIfForecast, 0);
+                const sum = whatIfDay.reduce((sum, item) => sum + item.whatIfForecast, 0);
+                return sum;
             }
 
             // If NO What-If record, check if we should show Baseline (to make a continuous line)
@@ -91,53 +127,150 @@ const SalesTrendChart = () => {
         });
 
         return {
-            chartDates: sortedDates, chartActuals: actualsData, chartForecasts: forecastsData, chartConsensus: consensusData, chartWhatIf: whatIfChartData,
-            showConsensusLine: hasConsensusData, showWhatIfLine
+            chartDates: sortedDates, 
+            chartActuals: actualsData, 
+            chartForecasts: forecastsData, 
+            chartConsensus: consensusData, 
+            chartWhatIf: whatIfChartData,
+            chartOOS: oosData,
+            chartSeasonality: seasonalityData,
+            chartTrends: trendsData,
+            showConsensusLine: hasConsensusData, 
+            showWhatIfLine
         };
-    }, [filters, globalData, whatIfData]);
+    }, [filters, globalData, whatIfData, chartToggle]);
 
-    // 8. Define Traces
-    const chartTraces = [
-        {
-            x: chartDates, y: chartActuals, type: 'scatter', mode: 'lines+markers', name: 'Actual Sales',
-            line: { color: '#3b82f6', width: 2 }, connectgaps: false
-        },
-        {
-            x: chartDates, y: chartForecasts, type: 'scatter', mode: 'lines+markers', name: 'Baseline Forecast',
-            line: { color: '#22c55e', dash: 'dot', width: 2 }, connectgaps: false
-        }
-    ];
+    // 8. Define Traces - Actual and Baseline always visible, OOS/Seasonality/Trend toggleable
+    const chartTraces = [];
 
+    // Always show Actual Sales (Primary - Left Y-axis)
+    chartTraces.push({
+        x: chartDates, 
+        y: chartActuals, 
+        type: 'scatter', 
+        mode: 'lines+markers', 
+        name: 'Actual Sales',
+        line: { color: '#3b82f6', width: 2 }, 
+        connectgaps: false,
+        yaxis: 'y1'
+    });
+
+    // Always show Baseline Forecast (Primary - Left Y-axis)
+    chartTraces.push({
+        x: chartDates, 
+        y: chartForecasts, 
+        type: 'scatter', 
+        mode: 'lines+markers', 
+        name: 'Baseline Forecast',
+        line: { color: '#22c55e', width: 2, dash: 'dot' }, 
+        connectgaps: false,
+        yaxis: 'y1'
+    });
+
+    // Show Consensus if it has been edited
     if (showConsensusLine) {
         chartTraces.push({
-            x: chartDates, y: chartConsensus, type: 'scatter', mode: 'lines+markers', name: 'Consensus (Updated)',
-            line: { color: '#f97316', width: 2 }, connectgaps: false
+            x: chartDates, 
+            y: chartConsensus, 
+            type: 'scatter', 
+            mode: 'lines+markers', 
+            name: 'Consensus (Updated)',
+            line: { color: '#f97316', width: 2 }, 
+            connectgaps: false,
+            yaxis: 'y1'
         });
     }
 
-    // 9. Add What-If Trace
+    // Toggle: OOS Days (Secondary Y-axis - only when OOS is on, use dual axes)
+    if (chartToggle.oos) {
+        chartTraces.push({
+            x: chartDates, 
+            y: chartOOS, 
+            type: 'scatter', 
+            mode: 'lines+markers', 
+            name: 'OOS Days',
+            line: { color: '#ef4444', width: 2, dash: 'dot' }, 
+            connectgaps: false,
+            yaxis: 'y2'
+        });
+    }
+
+    // Toggle: Seasonality & Trend (Primary Y-axis)
+    if (chartToggle.seasonalityTrends) {
+        chartTraces.push({
+            x: chartDates, 
+            y: chartSeasonality, 
+            type: 'scatter', 
+            mode: 'lines+markers', 
+            name: 'Seasonal Break',
+            line: { color: '#eab308', width: 2, dash: 'dash' }, 
+            connectgaps: false,
+            yaxis: 'y1'
+        });
+        chartTraces.push({
+            x: chartDates, 
+            y: chartTrends, 
+            type: 'scatter', 
+            mode: 'lines+markers', 
+            name: 'Trend Analysis',
+            line: { color: '#06b6d4', width: 2, dash: 'dashdot' }, 
+            connectgaps: false,
+            yaxis: 'y1'
+        });
+    }
+
+    // Show What-If if it exists
     if (showWhatIfLine) {
         chartTraces.push({
-            x: chartDates, y: chartWhatIf, type: 'scatter', mode: 'lines+markers', name: 'What-If Scenario',
-            line: { color: '#9333ea', width: 3, dash: 'dashdot' }, // Purple
-            connectgaps: true // Connect points to see the trend of the scenario
+            x: chartDates, 
+            y: chartWhatIf, 
+            type: 'scatter', 
+            mode: 'lines+markers', 
+            name: 'What-If Scenario',
+            line: { color: '#9333ea', width: 3, dash: 'dashdot' }, 
+            connectgaps: true,
+            yaxis: 'y1'
         });
+    }
+
+    // Build layout based on whether OOS is toggled
+    const layoutConfig = {
+        title: 'OOS Days Analysis',
+        plot_bgcolor: '#ffffff', 
+        paper_bgcolor: '#ffffff',
+        font: { family: 'Inter, sans-serif', size: 12 },
+        margin: { t: 40, r: chartToggle.oos ? 80 : 20, l: 60, b: 50 },
+        xaxis: { title: 'Date', tickangle: -45, gridcolor: '#f3f4f6' },
+        yaxis: { 
+            title: 'Sales Volume', 
+            titlefont: { color: '#3b82f6' },
+            tickfont: { color: '#3b82f6' },
+            gridcolor: '#f3f4f6',
+            side: 'left'
+        },
+        legend: { orientation: 'h', x: 0, y: 1.1 },
+        hovermode: 'x unified', 
+        autosize: true,
+    };
+
+    // Only add yaxis2 if OOS is toggled on
+    if (chartToggle.oos) {
+        layoutConfig.yaxis2 = { 
+            title: 'OOS Days', 
+            titlefont: { color: '#ef4444' },
+            tickfont: { color: '#ef4444' },
+            gridcolor: '#f3f4f6',
+            overlaying: 'y',
+            side: 'right'
+        };
     }
 
     return (
         <Plot
             data={chartTraces}
-            layout={{
-                title: getChartTitle(filters),
-                plot_bgcolor: '#ffffff', paper_bgcolor: '#ffffff',
-                font: { family: 'Inter, sans-serif', size: 12 },
-                margin: { t: 40, r: 20, l: 60, b: 50 },
-                xaxis: { title: 'Date', tickangle: -45, gridcolor: '#f3f4f6' },
-                yaxis: { title: 'Sales Volume', gridcolor: '#f3f4f6' },
-                legend: { orientation: 'h', x: 0, y: 1.1 },
-                hovermode: 'x unified', autosize: true,
-            }}
-            style={{ width: '100%', height: '100%' }} useResizeHandler={true}
+            layout={layoutConfig}
+            style={{ width: '100%', height: '100%' }} 
+            useResizeHandler={true}
         />
     );
 };
