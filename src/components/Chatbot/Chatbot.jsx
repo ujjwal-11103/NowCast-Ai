@@ -64,6 +64,10 @@ const Chatbot = ({ filters = {} }) => {
                 apiUrl = 'http://20.235.178.245:5000/api/rca';
                 payload = { include_sources: true, question: userMessage.text, filters: cleanFilters, key };
             }
+            else if (activeMode === "explorer") {
+                apiUrl = 'http://20.235.178.245:5500/query';
+                payload = { question: userMessage.text };
+            }
 
             // Print payload to console
             console.log(`[${activeMode.toUpperCase()}] Sending Payload:`, payload);
@@ -132,7 +136,21 @@ const Chatbot = ({ filters = {} }) => {
                     }]);
                 }
             }
+            else if (activeMode === "explorer") {
+                const answer = data?.answer;
 
+                if (answer) {
+                    setMessages(prev => [
+                        ...prev,
+                        { type: 'bot', text: answer }
+                    ]);
+                } else {
+                    setMessages(prev => [
+                        ...prev,
+                        { type: 'bot', text: "No summary available for this query." }
+                    ]);
+                }
+            }
         } catch (error) {
             console.error("API Error:", error);
             setMessages(prev => [...prev, {
@@ -149,6 +167,7 @@ const Chatbot = ({ filters = {} }) => {
         switch (activeMode) {
             case 'what-if': return 'text-purple-600 bg-purple-100 border-purple-200';
             case 'rca': return 'text-orange-600 bg-orange-100 border-orange-200';
+            case 'explorer': return 'text-green-600 bg-green-100 border-green-200';
             default: return 'text-blue-600 bg-blue-100 border-blue-200';
         }
     };
@@ -163,6 +182,7 @@ const Chatbot = ({ filters = {} }) => {
                         {activeMode === 'default' && <BarChart3 className="h-5 w-5" />}
                         {activeMode === 'what-if' && <Zap className="h-5 w-5" />}
                         {activeMode === 'rca' && <FileText className="h-5 w-5" />}
+                        {activeMode === 'explorer' && <Sparkles className="h-5 w-5" />}
                     </div>
                     <div>
                         <h3 className="font-bold text-gray-800">Nowcast AI Bot</h3>
@@ -176,7 +196,8 @@ const Chatbot = ({ filters = {} }) => {
                 {[
                     { id: 'default', icon: RefreshCcw, label: 'Consensus', color: 'bg-blue-600' },
                     { id: 'what-if', icon: Zap, label: 'What-If', color: 'bg-purple-600' },
-                    { id: 'rca', icon: FileText, label: 'RCA', color: 'bg-orange-500' }
+                    { id: 'rca', icon: FileText, label: 'RCA', color: 'bg-orange-500' },
+                    { id: 'explorer', icon: Sparkles, label: 'Explorer', color: 'bg-green-600'}
                 ].map((mode) => (
                     <Button
                         key={mode.id}

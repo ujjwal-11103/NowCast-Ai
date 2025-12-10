@@ -41,8 +41,8 @@ const Planning = () => {
     const [showPivotTable, setShowPivotTable] = useState(false);
     const [pivotData, setPivotData] = useState([]);
     const [chartToggle, setChartToggle] = useState({
-        oos: false,
-        seasonalityTrends: false
+        oos: false
+        // seasonalityTrends: false
     });
 
     const toggleFilters = () => setShowFilters(!showFilters);
@@ -204,7 +204,7 @@ const Planning = () => {
                                     >
                                         OOS Days
                                     </Button>
-                                    <Button 
+                                    {/* <Button 
                                         onClick={() => handleToggleChart('seasonalityTrends')}
                                         className={`font-medium transition-all duration-200 ${
                                             chartToggle.seasonalityTrends 
@@ -213,7 +213,7 @@ const Planning = () => {
                                         }`}
                                     >
                                         Seasonality & Trend
-                                    </Button>
+                                    </Button> */}
                                 </div>
 
                                 <div className="flex-1 min-h-0 w-full">

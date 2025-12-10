@@ -46,8 +46,8 @@ export const ForecastProvider = ({ children }) => {
               : (item.PredictedForecast !== null ? Number(item.PredictedForecast) : 0),
             Price: Number(item.Price) || 0,
             // OOS, Seasonality, and Trends data from API with correct field names
-            oosData: item['OOS Days'] !== null && item['OOS Days'] !== undefined ? Number(item['OOS Days']) : 0,
-            seasonalityData: item['Seasonal Break'] !== null && item['Seasonal Break'] !== undefined ? Number(item['Seasonal Break']) : 0,
+            oosData: item['OOS_Days'] !== null && item['OOS_Days'] !== undefined ? Number(item['OOS_Days']) : 0,
+            seasonalityData: item['SeasonalBreak'] !== null && item['SeasonalBreak'] !== undefined ? Number(item['SeasonalBreak']) : 0,
             trendsData: item['TrendAnalysis'] !== null && item['TrendAnalysis'] !== undefined ? Number(item['TrendAnalysis']) : 0,
             isEdited: false
           }));

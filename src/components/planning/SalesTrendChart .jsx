@@ -46,15 +46,26 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
         // 6. Aggregation
         const actualsData = sortedDates.map(date => {
             const dayData = groupedGlobal[date] || [];
-            const hasValidActual = dayData.some(d => d.actual > 0 || d.Period === "History");
-            if (!hasValidActual) return null;
-            return dayData.reduce((sum, entry) => sum + (Number(entry.actual) || 0), 0);
+            const historyRows = dayData.filter(d => d.Period === "History");
+            if (historyRows.length === 0) return null;
+
+            return historyRows.reduce((sum, entry) =>
+                sum + (Number(entry.actual) || 0), 0
+            );
         });
 
         const forecastsData = sortedDates.map(date => {
             const dayData = groupedGlobal[date] || [];
-            const allNull = dayData.every(d => d.forecast === null); // logic dependent on your data
-            const sum = dayData.reduce((acc, item) => acc + (Number(item.forecast) || 0), 0);
+
+            // Lock baseline to ONLY unedited forecast rows
+            const baselineRows = dayData.filter(d => !d.isEdited);
+
+            if (baselineRows.length === 0) return null;
+
+            const sum = baselineRows.reduce((sum, entry) =>
+                sum + (Number(entry.forecast) || 0), 0
+            );
+
             return sum > 0 ? sum : null;
         });
 
@@ -202,7 +213,7 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
             y: chartSeasonality, 
             type: 'scatter', 
             mode: 'lines+markers', 
-            name: 'Seasonal Break',
+            name: 'Seasonality',
             line: { color: '#eab308', width: 2, dash: 'dash' }, 
             connectgaps: false,
             yaxis: 'y1'
