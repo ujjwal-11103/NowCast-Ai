@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Send, Sparkles, Zap, FileText, BarChart3, Bot, User, RefreshCcw } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import Plot from 'react-plotly.js'; // Import Plotly
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -9,24 +10,21 @@ import { useForecast } from "@/context/ForecastContext/ForecastContext";
 
 const Chatbot = ({ filters = {} }) => {
     const [input, setInput] = useState("");
-    // Initial message
     const [messages, setMessages] = useState([
         { type: 'bot', text: 'Hello! I can help you simulate scenarios. Select a mode below or type a command.' }
     ]);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Mode State: "default" | "what-if" | "rca"
+    // Mode State: "default" | "what-if" | "rca" | "explorer"
     const [activeMode, setActiveMode] = useState("default");
 
-    // CHANGED: Use a ref for the CONTAINER, not an element at the bottom
     const chatContainerRef = useRef(null);
-    const { updateForecastData, handleWhatIfScenario, globalData } = useForecast();
+    const { updateForecastData, handleWhatIfScenario } = useForecast();
 
-    // CHANGED: Scroll logic to target only the container
+    // Scroll logic
     useEffect(() => {
         if (chatContainerRef.current) {
             const { scrollHeight, clientHeight } = chatContainerRef.current;
-            // Only scroll if content is taller than container
             if (scrollHeight > clientHeight) {
                 chatContainerRef.current.scrollTo({
                     top: scrollHeight,
@@ -45,34 +43,45 @@ const Chatbot = ({ filters = {} }) => {
         setIsLoading(true);
 
         try {
-            // Clean filters: only include non-null and non-"All" values
+            // 1. Prepare Common Data
             const cleanFilters = Object.fromEntries(
                 Object.entries(filters).filter(([_, value]) => value && value !== "All")
             );
 
-            // Generate key from filters (without channel and subCat): Chain_Depot_SKU
             const key = `${cleanFilters.chain || '*'}_${cleanFilters.depot || '*'}_${cleanFilters.sku || '*'}`;
 
-            let apiUrl = 'http://20.235.178.245:5000/api/update-consensus';
-            let payload = { owner: "Rahul", prompt: userMessage.text, filters: cleanFilters, key };
+            // 2. Construct Unified Payload
+            const apiUrl = 'http://20.235.178.245:5000/api/chat';
 
-            // Switch API based on Mode
-            if (activeMode === "what-if") {
-                apiUrl = 'http://20.235.178.245:5000/api/WhatIf';
-                payload = { prompt: userMessage.text, filters: cleanFilters, key };
-            } else if (activeMode === "rca") {
-                apiUrl = 'http://20.235.178.245:5000/api/rca';
-                payload = { include_sources: true, question: userMessage.text, filters: cleanFilters, key };
+            let payload = {
+                question: userMessage.text,
+                owner: "Rahul",
+                filters: cleanFilters,
+                key: key,
+                type: "query"
+            };
+
+            // Set 'type' based on Active Mode
+            switch (activeMode) {
+                case "default":
+                    payload.type = "update-consensus";
+                    break;
+                case "what-if":
+                    payload.type = "what-if";
+                    break;
+                case "rca":
+                    payload.type = "rca";
+                    break;
+                case "explorer":
+                    payload.type = "query";
+                    break;
+                default:
+                    payload.type = "query";
             }
-            else if (activeMode === "explorer") {
-                apiUrl = 'http://20.235.178.245:5500/query';
-                payload = { question: userMessage.text };
-            }
 
-            // Print payload to console
-            console.log(`[${activeMode.toUpperCase()}] Sending Payload:`, payload);
-            console.log(`API URL: ${apiUrl}`);
+            console.log(`[${activeMode.toUpperCase()}] Sending Payload to ${apiUrl}:`, payload);
 
+            // 3. Single API Call
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -81,76 +90,42 @@ const Chatbot = ({ filters = {} }) => {
 
             const data = await response.json();
 
-            // Handle Response based on Mode
-            if (activeMode === "default") {
-                if (data.status === "success") {
-                    if (data.consensus_data && data.consensus_data.length > 0) {
-                        // Extract filters from the parsed request
-                        const parsedFilters = data.parsed_request?.parsed_parameters?.filters;
-                        // PASS 3 ARGUMENTS: Data, Metadata, AND Filters
-                        updateForecastData(data.consensus_data, data.change_details, parsedFilters);
-                        setMessages(prev => [...prev, {
-                            type: 'bot',
-                            text: `**Success!** \n\nI've updated **${data.affected_records} records**. The charts have been refreshed.`
-                        }]);
-                    } else {
-                        setMessages(prev => [...prev, {
-                            type: 'bot',
-                            text: "I processed your request, but no matching records were found to update."
-                        }]);
-                    }
-                } else {
-                    setMessages(prev => [...prev, {
-                        type: 'bot',
-                        text: `**Error:** ${data.message || "Something went wrong."}`
-                    }]);
-                }
-            }
-            else if (activeMode === "what-if") {
-                if (data.status === "success") {
-                    setMessages(prev => [...prev, {
-                        type: 'bot',
-                        text: data.analysis || "Here is the analysis."
-                    }]);
+            // 4. Unified Response Handling
+            if (data.status === "success") {
 
-                    if (data.updated_records && data.updated_records.length > 0) {
-                        handleWhatIfScenario(data.updated_records);
-                    }
-                } else {
-                    setMessages(prev => [...prev, {
-                        type: 'bot',
-                        text: `**Error:** ${data.message}`
-                    }]);
-                }
-            }
-            else if (activeMode === "rca") {
-                if (data.status === "success") {
-                    setMessages(prev => [...prev, {
-                        type: 'bot',
-                        text: data.report || "Root Cause Analysis complete."
-                    }]);
-                } else {
-                    setMessages(prev => [...prev, {
-                        type: 'bot',
-                        text: `**Error:** ${data.message}`
-                    }]);
-                }
-            }
-            else if (activeMode === "explorer") {
-                const answer = data?.answer;
+                // Prepare the bot message object
+                const botResponse = {
+                    type: 'bot',
+                    text: data.answer || "Request processed successfully.",
+                    chart: data.chart || null // Capture chart data if present
+                };
 
-                if (answer) {
-                    setMessages(prev => [
-                        ...prev,
-                        { type: 'bot', text: answer }
-                    ]);
-                } else {
-                    setMessages(prev => [
-                        ...prev,
-                        { type: 'bot', text: "No summary available for this query." }
-                    ]);
+                // Add message to chat history
+                setMessages(prev => [...prev, botResponse]);
+
+                // B. Handle Data Side-Effects based on Type
+                const records = data.updated_records || data.data || [];
+
+                if (activeMode === "default") {
+                    if (records.length > 0) {
+                        const changeDetails = data.scenario || {};
+                        const parsedFilters = data.scenario?.filters || cleanFilters;
+                        updateForecastData(records, changeDetails, parsedFilters);
+                    }
                 }
+                else if (activeMode === "what-if") {
+                    if (records.length > 0) {
+                        handleWhatIfScenario(records);
+                    }
+                }
+
+            } else {
+                setMessages(prev => [...prev, {
+                    type: 'bot',
+                    text: `**Error:** ${data.message || "The server returned an unsuccessful status."}`
+                }]);
             }
+
         } catch (error) {
             console.error("API Error:", error);
             setMessages(prev => [...prev, {
@@ -162,7 +137,6 @@ const Chatbot = ({ filters = {} }) => {
         }
     };
 
-    // Helper to get Color Scheme based on Mode
     const getModeColor = () => {
         switch (activeMode) {
             case 'what-if': return 'text-purple-600 bg-purple-100 border-purple-200';
@@ -179,14 +153,14 @@ const Chatbot = ({ filters = {} }) => {
             <div className="p-4 bg-white border-b flex justify-between items-center flex-none">
                 <div className="flex items-center gap-3">
                     <div className={`p-2 rounded-lg border ${getModeColor()}`}>
-                        {activeMode === 'default' && <BarChart3 className="h-5 w-5" />}
+                        {activeMode === 'default' && <RefreshCcw className="h-5 w-5" />}
                         {activeMode === 'what-if' && <Zap className="h-5 w-5" />}
                         {activeMode === 'rca' && <FileText className="h-5 w-5" />}
                         {activeMode === 'explorer' && <Sparkles className="h-5 w-5" />}
                     </div>
                     <div>
                         <h3 className="font-bold text-gray-800">Nowcast AI Bot</h3>
-                        <p className="text-xs text-gray-500 capitalize">{activeMode.replace('-', ' ')} Mode Active</p>
+                        <p className="text-xs text-gray-500 capitalize">{activeMode === 'default' ? 'Consensus' : activeMode} Mode Active</p>
                     </div>
                 </div>
             </div>
@@ -197,7 +171,7 @@ const Chatbot = ({ filters = {} }) => {
                     { id: 'default', icon: RefreshCcw, label: 'Consensus', color: 'bg-blue-600' },
                     { id: 'what-if', icon: Zap, label: 'What-If', color: 'bg-purple-600' },
                     { id: 'rca', icon: FileText, label: 'RCA', color: 'bg-orange-500' },
-                    { id: 'explorer', icon: Sparkles, label: 'Explorer', color: 'bg-green-600'}
+                    { id: 'explorer', icon: Sparkles, label: 'Explorer', color: 'bg-green-600' }
                 ].map((mode) => (
                     <Button
                         key={mode.id}
@@ -215,7 +189,7 @@ const Chatbot = ({ filters = {} }) => {
                 ))}
             </div>
 
-            {/* Messages Area - CHANGED: Attached ref here instead of bottom div */}
+            {/* Messages Area */}
             <div
                 ref={chatContainerRef}
                 className="flex-1 overflow-y-auto p-4 bg-slate-50 space-y-6 scroll-smooth"
@@ -231,31 +205,53 @@ const Chatbot = ({ filters = {} }) => {
                                 </div>
                             )}
 
-                            {/* Message Bubble */}
-                            <div className={`max-w-[85%] rounded-2xl p-4 shadow-sm text-sm leading-relaxed 
+                            {/* Message Content */}
+                            <div className={`max-w-[90%] rounded-2xl p-4 shadow-sm text-sm leading-relaxed 
                                 ${isUser
                                     ? 'bg-blue-600 text-white rounded-br-none'
                                     : 'bg-white border border-gray-100 text-gray-800 rounded-bl-none'
                                 }`}>
+
+                                {/* Text Response */}
                                 {isUser ? (
                                     <p className="whitespace-pre-wrap">{msg.text}</p>
                                 ) : (
-                                    /* MARKDOWN RENDERER FOR BOT */
                                     <div className="markdown-content">
                                         <ReactMarkdown
                                             remarkPlugins={[remarkGfm]}
                                             components={{
-                                                // Customize Markdown Elements
                                                 strong: ({ node, ...props }) => <span className="font-bold text-indigo-700" {...props} />,
                                                 em: ({ node, ...props }) => <span className="italic text-gray-600" {...props} />,
                                                 p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
                                                 ul: ({ node, ...props }) => <ul className="list-disc pl-4 mb-2 space-y-1" {...props} />,
-                                                ol: ({ node, ...props }) => <ol className="list-decimal pl-4 mb-2 space-y-1" {...props} />,
                                                 li: ({ node, ...props }) => <li className="pl-1" {...props} />,
                                             }}
                                         >
                                             {msg.text}
                                         </ReactMarkdown>
+                                    </div>
+                                )}
+
+                                {/* RENDER CHART IF PRESENT */}
+                                {msg.chart && !isUser && (
+                                    <div className="mt-4 w-full h-[300px] bg-white rounded-lg border border-gray-200 overflow-hidden">
+                                        <Plot
+                                            data={msg.chart.data}
+                                            layout={{
+                                                ...msg.chart.layout,
+                                                autosize: true,
+                                                margin: { t: 40, r: 20, l: 40, b: 40 }, // Tweak margins for chat bubble
+                                                font: { size: 10 }, // Smaller font for chat
+                                                legend: { orientation: 'h', y: -0.2 } // Move legend to bottom to save space
+                                            }}
+                                            useResizeHandler={true}
+                                            style={{ width: "100%", height: "100%" }}
+                                            config={{
+                                                displayModeBar: "hover", // Shows tools on hover
+                                                displaylogo: false,      // Hides the "Produced with Plotly" logo
+                                                responsive: true,
+                                                modeBarButtonsToRemove: ['lasso2d', 'select2d'] // Optional: remove tools you don't need
+                                            }} />
                                     </div>
                                 )}
                             </div>
@@ -283,7 +279,6 @@ const Chatbot = ({ filters = {} }) => {
                         </div>
                     </div>
                 )}
-                {/* CHANGED: Removed the empty div reference here */}
             </div>
 
             {/* Input Area */}
@@ -293,7 +288,7 @@ const Chatbot = ({ filters = {} }) => {
                         placeholder={
                             activeMode === "default" ? "e.g. Increase forecast by 10% for GT..." :
                                 activeMode === "what-if" ? "e.g. What if we raise prices by 5%?..." :
-                                    "Ask why sales dropped last month..."
+                                    "Ask about root causes..."
                         }
                         value={input}
                         onChange={(e) => setInput(e.target.value)}

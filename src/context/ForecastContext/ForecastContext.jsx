@@ -30,8 +30,8 @@ export const ForecastProvider = ({ children }) => {
     const fetchInitialData = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch("http://20.235.178.245:3001/api/planning/data");
-        // const response = await fetch("http://localhost:3001/api/planning/data");
+        // const response = await fetch("http://20.235.178.245:3001/api/planning/data");
+        const response = await fetch("http://localhost:3001/api/planning/data");
         const result = await response.json();
 
         if (result.success && result.data) {
