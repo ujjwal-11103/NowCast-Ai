@@ -43,45 +43,47 @@ const Chatbot = ({ filters = {} }) => {
         setIsLoading(true);
 
         try {
-            // 1. Prepare Common Data
-            const cleanFilters = Object.fromEntries(
-                Object.entries(filters).filter(([_, value]) => value && value !== "All")
-            );
+            let apiUrl = '';
+            let payload = {};
 
-            const key = `${cleanFilters.chain || '*'}_${cleanFilters.depot || '*'}_${cleanFilters.sku || '*'}`;
+            // --- 1. DETERMINE API & PAYLOAD BASED ON MODE ---
 
-            // 2. Construct Unified Payload
-            const apiUrl = 'http://20.235.178.245:5000/api/chat';
+            if (activeMode === "explorer") {
+                // EXPLORER MODE: Specific Endpoint & Simple Payload
+                apiUrl = 'http://20.235.178.245:5500/query';
+                payload = {
+                    question: userMessage.text
+                };
+            } else {
+                // STANDARD MODES (Default, What-If, RCA): Unified Chat Endpoint
+                apiUrl = 'http://20.235.178.245:5000/api/chat';
 
-            let payload = {
-                question: userMessage.text,
-                owner: "Rahul",
-                filters: cleanFilters,
-                key: key,
-                type: "query"
-            };
+                // Prepare Common Data for Standard Modes
+                const cleanFilters = Object.fromEntries(
+                    Object.entries(filters).filter(([_, value]) => value && value !== "All")
+                );
+                const key = `${cleanFilters.chain || '*'}_${cleanFilters.depot || '*'}_${cleanFilters.sku || '*'}`;
 
-            // Set 'type' based on Active Mode
-            switch (activeMode) {
-                case "default":
-                    payload.type = "update-consensus";
-                    break;
-                case "what-if":
-                    payload.type = "what-if";
-                    break;
-                case "rca":
-                    payload.type = "rca";
-                    break;
-                case "explorer":
-                    payload.type = "query";
-                    break;
-                default:
-                    payload.type = "query";
+                let type = "query";
+                switch (activeMode) {
+                    case "default": type = "update-consensus"; break;
+                    case "what-if": type = "what-if"; break;
+                    case "rca": type = "rca"; break;
+                    default: type = "query";
+                }
+
+                payload = {
+                    question: userMessage.text,
+                    owner: "Rahul",
+                    filters: cleanFilters,
+                    key: key,
+                    type: type
+                };
             }
 
             console.log(`[${activeMode.toUpperCase()}] Sending Payload to ${apiUrl}:`, payload);
 
-            // 3. Single API Call
+            // --- 2. API CALL ---
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -90,32 +92,39 @@ const Chatbot = ({ filters = {} }) => {
 
             const data = await response.json();
 
-            // 4. Unified Response Handling
-            if (data.status === "success") {
+            // --- 3. UNIFIED RESPONSE HANDLING ---
 
-                // Prepare the bot message object
+            // Check success (Explorer returns 'success': true, Chat API returns 'status': 'success')
+            const isSuccess = data.status === "success" || data.success === true;
+
+            if (isSuccess) {
+
+                // A. Display Text Response (Answer/Analysis)
+                const botText = data.answer || "Request processed successfully.";
+
                 const botResponse = {
                     type: 'bot',
-                    text: data.answer || "Request processed successfully.",
-                    chart: data.chart || null // Capture chart data if present
+                    text: botText,
+                    chart: data.chart || null // Capture chart data if present (mainly for what-if)
                 };
 
-                // Add message to chat history
                 setMessages(prev => [...prev, botResponse]);
 
-                // B. Handle Data Side-Effects based on Type
-                const records = data.updated_records || data.data || [];
+                // B. Handle Data Side-Effects based on Mode (Only for Standard API)
+                if (activeMode !== "explorer") {
+                    const records = data.updated_records || data.data || [];
 
-                if (activeMode === "default") {
-                    if (records.length > 0) {
-                        const changeDetails = data.scenario || {};
-                        const parsedFilters = data.scenario?.filters || cleanFilters;
-                        updateForecastData(records, changeDetails, parsedFilters);
+                    if (activeMode === "default") {
+                        if (records.length > 0) {
+                            const changeDetails = data.scenario || {};
+                            const parsedFilters = data.scenario?.filters || payload.filters;
+                            updateForecastData(records, changeDetails, parsedFilters);
+                        }
                     }
-                }
-                else if (activeMode === "what-if") {
-                    if (records.length > 0) {
-                        handleWhatIfScenario(records);
+                    else if (activeMode === "what-if") {
+                        if (records.length > 0) {
+                            handleWhatIfScenario(records);
+                        }
                     }
                 }
 
@@ -205,7 +214,7 @@ const Chatbot = ({ filters = {} }) => {
                                 </div>
                             )}
 
-                            {/* Message Content */}
+                            {/* Message Bubble */}
                             <div className={`max-w-[90%] rounded-2xl p-4 shadow-sm text-sm leading-relaxed 
                                 ${isUser
                                     ? 'bg-blue-600 text-white rounded-br-none'
@@ -240,18 +249,19 @@ const Chatbot = ({ filters = {} }) => {
                                             layout={{
                                                 ...msg.chart.layout,
                                                 autosize: true,
-                                                margin: { t: 40, r: 20, l: 40, b: 40 }, // Tweak margins for chat bubble
-                                                font: { size: 10 }, // Smaller font for chat
-                                                legend: { orientation: 'h', y: -0.2 } // Move legend to bottom to save space
+                                                margin: { t: 40, r: 20, l: 40, b: 40 },
+                                                font: { size: 10 },
+                                                legend: { orientation: 'h', y: -0.2 }
                                             }}
                                             useResizeHandler={true}
                                             style={{ width: "100%", height: "100%" }}
                                             config={{
-                                                displayModeBar: "hover", // Shows tools on hover
-                                                displaylogo: false,      // Hides the "Produced with Plotly" logo
+                                                displayModeBar: "hover",
+                                                displaylogo: false,
                                                 responsive: true,
-                                                modeBarButtonsToRemove: ['lasso2d', 'select2d'] // Optional: remove tools you don't need
-                                            }} />
+                                                modeBarButtonsToRemove: ['lasso2d', 'select2d']
+                                            }}
+                                        />
                                     </div>
                                 )}
                             </div>
@@ -288,7 +298,8 @@ const Chatbot = ({ filters = {} }) => {
                         placeholder={
                             activeMode === "default" ? "e.g. Increase forecast by 10% for GT..." :
                                 activeMode === "what-if" ? "e.g. What if we raise prices by 5%?..." :
-                                    "Ask about root causes..."
+                                    activeMode === "explorer" ? "e.g. Need trend for Jan 2023..." :
+                                        "Ask about root causes..."
                         }
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
@@ -302,7 +313,8 @@ const Chatbot = ({ filters = {} }) => {
                         className={`absolute right-2 h-9 w-9 rounded-full shadow-sm transition-all
                             ${activeMode === "default" ? "bg-blue-600 hover:bg-blue-700" :
                                 activeMode === "what-if" ? "bg-purple-600 hover:bg-purple-700" :
-                                    "bg-orange-500 hover:bg-orange-600"
+                                    activeMode === "explorer" ? "bg-green-600 hover:bg-green-700" :
+                                        "bg-orange-500 hover:bg-orange-600"
                             }`}
                     >
                         <Send className="h-4 w-4 text-white" />
