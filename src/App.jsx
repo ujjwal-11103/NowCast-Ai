@@ -20,6 +20,8 @@ import Reporting from './pages/Reporting/Reporting';
 import ErrorAnalysis from './pages/Error Analysis/ErrorAnalysis';
 import Norms from './pages/Norms/Norms';
 import AuthPage from './pages/auth/AuthPage';
+import ForecastTestPage from './testing/ForecastTestPage';
+import PricingPage from './testing/PricingPage';
 
 const App = () => {
   return (
@@ -37,8 +39,21 @@ const App = () => {
               {/* <Route path="/supplychaintower" element={<SupplyChainTower />} /> */}
 
               <Route path="/" element={<AuthPage />} />
-              
+              {/* <Route path="/forecast" element={<ForecastTestPage />} />
+              <Route path="/pricing" element={<PricingPage />} /> */}
+
               {/* Protected Routes */}
+              {/* <Route path="/forecast" element={
+                <ProtectedRoute>
+                  <ForecastTestPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/pricing" element={
+                <ProtectedRoute>
+                  <PricingPage />
+                </ProtectedRoute>
+              } /> */}
+
               <Route path="/overall" element={
                 <ProtectedRoute>
                   <Overall />

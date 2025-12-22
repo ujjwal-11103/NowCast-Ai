@@ -3,16 +3,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LogIn, Eye, EyeOff } from 'lucide-react';
-import axiosnew from '@/utils/axiosnew';
-import { toast } from "sonner"
-import { Navigate, useNavigate } from 'react-router-dom';
+import { toast } from "sonner";
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth/AuthContext';
+import axiosnew from '@/utils/axiosnew'; // 🔁 API LOGIN (kept for later)
 
+
+// 🔁 AUTH MODE TOGGLE
+const USE_DUMMY_AUTH = true; // 👉 change to false to enable API login
+
+// 🔐 Dummy credentials
+const DUMMY_CREDENTIALS = {
+  username: "admin",
+  password: "admin123",
+};
 
 const LoginForm = () => {
-
   const { login } = useAuth();
-
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -26,21 +33,43 @@ const LoginForm = () => {
     e.preventDefault();
     setIsLoading(true);
 
+    const { username, password } = formData;
+
     try {
-      const response = await axiosnew.post('/api/v1/auth/login', formData);
+      /* =====================================================
+         🟦 DUMMY LOGIN (CURRENT)
+         ===================================================== */
+      if (USE_DUMMY_AUTH) {
+        if (
+          username === DUMMY_CREDENTIALS.username &&
+          password === DUMMY_CREDENTIALS.password
+        ) {
+          login("dummy-auth-token");
+          toast.success("Login successful");
+          navigate("/overall");
+        } else {
+          toast.error("Invalid username or password");
+        }
+        return;
+      }
 
-      // Store token and update auth state
+      /* =====================================================
+         🟩 REAL API LOGIN (ORIGINAL — COMMENTED)
+         ===================================================== */
+      /*
+      const response = await axiosnew.post(
+        'https://nowcast-ai-backend.onrender.com/api/v1/auth/login',
+        formData
+      );
+
       login(response.data.data.token);
-
-      console.log(response.data);
-
-      toast.success("Login Successful");
-
-      // Redirect or update app state here
+      toast.success("Login successful");
       navigate('/overall');
+      */
+
     } catch (error) {
-      toast.error("Login Failed", {
-        description: error.response?.data?.message || "An error occurred",
+      toast.error("Login failed", {
+        description: error?.response?.data?.message || "Something went wrong",
       });
     } finally {
       setIsLoading(false);
@@ -111,14 +140,6 @@ const LoginForm = () => {
           </>
         )}
       </Button>
-      <div className="text-center">
-        <button
-          type="button"
-          className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
-        >
-          Forgot your password?
-        </button>
-      </div>
     </form>
   );
 };

@@ -24,6 +24,7 @@ const SideBar = () => {
         { label: "Error Analysis", path: "/erroranalysis", icon: AlertCircle },
         { label: "Norms", path: "/norms", icon: ClipboardList },
         { label: "Supply Chain", path: "/supplychain", icon: ShoppingCart },
+        // { label: "Token Pricing", path: "/pricing", icon: ShoppingCart },
     ];
 
     // Navigation helpers
@@ -57,8 +58,8 @@ const SideBar = () => {
                     <div className="p-4 flex justify-between items-center border-b border-slate-700">
                         {isSidebarOpen && (
                             <div className="flex items-center gap-2">
-                                <img src="/Intellimark_AI.png" alt="" className="w-8 h-8" />
-                                <span className="text-xl font-bold text-white">Intellimark</span>
+                                <img src="/profitPulse.png" alt="" className="w-8 h-8" />
+                                <span className="text-xl font-bold text-white">Nowcast AI</span>
                             </div>
                         )}
                         <button onClick={toggleSidebar} className="p-1 hover:bg-slate-700 rounded-md">
