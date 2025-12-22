@@ -24,6 +24,7 @@ import { useSidebar } from "@/context/sidebar/SidebarContext";
 import Filters from "@/components/planning/Filters";
 import PivotTableComponent from "@/components/planning/PivotTableComponent";
 import Chatbot from "@/components/Chatbot/Chatbot";
+import { formatIndianNumber as formatForecastValue } from "@/utils/formatters";
 
 
 const Planning = () => {
@@ -64,16 +65,21 @@ const Planning = () => {
         setIsDownloading(true);
         try {
             // Match the key format used in data: Chain_Depot_SubCat_SKU
-            
+
             const key = `${filters.chain || 'All'}_${filters.depot || 'All'}_${filters.sku || 'All'}`;
+            const rawYtd = Number(parentLevelForecast) || 0;
+            const ytdScaled = rawYtd < 10000000
+                ? Number((rawYtd / 100000).toFixed(2))  // Less than 1 Cr -> Lakhs
+                : Number((rawYtd / 10000000).toFixed(2)); // 1 Cr or more -> Crores
+
             const payload = {
                 key: key,
                 report_key: key,
-                forecast_volume: Number(forecastSum) || 0,
-                forecast_value: Number(forecastValue) || 0,
+                forecast_volume: Number(((Number(forecastSum) || 0) / 100000).toFixed(2)), // Scaled to Lakhs (L)
+                forecast_value: Number(((Number(forecastValue) || 0) / 10000000).toFixed(2)), // Scaled to Crores (Cr)
                 yoy_growth: Number(yoyGrowth) || 0,
-                ytd_volume: Number(parentLevelForecast) || 0,
-                model_accuracy: typeof accuracy === 'number' ? accuracy : 0,
+                ytd_volume: ytdScaled,
+                model_accuracy: Number(accuracy) || 0,
                 question: "Generate Report", // Providing default question just in case
                 api_answer: "" // Providing default answer
             };
@@ -370,13 +376,7 @@ const Planning = () => {
 
     }, [tableData, teamInputs]);
 
-    const formatForecastValue = (value, isCurrency = false) => {
-        if (value === null || value === undefined) return "N/A";
-        if (value >= 10000000) return isCurrency ? `₹ ${(value / 10000000).toFixed(1)} Cr` : `${(value / 10000000).toFixed(1)} Cr`;
-        if (value >= 100000) return isCurrency ? `₹ ${(value / 100000).toFixed(1)} L` : `${(value / 100000).toFixed(1)} L`;
-        if (value >= 1000) return isCurrency ? `₹ ${(value / 1000).toFixed(1)} K` : `${(value / 1000).toFixed(1)} K`;
-        return isCurrency ? `₹ ${value.toFixed(1)}` : value.toFixed(1);
-    };
+
 
     if (isLoading) {
         return (
@@ -433,7 +433,7 @@ const Planning = () => {
                                             <Package className="w-5 h-5 text-blue-600" />
                                             <p className="text-sm font-medium text-blue-600">Forecast Volume</p>
                                         </div>
-                                        <div className="text-3xl font-bold text-gray-900">{formatForecastValue(forecastSum, false)}</div>
+                                        <div className="text-3xl font-bold text-gray-900">{Math.round(forecastSum).toLocaleString()}</div>
                                         <p className="text-xs text-gray-600">Total predicted units</p>
                                     </div>
                                 </Card>
@@ -471,7 +471,7 @@ const Planning = () => {
                                             <Calendar className="w-5 h-5 text-purple-600" />
                                             <p className="text-sm font-medium text-purple-600">YTD Volume (2024)</p>
                                         </div>
-                                        <div className="text-3xl font-bold text-gray-900">{formatForecastValue(parentLevelForecast)}</div>
+                                        <div className="text-3xl font-bold text-gray-900">{Math.round(parentLevelForecast).toLocaleString()}</div>
                                         <p className="text-xs text-gray-600">Total Actuals 2024</p>
                                     </div>
                                 </Card>
@@ -559,12 +559,11 @@ const Planning = () => {
                                                         <div>
                                                             <h4 className="text-sm font-medium text-blue-600 mb-1">Total Consensus</h4>
                                                             <div className="text-2xl font-bold text-gray-900">
-                                                                {formatForecastValue(
+                                                                {Math.round(
                                                                     Object.values(consensusValues).reduce((acc, curr) =>
                                                                         acc + (curr.oct || 0) + (curr.nov || 0) + (curr.dec || 0), 0
-                                                                    ),
-                                                                    false
-                                                                )}
+                                                                    )
+                                                                ).toLocaleString()}
                                                             </div>
                                                             <p className="text-xs text-gray-600">Aggregated Volume</p>
                                                         </div>
@@ -574,19 +573,19 @@ const Planning = () => {
                                                         <div>
                                                             <p className="text-xs text-gray-500">Oct</p>
                                                             <p className="text-sm font-semibold text-gray-800">
-                                                                {formatForecastValue(Object.values(consensusValues).reduce((acc, curr) => acc + (curr.oct || 0), 0), false)}
+                                                                {Math.round(Object.values(consensusValues).reduce((acc, curr) => acc + (curr.oct || 0), 0)).toLocaleString()}
                                                             </p>
                                                         </div>
                                                         <div>
                                                             <p className="text-xs text-gray-500">Nov</p>
                                                             <p className="text-sm font-semibold text-gray-800">
-                                                                {formatForecastValue(Object.values(consensusValues).reduce((acc, curr) => acc + (curr.nov || 0), 0), false)}
+                                                                {Math.round(Object.values(consensusValues).reduce((acc, curr) => acc + (curr.nov || 0), 0)).toLocaleString()}
                                                             </p>
                                                         </div>
                                                         <div>
                                                             <p className="text-xs text-gray-500">Dec</p>
                                                             <p className="text-sm font-semibold text-gray-800">
-                                                                {formatForecastValue(Object.values(consensusValues).reduce((acc, curr) => acc + (curr.dec || 0), 0), false)}
+                                                                {Math.round(Object.values(consensusValues).reduce((acc, curr) => acc + (curr.dec || 0), 0)).toLocaleString()}
                                                             </p>
                                                         </div>
                                                     </div>
@@ -651,7 +650,7 @@ const Planning = () => {
                                                         <div key={idx} className="flex flex-col gap-1">
                                                             <div className="flex justify-between items-center text-sm">
                                                                 <span className="font-semibold text-gray-700">{monthData.label}</span>
-                                                                <span className="text-xs text-gray-400">Total: {formatForecastValue(monthData.systemFinal, false)}</span>
+                                                                <span className="text-xs text-gray-400">Total: {Math.round(monthData.systemFinal).toLocaleString()}</span>
                                                             </div>
                                                             <ForecastBridge
                                                                 trend={monthData.trend}
