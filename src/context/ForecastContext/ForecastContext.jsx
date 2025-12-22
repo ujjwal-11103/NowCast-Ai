@@ -47,8 +47,14 @@ export const ForecastProvider = ({ children }) => {
             Price: Number(item.Price) || 0,
             // OOS, Seasonality, and Trends data from API with correct field names
             oosData: item['OOS_Days'] !== null && item['OOS_Days'] !== undefined ? Number(item['OOS_Days']) : 0,
-            seasonalityData: item['SeasonalBreak'] !== null && item['SeasonalBreak'] !== undefined ? Number(item['SeasonalBreak']) : 0,
-            trendsData: item['TrendAnalysis'] !== null && item['TrendAnalysis'] !== undefined ? Number(item['TrendAnalysis']) : 0,
+            seasonalityData: item['Seasonality'] !== null && item['Seasonality'] !== undefined ? Number(item['Seasonality']) : 0,
+            trendsData: item['Trend'] !== null && item['Trend'] !== undefined ? Number(item['Trend']) : 0,
+            upperBand: item['Upper_CL'] !== undefined ? Number(item['Upper_CL']) : (Number(item.PredictedForecast) * 1.15),
+            lowerBand: item['Lower_CL'] !== undefined ? Number(item['Lower_CL']) : (Number(item.PredictedForecast) * 0.85),
+            // New fields for Trend/Summary: Map directly from API
+            Recent_Trend_Category: item.Recent_Trend_Category,
+            Long_Term_Trend_Category: item["Long-term_Trend_Category"],
+            Forecast_Summary: item.Forecast_Summary,
             isEdited: false
           }));
           setGlobalData(mappedData);

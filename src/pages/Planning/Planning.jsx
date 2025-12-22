@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Activity, ArrowDown, ArrowUp, Calendar, DollarSign, ExternalLink, LineChart, Loader2, Minus } from "lucide-react"
 import { Package } from 'lucide-react';
 import { ChartPie } from 'lucide-react';
@@ -11,10 +11,13 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
 import SideBar from "@/components/Sidebar/SideBar";
 import { useForecast } from "@/context/ForecastContext/ForecastContext";
 import SalesTrendChart from "@/components/planning/SalesTrendChart ";
 import ForecastTable from "@/components/planning/ForecastTable";
+import ForecastBreakupTable, { ConsensusBridge, ForecastBridge } from "@/components/planning/ForecastBreakupTable";
 
 import data from "../../jsons/Planning/JF_censored.json"
 import { useSidebar } from "@/context/sidebar/SidebarContext";
@@ -45,6 +48,262 @@ const Planning = () => {
         // seasonalityTrends: false
     });
 
+    // --- LIFTED STATE & LOGIC ---
+    const selections = [
+        { field: 'Channel', value: filters.channel },
+        { field: 'Chain', value: filters.chain },
+        { field: 'Depot', value: filters.depot },
+        { field: 'SubCat', value: filters.subCat },
+        { field: 'SKU', value: filters.sku }
+    ];
+
+    // 1. Determine Hierarchy
+    const [isDownloading, setIsDownloading] = useState(false);
+
+    const handleDownloadReport = async () => {
+        setIsDownloading(true);
+        try {
+            // Match the key format used in data: Chain_Depot_SubCat_SKU
+            
+            const key = `${filters.chain || 'All'}_${filters.depot || 'All'}_${filters.sku || 'All'}`;
+            const payload = {
+                key: key,
+                report_key: key,
+                forecast_volume: Number(forecastSum) || 0,
+                forecast_value: Number(forecastValue) || 0,
+                yoy_growth: Number(yoyGrowth) || 0,
+                ytd_volume: Number(parentLevelForecast) || 0,
+                model_accuracy: typeof accuracy === 'number' ? accuracy : 0,
+                question: "Generate Report", // Providing default question just in case
+                api_answer: "" // Providing default answer
+            };
+
+            console.log("Sending Report Payload:", payload);
+
+            const response = await fetch('http://20.235.178.245:5500/generate-report', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) throw new Error('Failed to generate report');
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "forecast_report.pdf";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Error downloading report:", error);
+            alert(`Failed to download report: ${error.message}. Please check console for details.`);
+        } finally {
+            setIsDownloading(false);
+        }
+    };
+
+    const getItemLevel = () => {
+        const selectionMap = {}
+        selections.forEach(sel => { selectionMap[sel.field] = sel.value })
+        if (selectionMap.Chain === 'All') return 'Channel'
+        if (selectionMap.Depot === 'All') return 'Chain'
+        if (selectionMap.SubCat === 'All') return 'Depot'
+        if (selectionMap.SKU === 'All') return 'SubCat'
+        return 'SKU'
+    }
+    const itemLevel = getItemLevel()
+
+    // 2. Filter Data
+    const filteredData = globalData.filter(item => {
+        return selections.every(sel => {
+            if (sel.field === itemLevel) return true
+            if (sel.value === 'All') return true
+            return item[sel.field] === sel.value
+        })
+    })
+
+    // 3. Group & Sum Data (Oct, Nov, Dec)
+    const groupedData = filteredData.reduce((acc, item) => {
+        const key = item[itemLevel]
+        if (!acc[key]) {
+            acc[key] = {
+                name: key,
+                LYOct: 0, LYNov: 0, LYDec: 0,
+                ForecastOct: 0, ForecastNov: 0, ForecastDec: 0,
+                // Intelligence Columns
+                Recent_Trend_Category: item.Recent_Trend_Category,
+                Long_Term_Trend_Category: item.Long_Term_Trend_Category,
+                Forecast_Summary: item.Forecast_Summary,
+                // Metadata storage
+                salesInputOct: null, salesInputNov: null, salesInputDec: null,
+                // Arrays to store raw items for accurate consensus diff calculation
+                itemsOct: [], itemsNov: [], itemsDec: [],
+                // Forecast Components
+                TrendOct: 0, TrendNov: 0, TrendDec: 0,
+                SeasonalityOct: 0, SeasonalityNov: 0, SeasonalityDec: 0,
+                DiscountOct: 0, DiscountNov: 0, DiscountDec: 0,
+                SpendsOct: 0, SpendsNov: 0, SpendsDec: 0,
+                Lag3Oct: 0, Lag3Nov: 0, Lag3Dec: 0,
+                MA4Oct: 0, MA4Nov: 0, MA4Dec: 0
+            }
+        }
+
+        // LY Logic (2023)
+        if (item.Date.includes('2023-10')) acc[key].LYOct += Number(item.actual) || 0
+        if (item.Date.includes('2023-11')) acc[key].LYNov += Number(item.actual) || 0
+        if (item.Date.includes('2023-12')) acc[key].LYDec += Number(item.actual) || 0
+
+        // Forecast Logic (2024) & Metadata Capture
+        // We accumulate the raw items into arrays so we can sum their ConsensusForecast later
+        if (item.Date.includes('2024-10')) {
+            acc[key].ForecastOct += Number(item.forecast) || 0;
+            acc[key].itemsOct.push(item);
+            if (item.salesInput) acc[key].salesInputOct = item.salesInput;
+
+            acc[key].TrendOct += Number(item.Trend) || (Number(item.forecast || 0) * 0.5);
+            acc[key].SeasonalityOct += Number(item.Seasonality) || (Number(item.forecast || 0) * 0.2);
+            acc[key].DiscountOct += Number(item.Discount) || (Number(item.forecast || 0) * 0.1);
+            acc[key].SpendsOct += Number(item.Spends) || (Number(item.forecast || 0) * 0.1);
+            acc[key].Lag3Oct += Number(item.Lag3) || (Number(item.forecast || 0) * 0.05);
+            acc[key].MA4Oct += Number(item.MA4) || (Number(item.forecast || 0) * 0.05);
+        }
+        if (item.Date.includes('2024-11')) {
+            acc[key].ForecastNov += Number(item.forecast) || 0;
+            acc[key].itemsNov.push(item);
+            if (item.salesInput) acc[key].salesInputNov = item.salesInput;
+
+            acc[key].TrendNov += Number(item.Trend) || (Number(item.forecast || 0) * 0.5);
+            acc[key].SeasonalityNov += Number(item.Seasonality) || (Number(item.forecast || 0) * 0.2);
+            acc[key].DiscountNov += Number(item.Discount) || (Number(item.forecast || 0) * 0.1);
+            acc[key].SpendsNov += Number(item.Spends) || (Number(item.forecast || 0) * 0.1);
+            acc[key].Lag3Nov += Number(item.Lag3) || (Number(item.forecast || 0) * 0.05);
+            acc[key].MA4Nov += Number(item.MA4) || (Number(item.forecast || 0) * 0.05);
+        }
+        if (item.Date.includes('2024-12')) {
+            acc[key].ForecastDec += Number(item.forecast) || 0;
+            acc[key].itemsDec.push(item);
+            if (item.salesInput) acc[key].salesInputDec = item.salesInput;
+
+            acc[key].TrendDec += Number(item.Trend) || (Number(item.forecast || 0) * 0.5);
+            acc[key].SeasonalityDec += Number(item.Seasonality) || (Number(item.forecast || 0) * 0.2);
+            acc[key].DiscountDec += Number(item.Discount) || (Number(item.forecast || 0) * 0.1);
+            acc[key].SpendsDec += Number(item.Spends) || (Number(item.forecast || 0) * 0.1);
+            acc[key].Lag3Dec += Number(item.Lag3) || (Number(item.forecast || 0) * 0.05);
+            acc[key].MA4Dec += Number(item.MA4) || (Number(item.forecast || 0) * 0.05);
+        }
+
+        // Capture Intelligence Columns if present (as they might only be on specific rows like 2024-10)
+        if (!acc[key].Recent_Trend_Category && item.Recent_Trend_Category) acc[key].Recent_Trend_Category = item.Recent_Trend_Category;
+        if (!acc[key].Long_Term_Trend_Category && item.Long_Term_Trend_Category) acc[key].Long_Term_Trend_Category = item.Long_Term_Trend_Category;
+        if (!acc[key].Forecast_Summary && item.Forecast_Summary) acc[key].Forecast_Summary = item.Forecast_Summary;
+
+        return acc
+    }, {})
+
+    const tableData = Object.values(groupedData).map(item => ({ ...item }))
+
+    const [teamInputs, setTeamInputs] = useState({});
+    const [consensusValues, setConsensusValues] = useState({});
+
+    // --- AUTO-FILL & SYNC EFFECT ---
+    // This runs whenever 'globalData' changes (Initial Load OR Chatbot Update)
+    useEffect(() => {
+        const nextInputs = {};
+        const nextConsensus = {};
+
+        tableData.forEach(row => {
+            // Helper to process a month
+            const processMonth = (items, baselineSum, salesInputMetadata) => {
+                // Default: Consensus = Baseline
+                let consensusSum = baselineSum;
+                let inputData = null;
+
+                // If we have items for this month
+                if (items && items.length > 0) {
+                    // 1. Calculate the True Consensus from the Data (which API updated)
+                    // Note: We use 'ConsensusForecast' if available, else 'forecast'
+                    const dataConsensus = items.reduce((sum, item) =>
+                        sum + (item.ConsensusForecast !== undefined ? Number(item.ConsensusForecast) : Number(item.forecast)), 0);
+
+                    // 2. If Chatbot updated this row, we will have salesInputMetadata
+                    // OR if the Data Consensus differs from Baseline (Manual or API)
+                    if (salesInputMetadata) {
+                        // The Delta is what we show in the Input Box
+                        const delta = dataConsensus - baselineSum;
+
+                        inputData = {
+                            value: Math.round(delta), // Show +20, -50, etc.
+                            comment: salesInputMetadata.comment,
+                            owner: salesInputMetadata.owner
+                        };
+
+                        // Set Consensus to the Data Value
+                        consensusSum = dataConsensus;
+                    }
+                }
+
+                return { consensus: consensusSum, input: inputData };
+            };
+
+            const octResult = processMonth(row.itemsOct, row.ForecastOct, row.salesInputOct);
+            const novResult = processMonth(row.itemsNov, row.ForecastNov, row.salesInputNov);
+            const decResult = processMonth(row.itemsDec, row.ForecastDec, row.salesInputDec);
+
+            // Update Inputs State (Only if inputData exists)
+            if (octResult.input || novResult.input || decResult.input) {
+                if (!nextInputs[row.name]) nextInputs[row.name] = { sales: {}, marketing: {}, finance: {} };
+                if (octResult.input) nextInputs[row.name].sales.oct = octResult.input;
+                if (novResult.input) nextInputs[row.name].sales.nov = novResult.input;
+                if (decResult.input) nextInputs[row.name].sales.dec = decResult.input;
+            }
+
+            // Update Consensus State
+            nextConsensus[row.name] = {
+                oct: Math.round(octResult.consensus),
+                nov: Math.round(novResult.consensus),
+                dec: Math.round(decResult.consensus)
+            };
+        });
+
+        setTeamInputs(nextInputs);
+        setConsensusValues(nextConsensus);
+
+    }, [globalData, filters]); // Re-run when data or filters change
+
+
+    // Handle MANUAL input changes
+    const handleTeamInputChange = (itemName, team, month, field, value) => {
+        setTeamInputs(prev => {
+            const newInputs = { ...prev };
+            if (!newInputs[itemName]) newInputs[itemName] = { sales: {}, marketing: {}, finance: {} };
+            if (!newInputs[itemName][team]) newInputs[itemName][team] = {};
+            if (!newInputs[itemName][team][month]) newInputs[itemName][team][month] = {};
+
+            newInputs[itemName][team][month][field] = value;
+
+            // Recalculate Consensus for this row immediately (Client Side Calc)
+            const row = tableData.find(r => r.name === itemName);
+            if (row) {
+                const getVal = (t, m) => parseFloat(newInputs[itemName]?.[t]?.[m]?.value) || 0;
+                const calcMonth = (m, base) => base + getVal('sales', m) + getVal('marketing', m) + getVal('finance', m);
+
+                setConsensusValues(curr => ({
+                    ...curr,
+                    [itemName]: {
+                        ...curr[itemName], // Keep other months
+                        [month]: Math.round(calcMonth(month, row[`Forecast${month.charAt(0).toUpperCase() + month.slice(1)}`]))
+                    }
+                }));
+            }
+            return newInputs;
+        });
+    };
+
+    // --- END LIFTED STATE & LOGIC ---
+
     const toggleFilters = () => setShowFilters(!showFilters);
 
     const handleToggleChart = (toggleType) => {
@@ -53,6 +312,63 @@ const Planning = () => {
             [toggleType]: !prev[toggleType]
         }));
     };
+
+    // Calculate Aggregated Bridge Data Per Month
+    const bridgeData = React.useMemo(() => {
+        if (!tableData || tableData.length === 0) return [];
+
+        // Aggregate per Month
+        const months = {
+            'Oct': { label: 'Oct', baseline: 0, sales: 0, marketing: 0, finance: 0, trend: 0, seasonality: 0, discount: 0, spends: 0, lag3: 0, ma4: 0 },
+            'Nov': { label: 'Nov', baseline: 0, sales: 0, marketing: 0, finance: 0, trend: 0, seasonality: 0, discount: 0, spends: 0, lag3: 0, ma4: 0 },
+            'Dec': { label: 'Dec', baseline: 0, sales: 0, marketing: 0, finance: 0, trend: 0, seasonality: 0, discount: 0, spends: 0, lag3: 0, ma4: 0 },
+        };
+
+        tableData.forEach(row => {
+            // Baselines (Already summed in tableData items)
+            months['Oct'].baseline += (Number(row.ForecastOct) || 0);
+            months['Nov'].baseline += (Number(row.ForecastNov) || 0);
+            months['Dec'].baseline += (Number(row.ForecastDec) || 0);
+
+            // Inputs (Keyed by row name)
+            const inputs = teamInputs[row.name];
+            if (inputs) {
+                // Sales
+                months['Oct'].sales += (parseFloat(inputs.sales?.oct?.value) || 0);
+                months['Nov'].sales += (parseFloat(inputs.sales?.nov?.value) || 0);
+                months['Dec'].sales += (parseFloat(inputs.sales?.dec?.value) || 0);
+
+                // Marketing
+                months['Oct'].marketing += (parseFloat(inputs.marketing?.oct?.value) || 0);
+                months['Nov'].marketing += (parseFloat(inputs.marketing?.nov?.value) || 0);
+                months['Dec'].marketing += (parseFloat(inputs.marketing?.dec?.value) || 0);
+
+                // Finance
+                months['Oct'].finance += (parseFloat(inputs.finance?.oct?.value) || 0);
+                months['Nov'].finance += (parseFloat(inputs.finance?.nov?.value) || 0);
+                months['Dec'].finance += (parseFloat(inputs.finance?.dec?.value) || 0);
+            }
+
+            // System Components
+            ['Oct', 'Nov', 'Dec'].forEach(m => {
+                const suffix = m; // Oct, Nov, Dec
+                months[m].trend += (Number(row[`Trend${suffix}`]) || 0);
+                months[m].seasonality += (Number(row[`Seasonality${suffix}`]) || 0);
+                months[m].discount += (Number(row[`Discount${suffix}`]) || 0);
+                months[m].spends += (Number(row[`Spends${suffix}`]) || 0);
+                months[m].lag3 += (Number(row[`Lag3${suffix}`]) || 0);
+                months[m].ma4 += (Number(row[`MA4${suffix}`]) || 0);
+            });
+        });
+
+        // Calculate Finals
+        return Object.values(months).map(m => ({
+            ...m,
+            final: m.baseline + m.sales + m.marketing + m.finance,
+            systemFinal: m.trend + m.seasonality + m.discount + m.spends + m.lag3 + m.ma4
+        }));
+
+    }, [tableData, teamInputs]);
 
     const formatForecastValue = (value, isCurrency = false) => {
         if (value === null || value === undefined) return "N/A";
@@ -75,12 +391,12 @@ const Planning = () => {
 
     return (
         <div>
-            <div className="flex">
-                <div className={`transition-all duration-300 ${isSidebarOpen ? "w-64" : "w-16"} fixed`}>
+            <div className="flex min-h-screen relative">
+                <div className={`transition-all duration-300 ${isSidebarOpen ? "w-64" : "w-16"} fixed z-[100] h-full`}>
                     <SideBar />
                 </div>
 
-                <div className={`main transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-16"} w-full bg-gray-50 p-6`}>
+                <div className={`main transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-16"} flex-1 bg-gray-50 p-6`}>
                     <div className="max-w-7xl mx-auto space-y-6">
                         {/* Header */}
                         <div className="flex justify-between items-start">
@@ -108,8 +424,8 @@ const Planning = () => {
                                 </div>
                             </div>
 
-                            {/* UPDATED GRID TO 5 COLUMNS */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                            {/* UPDATED GRID TO 5 COLUMNS - RESPONSIVE */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                                 {/* 1. Forecast Volume */}
                                 <Card className="p-6 bg-blue-50 border border-blue-100 hover:scale-105 transition-transform">
                                     <div className="space-y-2">
@@ -185,41 +501,182 @@ const Planning = () => {
                             </div>
                         </Card>
 
-                        {/* OOS Analysis Chart */}
-                        <div className="w-full h-[500px] mb-6">
-                            <Card className="w-full h-full flex flex-col p-6 bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-200">
-                                <div className="flex justify-between items-center mb-4 flex-none">
-                                    <h3 className="text-lg font-semibold text-gray-800">OOS Days Analysis</h3>
-                                </div>
-                                
-                                {/* Chart Toggle Buttons */}
-                                <div className="flex gap-3 mb-4 flex-none flex-wrap z-10">
-                                    <Button 
-                                        onClick={() => handleToggleChart('oos')}
-                                        className={`font-medium transition-all duration-200 ${
-                                            chartToggle.oos 
-                                                ? 'bg-red-600 hover:bg-red-700 text-white shadow-md' 
-                                                : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                                        }`}
-                                    >
-                                        OOS Days
-                                    </Button>
-                                    {/* <Button 
-                                        onClick={() => handleToggleChart('seasonalityTrends')}
-                                        className={`font-medium transition-all duration-200 ${
-                                            chartToggle.seasonalityTrends 
-                                                ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-md' 
-                                                : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                                        }`}
-                                    >
-                                        Seasonality & Trend
-                                    </Button> */}
-                                </div>
+                        {/* OOS Analysis Chart & Forecast Bridge - RESPONSIVE CONTAINER */}
+                        <div className="flex flex-col lg:flex-row w-full gap-6 mb-6">
+                            {/* OOS Days Analysis (70% on Desktop, 100% on Mobile) */}
+                            <div className="w-full lg:w-[70%] h-[450px] lg:h-[500px] min-w-0">
+                                <Card className="w-full h-full flex flex-col p-6 bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+                                    <div className="flex justify-between items-center mb-4 flex-none">
+                                        <h3 className="text-lg font-semibold text-gray-800">OOS Days Analysis</h3>
+                                    </div>
 
-                                <div className="flex-1 min-h-0 w-full">
-                                    <SalesTrendChart chartToggle={chartToggle} />
-                                </div>
-                            </Card>
+                                    {/* Chart Toggle Buttons */}
+                                    <div className="flex gap-3 mb-4 flex-none flex-wrap z-10">
+                                        <Button
+                                            onClick={() => handleToggleChart('oos')}
+                                            className={`font-medium transition-all duration-200 ${chartToggle.oos
+                                                ? 'bg-red-600 hover:bg-red-700 text-white shadow-md'
+                                                : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                                                }`}
+                                        >
+                                            OOS Days
+                                        </Button>
+                                    </div>
+
+                                    <div className="flex-1 min-h-0 w-full">
+                                        <SalesTrendChart
+                                            chartToggle={chartToggle}
+                                            manualConsensus={{
+                                                '2024-10-01': Object.values(consensusValues).reduce((acc, curr) => acc + (curr.oct || 0), 0),
+                                                '2024-11-01': Object.values(consensusValues).reduce((acc, curr) => acc + (curr.nov || 0), 0),
+                                                '2024-12-01': Object.values(consensusValues).reduce((acc, curr) => acc + (curr.dec || 0), 0)
+                                            }}
+                                        />
+                                    </div>
+                                </Card>
+                            </div>
+
+                            {/* Forecast Bridge (30% on Desktop, 100% on Mobile) */}
+                            <div className="w-full lg:w-[30%] h-[500px] lg:h-[500px] min-w-0">
+                                <Card className="w-full h-full flex flex-col p-6 bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+                                    <div className="flex justify-between items-center mb-4 flex-none">
+                                        <h3 className="text-lg font-semibold text-gray-800">Forecast Analysis</h3>
+                                    </div>
+
+                                    <Tabs defaultValue="consensus" className="flex-1 flex flex-col overflow-hidden">
+                                        <TabsList className="grid w-full grid-cols-2 mb-4">
+                                            <TabsTrigger value="consensus">Consensus Breakup</TabsTrigger>
+                                            <TabsTrigger value="forecast">Forecast Breakup</TabsTrigger>
+                                        </TabsList>
+
+                                        {/* Tab 1: Consensus (Summary + Bridge) */}
+                                        <TabsContent value="consensus" className="flex-1 overflow-y-auto pr-2 space-y-6 mt-0">
+                                            {/* 1. Consensus Breakup Section */}
+                                            <div className="space-y-3">
+                                                <h4 className="text-sm font-medium text-gray-700">Consensus Breakup</h4>
+                                                <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
+                                                    <div className="flex justify-between items-start mb-3">
+                                                        <div>
+                                                            <h4 className="text-sm font-medium text-blue-600 mb-1">Total Consensus</h4>
+                                                            <div className="text-2xl font-bold text-gray-900">
+                                                                {formatForecastValue(
+                                                                    Object.values(consensusValues).reduce((acc, curr) =>
+                                                                        acc + (curr.oct || 0) + (curr.nov || 0) + (curr.dec || 0), 0
+                                                                    ),
+                                                                    false
+                                                                )}
+                                                            </div>
+                                                            <p className="text-xs text-gray-600">Aggregated Volume</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-3 gap-2 pt-3 border-t border-blue-100">
+                                                        <div>
+                                                            <p className="text-xs text-gray-500">Oct</p>
+                                                            <p className="text-sm font-semibold text-gray-800">
+                                                                {formatForecastValue(Object.values(consensusValues).reduce((acc, curr) => acc + (curr.oct || 0), 0), false)}
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-xs text-gray-500">Nov</p>
+                                                            <p className="text-sm font-semibold text-gray-800">
+                                                                {formatForecastValue(Object.values(consensusValues).reduce((acc, curr) => acc + (curr.nov || 0), 0), false)}
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-xs text-gray-500">Dec</p>
+                                                            <p className="text-sm font-semibold text-gray-800">
+                                                                {formatForecastValue(Object.values(consensusValues).reduce((acc, curr) => acc + (curr.dec || 0), 0), false)}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* 2. Forecast Breakup (Waterfalls) Section */}
+                                            <div className="space-y-3">
+                                                <div className="flex justify-between items-center">
+                                                    <h4 className="text-sm font-medium text-gray-700">Consensus Bridge</h4>
+                                                    {/* Legend */}
+                                                    <div className="flex flex-wrap gap-2">
+                                                        <div className="flex items-center gap-1">
+                                                            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                                                            <span className="text-[10px] text-gray-500">Sales</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-1">
+                                                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                                            <span className="text-[10px] text-gray-500">Mkt</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-1">
+                                                            <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                                                            <span className="text-[10px] text-gray-500">Fin</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden p-3 space-y-4">
+                                                    {bridgeData.map((monthData, idx) => (
+                                                        <div key={idx} className="flex flex-col gap-1">
+                                                            <div className="flex justify-between items-center text-sm">
+                                                                <span className="font-semibold text-gray-700">{monthData.label}</span>
+                                                                <span className="text-xs text-gray-400">Target: {Math.round(monthData.final)}</span>
+                                                            </div>
+                                                            <ForecastBridge
+                                                                {...monthData}
+                                                                className="h-32 w-full text-base shadow-sm bg-slate-50 border border-slate-100"
+                                                            />
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </TabsContent>
+
+                                        {/* Tab 2: Forecast Breakup (Table) */}
+                                        <TabsContent value="forecast" className="flex-1 overflow-y-auto mt-0 space-y-6">
+                                            {/* 1. Forecast System Breakup Section */}
+                                            <div className="space-y-3">
+                                                <div className="flex justify-between items-center">
+                                                    <h4 className="text-sm font-medium text-gray-700">System Forecast Bridge</h4>
+                                                    {/* Legend */}
+                                                    <div className="flex flex-wrap gap-2">
+                                                        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-indigo-600"></div><span className="text-[10px] text-gray-500">Trend</span></div>
+                                                        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-cyan-500"></div><span className="text-[10px] text-gray-500">Seas.</span></div>
+                                                        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-amber-500"></div><span className="text-[10px] text-gray-500">Disc.</span></div>
+                                                        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-500"></div><span className="text-[10px] text-gray-500">Spends</span></div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden p-3 space-y-4">
+                                                    {bridgeData.map((monthData, idx) => (
+                                                        <div key={idx} className="flex flex-col gap-1">
+                                                            <div className="flex justify-between items-center text-sm">
+                                                                <span className="font-semibold text-gray-700">{monthData.label}</span>
+                                                                <span className="text-xs text-gray-400">Total: {formatForecastValue(monthData.systemFinal, false)}</span>
+                                                            </div>
+                                                            <ForecastBridge
+                                                                trend={monthData.trend}
+                                                                seasonality={monthData.seasonality}
+                                                                discount={monthData.discount}
+                                                                spends={monthData.spends}
+                                                                lag3={monthData.lag3}
+                                                                ma4={monthData.ma4}
+                                                                final={monthData.systemFinal}
+                                                                className="h-32 w-full text-base shadow-sm bg-slate-50 border border-slate-100"
+                                                            />
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            <ForecastBreakupTable
+                                                tableData={tableData}
+                                                teamInputs={teamInputs}
+                                                consensusValues={consensusValues}
+                                            />
+                                        </TabsContent>
+                                    </Tabs>
+                                </Card>
+                            </div>
                         </div>
 
                         {/* --- ROW 2: Chatbot (Full Width) --- */}
@@ -231,13 +688,11 @@ const Planning = () => {
                         <div className="mb-8">
                             <ForecastTable
                                 data={globalData}
-                                selections={[
-                                    { field: 'Channel', value: filters.channel },
-                                    { field: 'Chain', value: filters.chain },
-                                    { field: 'Depot', value: filters.depot },
-                                    { field: 'SubCat', value: filters.subCat },
-                                    { field: 'SKU', value: filters.sku }
-                                ]}
+                                selections={selections}
+                                tableData={tableData}
+                                teamInputs={teamInputs}
+                                consensusValues={consensusValues}
+                                handleTeamInputChange={handleTeamInputChange}
                                 onPivotRequest={(tableData) => {
                                     setPivotData(tableData);
                                     setShowPivotTable(true);
@@ -252,6 +707,27 @@ const Planning = () => {
                                 onClose={() => setShowPivotTable(false)}
                             />
                         )}
+                    </div>
+
+                    {/* Download Report Button - Fixed Bottom */}
+                    <div className="mt-8 flex justify-end pb-8 max-w-7xl mx-auto px-6">
+                        <Button
+                            onClick={handleDownloadReport}
+                            disabled={isDownloading}
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white min-w-[200px]"
+                        >
+                            {isDownloading ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Generating PDF...
+                                </>
+                            ) : (
+                                <>
+                                    <Download className="mr-2 h-4 w-4" />
+                                    Download Forecast Report
+                                </>
+                            )}
+                        </Button>
                     </div>
                 </div>
             </div>
