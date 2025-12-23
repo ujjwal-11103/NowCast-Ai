@@ -59,8 +59,8 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
         const forecastsData = sortedDates.map(date => {
             const dayData = groupedGlobal[date] || [];
 
-            // Lock baseline to ONLY unedited forecast rows
-            const baselineRows = dayData.filter(d => !d.isEdited);
+            // Lock baseline to display ALL forecast rows (Edited or Not) to serve as a reference
+            const baselineRows = dayData;
 
             if (baselineRows.length === 0) return null;
 
@@ -125,7 +125,7 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
         // 7a. Confidence Intervals (Upper/Lower Band)
         const upperBandData = sortedDates.map(date => {
             const dayData = groupedGlobal[date] || [];
-            const baselineRows = dayData.filter(d => !d.isEdited);
+            const baselineRows = dayData; // Use ALL rows for bands too
             if (baselineRows.length === 0) return null;
 
             // Check if data has bands
@@ -138,7 +138,7 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
 
         const lowerBandData = sortedDates.map(date => {
             const dayData = groupedGlobal[date] || [];
-            const baselineRows = dayData.filter(d => !d.isEdited);
+            const baselineRows = dayData; // Use ALL rows for bands too
             if (baselineRows.length === 0) return null;
 
             const hasBand = baselineRows.some(d => d.lowerBand !== null && d.lowerBand !== undefined);

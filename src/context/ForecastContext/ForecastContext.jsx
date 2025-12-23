@@ -131,20 +131,19 @@ export const ForecastProvider = ({ children }) => {
           return update; // Exact match found
         }
 
-        // Fuzzy match: Look for same SKU and Date (and Depot/Chain if available)
+        // Fuzzy match: Look for same SKU and Date
         // Normalize Date comparison (first 10 chars)
         const updateDate = String(update.Date).substring(0, 10);
 
+        // Relaxed Match: Prioritize SKU and Date. 
+        // We assume that for a single Date, an SKU only appears once in the flat list (or at least within the same context).
         const strictMatch = prevData.find(row => {
           const rowDate = String(row.Date).substring(0, 10);
-          return row.SKU === update.SKU &&
-            rowDate === updateDate &&
-            (!update.Depot || row.Depot === update.Depot) &&
-            (!update.Chain || row.Chain === update.Chain);
+          return row.SKU === update.SKU && rowDate === updateDate;
         });
 
         if (strictMatch) {
-          console.log(`SmartMatch: Linked update for ${update.SKU} to existing key ${strictMatch.key}`);
+          console.log(`SmartMatch (Relaxed): Linked update for ${update.SKU} (${updateDate}) to existing key ${strictMatch.key}`);
           return { ...update, key: strictMatch.key };
         }
 
