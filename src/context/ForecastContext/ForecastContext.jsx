@@ -94,12 +94,67 @@ export const ForecastProvider = ({ children }) => {
 
     console.log(`Merging ${recordsToProcess.length} records from Chatbot...`);
 
+    // --- PRE-PROCESS RECORDS TO ENSURE KEYS AND TYPES MATCH ---
+    const sanitizedRecords = recordsToProcess.map(record => {
+      // Ensure key matches the format used in fetchInitialData
+      // Added fallback for SubCategory just in case
+      const key = record.key || `${record.Chain}_${record.Depot}_${record.SubCat || record.SubCategory}_${record.SKU}`;
+
+      // Determine the new consensus value. 
+      // If the API returns 'ConsensusForecast', use it. 
+      // If not, but returns 'PredictedForecast' (common in ML updates), use that as the new consensus.
+      let newConsensus = record.ConsensusForecast;
+      if (newConsensus === undefined || newConsensus === null) {
+        newConsensus = record.PredictedForecast;
+      }
+
+      return {
+        ...record,
+        key,
+        ConsensusForecast: newConsensus !== undefined && newConsensus !== null ? Number(newConsensus) : 0,
+        PredictedForecast: record.PredictedForecast !== undefined ? Number(record.PredictedForecast) : undefined
+      };
+    });
+
     setGlobalData(prevData => {
       const getUniqueId = (k, d) => `${k}_${String(d).substring(0, 10)}`;
 
-      // Use 'recordsToProcess' instead of 'updatedRecords'
+      // Helper set for fast existing key check
+      const existingKeySet = new Set(prevData.map(row => getUniqueId(row.key, row.Date)));
+
+      // --- SMART KEY MATCHING ---
+      // If the constructed key doesn't match an existing record, search for a semantic match (SKU + Date)
+      // and adopt the existing key to ensure WE UPDATE instead of INSERT (preventing duplicates).
+      const finalUpdates = sanitizedRecords.map(update => {
+        const currentId = getUniqueId(update.key, update.Date);
+        if (existingKeySet.has(currentId)) {
+          return update; // Exact match found
+        }
+
+        // Fuzzy match: Look for same SKU and Date (and Depot/Chain if available)
+        // Normalize Date comparison (first 10 chars)
+        const updateDate = String(update.Date).substring(0, 10);
+
+        const strictMatch = prevData.find(row => {
+          const rowDate = String(row.Date).substring(0, 10);
+          return row.SKU === update.SKU &&
+            rowDate === updateDate &&
+            (!update.Depot || row.Depot === update.Depot) &&
+            (!update.Chain || row.Chain === update.Chain);
+        });
+
+        if (strictMatch) {
+          console.log(`SmartMatch: Linked update for ${update.SKU} to existing key ${strictMatch.key}`);
+          return { ...update, key: strictMatch.key };
+        }
+
+        return update; // True new record
+      });
+
+
+      // Build Map from final updates
       const updatesMap = new Map(
-        recordsToProcess.map(item => [getUniqueId(item.key, item.Date), item])
+        finalUpdates.map(item => [getUniqueId(item.key, item.Date), item])
       );
 
       const updatedExistingData = prevData.map(row => {
@@ -108,7 +163,7 @@ export const ForecastProvider = ({ children }) => {
           const update = updatesMap.get(rowId);
           return {
             ...row,
-            ConsensusForecast: update.ConsensusForecast,
+            ConsensusForecast: update.ConsensusForecast, // Now guaranteed to be a number (or 0)
             forecast: update.PredictedForecast !== undefined ? update.PredictedForecast : row.forecast,
             salesInput: metadata ? {
               value: metadata.value,
@@ -121,10 +176,11 @@ export const ForecastProvider = ({ children }) => {
         return row;
       });
 
-      // Upsert logic
-      const existingKeys = new Set(prevData.map(row => getUniqueId(row.key, row.Date)));
-      const newRecords = recordsToProcess
-        .filter(item => !existingKeys.has(getUniqueId(item.key, item.Date)))
+      // Upsert logic - only add if truly new (not in existingKeys)
+      // Note: We used 'finalUpdates' which might have corrected keys now.
+      // Re-evaluate existing keys against the FINAL update keys.
+      const newRecords = finalUpdates
+        .filter(item => !existingKeySet.has(getUniqueId(item.key, item.Date)))
         .map(item => ({
           // ... (Same mapping as before) ...
           ...item,

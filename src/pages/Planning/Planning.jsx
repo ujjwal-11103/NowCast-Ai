@@ -37,6 +37,7 @@ const Planning = () => {
         filters,
         globalData,
         isLoading,
+        setFilters, // Get setFilters
         accuracy, // NEW
         bias      // NEW
     } = useForecast();
@@ -112,21 +113,53 @@ const Planning = () => {
     };
 
     const getItemLevel = () => {
-        const selectionMap = {}
-        selections.forEach(sel => { selectionMap[sel.field] = sel.value })
-        if (selectionMap.Chain === 'All') return 'Channel'
-        if (selectionMap.Depot === 'All') return 'Chain'
-        if (selectionMap.SubCat === 'All') return 'Depot'
-        if (selectionMap.SKU === 'All') return 'SubCat'
-        return 'SKU'
+        if (!filters.channel || filters.channel === 'All') return 'Channel';
+        if (!filters.chain) return 'Chain';
+
+        // If Chain is 'All', show Depots (Subcategory of Chain), unless a specific depot is selected
+        const isChainAll = filters.chain === 'All';
+        const isDepotSpecific = filters.depot && filters.depot !== 'All';
+        if (isChainAll && !isDepotSpecific) return 'Depot';
+
+        if (!filters.depot) return 'Depot';
+
+        // If Depot is 'All', show SubCats (Subcategory of Depot), unless a specific subcat is selected
+        const isDepotAll = filters.depot === 'All';
+        const isSubCatSpecific = filters.subCat && filters.subCat !== 'All';
+        if (isDepotAll && !isSubCatSpecific) return 'SubCat';
+
+        if (!filters.subCat) return 'SubCat';
+
+        // If SubCat is 'All', show SKUs
+        if (filters.subCat === 'All' && (!filters.sku || filters.sku === 'All')) return 'SKU';
+
+        return 'SKU';
     }
     const itemLevel = getItemLevel()
 
+    const handleDrillDown = (itemName) => {
+        const currentLevel = itemLevel; // Uses specific logic
+        const newFilters = { ...filters };
+
+        if (currentLevel === 'Channel') newFilters.channel = itemName;
+        else if (currentLevel === 'Chain') newFilters.chain = itemName;
+        else if (currentLevel === 'Depot') newFilters.depot = itemName;
+        else if (currentLevel === 'SubCat') newFilters.subCat = itemName;
+
+        setFilters(newFilters);
+    };
+
+    // 2. Filter Data
     // 2. Filter Data
     const filteredData = globalData.filter(item => {
         return selections.every(sel => {
-            if (sel.field === itemLevel) return true
+            // When filtering, if a selection is 'All' (e.g., Chain=All), we do NOT filter by specific Chain.
+            // We just ensure the PARENT level matches.
+            // Since we process top-down (Channel -> Chain -> Depot), the previous checks handle the parent.
+            // So if value is 'All', we simply return true (include all items at this level).
+
             if (sel.value === 'All') return true
+            if (!sel.value) return true // Treat null/undefined as pass for safety (or handling unselected lower levels)
             return item[sel.field] === sel.value
         })
     })
@@ -158,13 +191,13 @@ const Planning = () => {
         }
 
         // LY Logic (2023)
-        if (item.Date.includes('2023-10')) acc[key].LYOct += Number(item.actual) || 0
-        if (item.Date.includes('2023-11')) acc[key].LYNov += Number(item.actual) || 0
-        if (item.Date.includes('2023-12')) acc[key].LYDec += Number(item.actual) || 0
+        if (item.Date && item.Date.includes('2023-10')) acc[key].LYOct += Number(item.actual) || 0
+        if (item.Date && item.Date.includes('2023-11')) acc[key].LYNov += Number(item.actual) || 0
+        if (item.Date && item.Date.includes('2023-12')) acc[key].LYDec += Number(item.actual) || 0
 
         // Forecast Logic (2024) & Metadata Capture
         // We accumulate the raw items into arrays so we can sum their ConsensusForecast later
-        if (item.Date.includes('2024-10')) {
+        if (item.Date && item.Date.includes('2024-10')) {
             acc[key].ForecastOct += Number(item.forecast) || 0;
             acc[key].itemsOct.push(item);
             if (item.salesInput) acc[key].salesInputOct = item.salesInput;
@@ -176,7 +209,7 @@ const Planning = () => {
             acc[key].Lag3Oct += Number(item.Lag3) || (Number(item.forecast || 0) * 0.05);
             acc[key].MA4Oct += Number(item.MA4) || (Number(item.forecast || 0) * 0.05);
         }
-        if (item.Date.includes('2024-11')) {
+        if (item.Date && item.Date.includes('2024-11')) {
             acc[key].ForecastNov += Number(item.forecast) || 0;
             acc[key].itemsNov.push(item);
             if (item.salesInput) acc[key].salesInputNov = item.salesInput;
@@ -188,7 +221,7 @@ const Planning = () => {
             acc[key].Lag3Nov += Number(item.Lag3) || (Number(item.forecast || 0) * 0.05);
             acc[key].MA4Nov += Number(item.MA4) || (Number(item.forecast || 0) * 0.05);
         }
-        if (item.Date.includes('2024-12')) {
+        if (item.Date && item.Date.includes('2024-12')) {
             acc[key].ForecastDec += Number(item.forecast) || 0;
             acc[key].itemsDec.push(item);
             if (item.salesInput) acc[key].salesInputDec = item.salesInput;
@@ -503,11 +536,11 @@ const Planning = () => {
 
                         {/* OOS Analysis Chart & Forecast Bridge - RESPONSIVE CONTAINER */}
                         <div className="flex flex-col lg:flex-row w-full gap-6 mb-6">
-                            {/* OOS Days Analysis (70% on Desktop, 100% on Mobile) */}
-                            <div className="w-full lg:w-[70%] h-[450px] lg:h-[500px] min-w-0">
+                            {/* OOS Days Analysis (100% since Forecast Analysis moved) */}
+                            <div className="w-full h-[450px] lg:h-[500px] min-w-0">
                                 <Card className="w-full h-full flex flex-col p-6 bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-200 overflow-hidden">
                                     <div className="flex justify-between items-center mb-4 flex-none">
-                                        <h3 className="text-lg font-semibold text-gray-800">OOS Days Analysis</h3>
+                                        <h3 className="text-lg font-semibold text-gray-800">Actual vs Forecast</h3>
                                     </div>
 
                                     {/* Chart Toggle Buttons */}
@@ -536,151 +569,190 @@ const Planning = () => {
                                 </Card>
                             </div>
 
-                            {/* Forecast Bridge (30% on Desktop, 100% on Mobile) */}
-                            <div className="w-full lg:w-[30%] h-[500px] lg:h-[500px] min-w-0">
-                                <Card className="w-full h-full flex flex-col p-6 bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-200 overflow-hidden">
-                                    <div className="flex justify-between items-center mb-4 flex-none">
-                                        <h3 className="text-lg font-semibold text-gray-800">Forecast Analysis</h3>
-                                    </div>
 
-                                    <Tabs defaultValue="consensus" className="flex-1 flex flex-col overflow-hidden">
-                                        <TabsList className="grid w-full grid-cols-2 mb-4">
-                                            <TabsTrigger value="consensus">Consensus Breakup</TabsTrigger>
-                                            <TabsTrigger value="forecast">Forecast Breakup</TabsTrigger>
-                                        </TabsList>
-
-                                        {/* Tab 1: Consensus (Summary + Bridge) */}
-                                        <TabsContent value="consensus" className="flex-1 overflow-y-auto pr-2 space-y-6 mt-0">
-                                            {/* 1. Consensus Breakup Section */}
-                                            <div className="space-y-3">
-                                                <h4 className="text-sm font-medium text-gray-700">Consensus Breakup</h4>
-                                                <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
-                                                    <div className="flex justify-between items-start mb-3">
-                                                        <div>
-                                                            <h4 className="text-sm font-medium text-blue-600 mb-1">Total Consensus</h4>
-                                                            <div className="text-2xl font-bold text-gray-900">
-                                                                {Math.round(
-                                                                    Object.values(consensusValues).reduce((acc, curr) =>
-                                                                        acc + (curr.oct || 0) + (curr.nov || 0) + (curr.dec || 0), 0
-                                                                    )
-                                                                ).toLocaleString()}
-                                                            </div>
-                                                            <p className="text-xs text-gray-600">Aggregated Volume</p>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="grid grid-cols-3 gap-2 pt-3 border-t border-blue-100">
-                                                        <div>
-                                                            <p className="text-xs text-gray-500">Oct</p>
-                                                            <p className="text-sm font-semibold text-gray-800">
-                                                                {Math.round(Object.values(consensusValues).reduce((acc, curr) => acc + (curr.oct || 0), 0)).toLocaleString()}
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-xs text-gray-500">Nov</p>
-                                                            <p className="text-sm font-semibold text-gray-800">
-                                                                {Math.round(Object.values(consensusValues).reduce((acc, curr) => acc + (curr.nov || 0), 0)).toLocaleString()}
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-xs text-gray-500">Dec</p>
-                                                            <p className="text-sm font-semibold text-gray-800">
-                                                                {Math.round(Object.values(consensusValues).reduce((acc, curr) => acc + (curr.dec || 0), 0)).toLocaleString()}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* 2. Forecast Breakup (Waterfalls) Section */}
-                                            <div className="space-y-3">
-                                                <div className="flex justify-between items-center">
-                                                    <h4 className="text-sm font-medium text-gray-700">Consensus Bridge</h4>
-                                                    {/* Legend */}
-                                                    <div className="flex flex-wrap gap-2">
-                                                        <div className="flex items-center gap-1">
-                                                            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                                                            <span className="text-[10px] text-gray-500">Sales</span>
-                                                        </div>
-                                                        <div className="flex items-center gap-1">
-                                                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                                                            <span className="text-[10px] text-gray-500">Mkt</span>
-                                                        </div>
-                                                        <div className="flex items-center gap-1">
-                                                            <div className="w-2 h-2 rounded-full bg-purple-500"></div>
-                                                            <span className="text-[10px] text-gray-500">Fin</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden p-3 space-y-4">
-                                                    {bridgeData.map((monthData, idx) => (
-                                                        <div key={idx} className="flex flex-col gap-1">
-                                                            <div className="flex justify-between items-center text-sm">
-                                                                <span className="font-semibold text-gray-700">{monthData.label}</span>
-                                                                <span className="text-xs text-gray-400">Target: {Math.round(monthData.final)}</span>
-                                                            </div>
-                                                            <ForecastBridge
-                                                                {...monthData}
-                                                                className="h-32 w-full text-base shadow-sm bg-slate-50 border border-slate-100"
-                                                            />
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </TabsContent>
-
-                                        {/* Tab 2: Forecast Breakup (Table) */}
-                                        <TabsContent value="forecast" className="flex-1 overflow-y-auto mt-0 space-y-6">
-                                            {/* 1. Forecast System Breakup Section */}
-                                            <div className="space-y-3">
-                                                <div className="flex justify-between items-center">
-                                                    <h4 className="text-sm font-medium text-gray-700">System Forecast Bridge</h4>
-                                                    {/* Legend */}
-                                                    <div className="flex flex-wrap gap-2">
-                                                        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-indigo-600"></div><span className="text-[10px] text-gray-500">Trend</span></div>
-                                                        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-cyan-500"></div><span className="text-[10px] text-gray-500">Seas.</span></div>
-                                                        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-amber-500"></div><span className="text-[10px] text-gray-500">Disc.</span></div>
-                                                        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-500"></div><span className="text-[10px] text-gray-500">Spends</span></div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden p-3 space-y-4">
-                                                    {bridgeData.map((monthData, idx) => (
-                                                        <div key={idx} className="flex flex-col gap-1">
-                                                            <div className="flex justify-between items-center text-sm">
-                                                                <span className="font-semibold text-gray-700">{monthData.label}</span>
-                                                                <span className="text-xs text-gray-400">Total: {Math.round(monthData.systemFinal).toLocaleString()}</span>
-                                                            </div>
-                                                            <ForecastBridge
-                                                                trend={monthData.trend}
-                                                                seasonality={monthData.seasonality}
-                                                                discount={monthData.discount}
-                                                                spends={monthData.spends}
-                                                                lag3={monthData.lag3}
-                                                                ma4={monthData.ma4}
-                                                                final={monthData.systemFinal}
-                                                                className="h-32 w-full text-base shadow-sm bg-slate-50 border border-slate-100"
-                                                            />
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-
-                                            <ForecastBreakupTable
-                                                tableData={tableData}
-                                                teamInputs={teamInputs}
-                                                consensusValues={consensusValues}
-                                            />
-                                        </TabsContent>
-                                    </Tabs>
-                                </Card>
-                            </div>
                         </div>
 
                         {/* --- ROW 2: Chatbot (Full Width) --- */}
                         <div className="w-full h-[600px]">
                             <Chatbot filters={filters} />
+                        </div>
+
+                        {/* Forecast Bridge (Increased Width below Chatbot) */}
+                        <div className="w-full h-auto mb-6">
+                            <Card className="w-full flex flex-col p-6 bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+                                <div className="flex justify-between items-center mb-4 flex-none">
+                                    <h3 className="text-lg font-semibold text-gray-800">Forecast Analysis</h3>
+                                </div>
+
+                                <Accordion type="single" collapsible defaultValue="consensus" className="w-full">
+                                    <AccordionItem value="consensus" className="border-b-0">
+                                        <AccordionTrigger className="hover:no-underline py-2 px-1">
+                                            <span className="text-base font-medium text-gray-700">Consensus Breakup</span>
+                                        </AccordionTrigger>
+                                        <AccordionContent>
+                                            <div className="h-[600px] w-full pt-2">
+                                                <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-4 h-full">
+                                                    {/* 1. Consensus Breakup Section */}
+                                                    <div className="space-y-3 h-full flex flex-col">
+                                                        <h4 className="text-sm font-medium text-gray-700">Consensus Breakup</h4>
+                                                        <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50/50 rounded-xl border border-blue-100 shadow-sm hover:shadow-md transition-shadow duration-300 flex-1 flex flex-col relative overflow-hidden">
+
+                                                            {/* Decorative Background Icon */}
+                                                            <div className="absolute -top-6 -right-6 opacity-5 rotate-12 pointer-events-none">
+                                                                <Package className="w-32 h-32 text-blue-600" />
+                                                            </div>
+
+                                                            <div className="flex flex-col h-full z-10">
+                                                                {/* Top: Total Consensus */}
+                                                                <div className="flex-none mb-4 border-b border-blue-200/60 pb-4">
+                                                                    <h4 className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2">Total Consensus</h4>
+                                                                    <div className="text-4xl font-extrabold text-slate-900 tracking-tight break-words">
+                                                                        {Math.round(
+                                                                            Object.values(consensusValues).reduce((acc, curr) =>
+                                                                                acc + (curr.oct || 0) + (curr.nov || 0) + (curr.dec || 0), 0
+                                                                            )
+                                                                        ).toLocaleString()}
+                                                                    </div>
+                                                                    <p className="text-[10px] text-slate-500 font-medium mt-1">Aggregated Volume (Oct - Dec)</p>
+                                                                </div>
+
+                                                                {/* Middle/Bottom: Vertically Distributed Monthly Data */}
+                                                                <div className="flex-1 flex flex-col justify-around">
+                                                                    {/* Oct */}
+                                                                    <div className="flex flex-col group">
+                                                                        <div className="flex justify-between items-end mb-1">
+                                                                            <span className="text-xs font-bold text-slate-400 uppercase">Oct</span>
+                                                                            <span className="text-2xl font-bold text-slate-700 group-hover:text-blue-600 transition-colors">
+                                                                                {Math.round(Object.values(consensusValues).reduce((acc, curr) => acc + (curr.oct || 0), 0)).toLocaleString()}
+                                                                            </span>
+                                                                        </div>
+                                                                        <div className="h-1.5 w-full bg-blue-100/50 rounded-full overflow-hidden">
+                                                                            <div className="h-full bg-blue-500 w-full opacity-20 group-hover:opacity-100 transition-opacity"></div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {/* Nov */}
+                                                                    <div className="flex flex-col group">
+                                                                        <div className="flex justify-between items-end mb-1">
+                                                                            <span className="text-xs font-bold text-slate-400 uppercase">Nov</span>
+                                                                            <span className="text-2xl font-bold text-slate-700 group-hover:text-blue-600 transition-colors">
+                                                                                {Math.round(Object.values(consensusValues).reduce((acc, curr) => acc + (curr.nov || 0), 0)).toLocaleString()}
+                                                                            </span>
+                                                                        </div>
+                                                                        <div className="h-1.5 w-full bg-blue-100/50 rounded-full overflow-hidden">
+                                                                            <div className="h-full bg-blue-500 w-full opacity-20 group-hover:opacity-100 transition-opacity"></div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {/* Dec */}
+                                                                    <div className="flex flex-col group">
+                                                                        <div className="flex justify-between items-end mb-1">
+                                                                            <span className="text-xs font-bold text-slate-400 uppercase">Dec</span>
+                                                                            <span className="text-2xl font-bold text-slate-700 group-hover:text-blue-600 transition-colors">
+                                                                                {Math.round(Object.values(consensusValues).reduce((acc, curr) => acc + (curr.dec || 0), 0)).toLocaleString()}
+                                                                            </span>
+                                                                        </div>
+                                                                        <div className="h-1.5 w-full bg-blue-100/50 rounded-full overflow-hidden">
+                                                                            <div className="h-full bg-blue-500 w-full opacity-20 group-hover:opacity-100 transition-opacity"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* 2. Forecast Breakup (Waterfalls) Section */}
+                                                    <div className="flex flex-col gap-3 h-full min-h-0">
+                                                        <div className="flex justify-between items-center shrink-0">
+                                                            <h4 className="text-sm font-medium text-gray-700">Consensus Bridge</h4>
+                                                            {/* Legend */}
+                                                            <div className="flex flex-wrap gap-2">
+                                                                <div className="flex items-center gap-1">
+                                                                    <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                                                                    <span className="text-[10px] text-gray-500">Sales</span>
+                                                                </div>
+                                                                <div className="flex items-center gap-1">
+                                                                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                                                    <span className="text-[10px] text-gray-500">Mkt</span>
+                                                                </div>
+                                                                <div className="flex items-center gap-1">
+                                                                    <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                                                                    <span className="text-[10px] text-gray-500">Fin</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="bg-white border border-gray-200 rounded-lg overflow-x-hidden p-3 space-y-4 flex-1 min-h-0 overflow-y-auto">
+                                                            {bridgeData.map((monthData, idx) => (
+                                                                <div key={idx} className="flex flex-col gap-1">
+                                                                    <div className="flex justify-between items-center text-sm">
+                                                                        <span className="font-semibold text-gray-700">{monthData.label}</span>
+                                                                        <span className="text-xs text-gray-400">Target: {Math.round(monthData.final)}</span>
+                                                                    </div>
+                                                                    <ForecastBridge
+                                                                        {...monthData}
+                                                                        className="h-52 w-full text-base shadow-sm bg-slate-50 border border-slate-100"
+                                                                    />
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </AccordionContent>
+                                    </AccordionItem>
+
+                                    <AccordionItem value="forecast" className="border-b-0">
+                                        <AccordionTrigger className="hover:no-underline py-2 px-1">
+                                            <span className="text-base font-medium text-gray-700">Forecast Breakup</span>
+                                        </AccordionTrigger>
+                                        <AccordionContent>
+                                            <div className="pt-2">
+                                                {/* 1. Forecast System Breakup Section (Commented Out) */}
+                                                {/* <div className="space-y-3">
+                                                    <div className="flex justify-between items-center">
+                                                        <h4 className="text-sm font-medium text-gray-700">System Forecast Bridge</h4>
+                                                        
+                                                        <div className="flex flex-wrap gap-2">
+                                                            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-indigo-600"></div><span className="text-[10px] text-gray-500">Trend</span></div>
+                                                            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-cyan-500"></div><span className="text-[10px] text-gray-500">Seas.</span></div>
+                                                            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-amber-500"></div><span className="text-[10px] text-gray-500">Disc.</span></div>
+                                                            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-500"></div><span className="text-[10px] text-gray-500">Spends</span></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden p-3 space-y-4">
+                                                        {bridgeData.map((monthData, idx) => (
+                                                            <div key={idx} className="flex flex-col gap-1">
+                                                                <div className="flex justify-between items-center text-sm">
+                                                                    <span className="font-semibold text-gray-700">{monthData.label}</span>
+                                                                    <span className="text-xs text-gray-400">Total: {Math.round(monthData.systemFinal).toLocaleString()}</span>
+                                                                </div>
+                                                                <ForecastBridge
+                                                                    trend={monthData.trend}
+                                                                    seasonality={monthData.seasonality}
+                                                                    discount={monthData.discount}
+                                                                    spends={monthData.spends}
+                                                                    lag3={monthData.lag3}
+                                                                    ma4={monthData.ma4}
+                                                                    final={monthData.systemFinal}
+                                                                    className="h-32 w-full text-base shadow-sm bg-slate-50 border border-slate-100"
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div> */}
+
+                                                <ForecastBreakupTable
+                                                    tableData={tableData}
+                                                    teamInputs={teamInputs}
+                                                    consensusValues={consensusValues}
+                                                />
+                                            </div>
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                </Accordion>
+                            </Card>
                         </div>
 
                         {/* Forecast Table */}
@@ -692,6 +764,7 @@ const Planning = () => {
                                 teamInputs={teamInputs}
                                 consensusValues={consensusValues}
                                 handleTeamInputChange={handleTeamInputChange}
+                                onDrillDown={handleDrillDown}
                                 onPivotRequest={(tableData) => {
                                     setPivotData(tableData);
                                     setShowPivotTable(true);

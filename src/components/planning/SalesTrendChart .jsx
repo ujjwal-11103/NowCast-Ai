@@ -312,7 +312,7 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
 
     // Build layout based on whether OOS is toggled
     const layoutConfig = {
-        title: customTitle !== undefined ? customTitle : 'OOS Days Analysis',
+        title: customTitle !== undefined ? customTitle : 'Actual vs Forecast',
         plot_bgcolor: '#ffffff',
         paper_bgcolor: '#ffffff',
         font: { family: 'Inter, sans-serif', size: 12 },

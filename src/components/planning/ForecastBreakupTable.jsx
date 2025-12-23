@@ -203,12 +203,24 @@ const ForecastBreakupTable = ({ tableData }) => {
                             <TableHead className="w-[120px]">Item</TableHead>
                             <TableHead className="w-[80px]">Month</TableHead>
                             <TableHead className="w-[300px]">Forecast Bridge</TableHead>
-                            <TableHead className="text-right w-[80px] text-indigo-600">Trend</TableHead>
-                            <TableHead className="text-right w-[80px] text-cyan-600">Seas.</TableHead>
-                            <TableHead className="text-right w-[80px] text-amber-600">Disc.</TableHead>
-                            <TableHead className="text-right w-[80px] text-emerald-600">Spends</TableHead>
-                            <TableHead className="text-right w-[80px] text-violet-600">Lag3</TableHead>
-                            <TableHead className="text-right w-[80px] text-pink-600">MA4</TableHead>
+                            <TableHead className="text-right w-[80px] text-indigo-600">
+                                <div className="flex items-center justify-end gap-1"><div className="w-2 h-2 rounded-full bg-indigo-600"></div>Trend</div>
+                            </TableHead>
+                            <TableHead className="text-right w-[80px] text-cyan-600">
+                                <div className="flex items-center justify-end gap-1"><div className="w-2 h-2 rounded-full bg-cyan-500"></div>Seas.</div>
+                            </TableHead>
+                            <TableHead className="text-right w-[80px] text-amber-600">
+                                <div className="flex items-center justify-end gap-1"><div className="w-2 h-2 rounded-full bg-amber-500"></div>Disc.</div>
+                            </TableHead>
+                            <TableHead className="text-right w-[80px] text-emerald-600">
+                                <div className="flex items-center justify-end gap-1"><div className="w-2 h-2 rounded-full bg-emerald-500"></div>Spends</div>
+                            </TableHead>
+                            <TableHead className="text-right w-[80px] text-violet-600">
+                                <div className="flex items-center justify-end gap-1"><div className="w-2 h-2 rounded-full bg-violet-500"></div>Lag3</div>
+                            </TableHead>
+                            <TableHead className="text-right w-[80px] text-pink-600">
+                                <div className="flex items-center justify-end gap-1"><div className="w-2 h-2 rounded-full bg-pink-500"></div>MA4</div>
+                            </TableHead>
                             <TableHead className="text-right w-[100px] font-bold text-gray-900 border-l border-gray-100 bg-gray-50/30">Final</TableHead>
                         </TableRow>
                     </TableHeader>
