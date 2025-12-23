@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle, useState, useEffect } from 'react';
+import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import {
     Table, TableHeader, TableRow, TableHead, TableBody, TableCell,
 } from "@/components/ui/table"
@@ -6,174 +6,51 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { useSidebar } from '@/context/sidebar/SidebarContext'
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, Table2 } from 'lucide-react';
+import { ChevronDown, Table2, CornerDownRight } from 'lucide-react';
 import WaterfallChart from './WaterfallChart'
 
-const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => {
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
 
-    // 1. Determine Hierarchy
+const ForecastTable = forwardRef(({ data, selections, onPivotRequest, tableData, teamInputs, consensusValues, handleTeamInputChange, onDrillDown }, ref) => {
+
+    // 1. Determine Hierarchy (Re-calculate for display purposes)
+    // 1. Determine Hierarchy (Re-calculate for display purposes)
     const getItemLevel = () => {
         const selectionMap = {}
         selections.forEach(sel => { selectionMap[sel.field] = sel.value })
-        if (selectionMap.Chain === 'All') return 'Channel'
-        if (selectionMap.Depot === 'All') return 'Chain'
-        if (selectionMap.SubCat === 'All') return 'Depot'
-        if (selectionMap.SKU === 'All') return 'SubCat'
-        return 'SKU'
+
+        if (!selectionMap.Channel || selectionMap.Channel === 'All') return 'Channel';
+        if (!selectionMap.Chain) return 'Chain';
+
+        // Chain is 'All' -> Show Depots
+        const isChainAll = selectionMap.Chain === 'All';
+        const isDepotSpecific = selectionMap.Depot && selectionMap.Depot !== 'All';
+        if (isChainAll && !isDepotSpecific) return 'Depot';
+
+        if (!selectionMap.Depot) return 'Depot';
+
+        // Depot is 'All' -> Show SubCats
+        const isDepotAll = selectionMap.Depot === 'All';
+        const isSubCatSpecific = selectionMap.SubCat && selectionMap.SubCat !== 'All';
+        if (isDepotAll && !isSubCatSpecific) return 'SubCat';
+
+        if (!selectionMap.SubCat) return 'SubCat';
+
+        // SubCat is 'All' -> Show SKUs
+        if (selectionMap.SubCat === 'All' && (!selectionMap.SKU || selectionMap.SKU === 'All')) return 'SKU';
+
+        return 'SKU';
     }
     const itemLevel = getItemLevel()
 
-    // 2. Filter Data
-    const filteredData = data.filter(item => {
-        return selections.every(sel => {
-            if (sel.field === itemLevel) return true
-            if (sel.value === 'All') return true
-            return item[sel.field] === sel.value
-        })
-    })
-
-    // 3. Group & Sum Data (Oct, Nov, Dec)
-    const groupedData = filteredData.reduce((acc, item) => {
-        const key = item[itemLevel]
-        if (!acc[key]) {
-            acc[key] = {
-                name: key,
-                LYOct: 0, LYNov: 0, LYDec: 0,
-                ForecastOct: 0, ForecastNov: 0, ForecastDec: 0,
-                // Metadata storage
-                salesInputOct: null, salesInputNov: null, salesInputDec: null,
-                // Arrays to store raw items for accurate consensus diff calculation
-                itemsOct: [], itemsNov: [], itemsDec: []
-            }
-        }
-
-        // LY Logic (2023)
-        if (item.Date.includes('2023-10')) acc[key].LYOct += Number(item.actual) || 0
-        if (item.Date.includes('2023-11')) acc[key].LYNov += Number(item.actual) || 0
-        if (item.Date.includes('2023-12')) acc[key].LYDec += Number(item.actual) || 0
-
-        // Forecast Logic (2024) & Metadata Capture
-        // We accumulate the raw items into arrays so we can sum their ConsensusForecast later
-        if (item.Date.includes('2024-10')) {
-            acc[key].ForecastOct += Number(item.forecast) || 0;
-            acc[key].itemsOct.push(item);
-            if (item.salesInput) acc[key].salesInputOct = item.salesInput;
-        }
-        if (item.Date.includes('2024-11')) {
-            acc[key].ForecastNov += Number(item.forecast) || 0;
-            acc[key].itemsNov.push(item);
-            if (item.salesInput) acc[key].salesInputNov = item.salesInput;
-        }
-        if (item.Date.includes('2024-12')) {
-            acc[key].ForecastDec += Number(item.forecast) || 0;
-            acc[key].itemsDec.push(item);
-            if (item.salesInput) acc[key].salesInputDec = item.salesInput;
-        }
-
-        return acc
-    }, {})
-
-    const tableData = Object.values(groupedData).map(item => ({ ...item }))
-
-    const [teamInputs, setTeamInputs] = useState({});
-    const [consensusValues, setConsensusValues] = useState({});
-
-    // --- AUTO-FILL & SYNC EFFECT ---
-    // This runs whenever 'data' changes (Initial Load OR Chatbot Update)
-    useEffect(() => {
-        const nextInputs = {};
-        const nextConsensus = {};
-
-        tableData.forEach(row => {
-            // Helper to process a month
-            const processMonth = (items, baselineSum, salesInputMetadata) => {
-                // Default: Consensus = Baseline
-                let consensusSum = baselineSum;
-                let inputData = null;
-
-                // If we have items for this month
-                if (items && items.length > 0) {
-                    // 1. Calculate the True Consensus from the Data (which API updated)
-                    // Note: We use 'ConsensusForecast' if available, else 'forecast'
-                    const dataConsensus = items.reduce((sum, item) =>
-                        sum + (item.ConsensusForecast !== undefined ? Number(item.ConsensusForecast) : Number(item.forecast)), 0);
-
-                    // 2. If Chatbot updated this row, we will have salesInputMetadata
-                    // OR if the Data Consensus differs from Baseline (Manual or API)
-                    if (salesInputMetadata) {
-                        // The Delta is what we show in the Input Box
-                        const delta = dataConsensus - baselineSum;
-
-                        inputData = {
-                            value: Math.round(delta), // Show +20, -50, etc.
-                            comment: salesInputMetadata.comment,
-                            owner: salesInputMetadata.owner
-                        };
-
-                        // Set Consensus to the Data Value
-                        consensusSum = dataConsensus;
-                    }
-                }
-
-                return { consensus: consensusSum, input: inputData };
-            };
-
-            const octResult = processMonth(row.itemsOct, row.ForecastOct, row.salesInputOct);
-            const novResult = processMonth(row.itemsNov, row.ForecastNov, row.salesInputNov);
-            const decResult = processMonth(row.itemsDec, row.ForecastDec, row.salesInputDec);
-
-            // Update Inputs State (Only if inputData exists)
-            if (octResult.input || novResult.input || decResult.input) {
-                if (!nextInputs[row.name]) nextInputs[row.name] = { sales: {}, marketing: {}, finance: {} };
-                if (octResult.input) nextInputs[row.name].sales.oct = octResult.input;
-                if (novResult.input) nextInputs[row.name].sales.nov = novResult.input;
-                if (decResult.input) nextInputs[row.name].sales.dec = decResult.input;
-            }
-
-            // Update Consensus State
-            nextConsensus[row.name] = {
-                oct: Math.round(octResult.consensus),
-                nov: Math.round(novResult.consensus),
-                dec: Math.round(decResult.consensus)
-            };
-        });
-
-        setTeamInputs(nextInputs);
-        setConsensusValues(nextConsensus);
-
-    }, [data, selections]);
-
-
-    // Handle MANUAL input changes
-    const handleTeamInputChange = (itemName, team, month, field, value) => {
-        setTeamInputs(prev => {
-            const newInputs = { ...prev };
-            if (!newInputs[itemName]) newInputs[itemName] = { sales: {}, marketing: {}, finance: {} };
-            if (!newInputs[itemName][team]) newInputs[itemName][team] = {};
-            if (!newInputs[itemName][team][month]) newInputs[itemName][team][month] = {};
-
-            newInputs[itemName][team][month][field] = value;
-
-            // Recalculate Consensus for this row immediately (Client Side Calc)
-            const row = tableData.find(r => r.name === itemName);
-            if (row) {
-                const getVal = (t, m) => parseFloat(newInputs[itemName]?.[t]?.[m]?.value) || 0;
-                const calcMonth = (m, base) => base + getVal('sales', m) + getVal('marketing', m) + getVal('finance', m);
-
-                setConsensusValues(curr => ({
-                    ...curr,
-                    [itemName]: {
-                        ...curr[itemName], // Keep other months
-                        [month]: Math.round(calcMonth(month, row[`Forecast${month.charAt(0).toUpperCase() + month.slice(1)}`]))
-                    }
-                }));
-            }
-            return newInputs;
-        });
-    };
-
     const { isSidebarOpen } = useSidebar();
     const [activeInputs, setActiveInputs] = useState({});
+
+    // Note: Local focus state is fine to keep here as it's UI specific
     const handleInputFocus = (itemName, team, month) => {
         setActiveInputs(prev => ({ ...prev, [`${itemName}-${team}-${month}`]: true }));
     };
@@ -185,8 +62,9 @@ const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => 
 
     useImperativeHandle(ref, () => ({
         getTableData: () => tableData,
-        getFilteredData: () => filteredData,
-        getGroupedData: () => groupedData
+        // filteredData and groupedData are no longer computed locally
+        getFilteredData: () => [],
+        getGroupedData: () => ({})
     }));
 
     return (
@@ -204,16 +82,18 @@ const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => 
                         <Table>
                             <TableHeader className="bg-white">
                                 <TableRow>
-                                    <TableHead className="border-r border-gray-200 sticky left-0 bg-white z-10 min-w-[150px]">{itemLevel}</TableHead>
+                                    <TableHead rowSpan={3} className="border-r border-gray-200 sticky left-0 bg-white z-10 min-w-[150px]">{itemLevel}</TableHead>
                                     <TableHead colSpan={3} className="text-center border-r border-gray-200">Last Year Values</TableHead>
                                     <TableHead colSpan={3} className="text-center border-r border-gray-200">Baseline Forecast</TableHead>
                                     <TableHead colSpan={3} className="text-center border-r border-gray-200">Consensus</TableHead>
+                                    <TableHead rowSpan={3} className="text-center border-r border-gray-200 min-w-[200px] bg-orange-50/50 text-orange-700">Recent Trend</TableHead>
+                                    <TableHead rowSpan={3} className="text-center border-r border-gray-200 min-w-[200px] bg-indigo-50/50 text-indigo-700">Long Term Trend</TableHead>
+                                    <TableHead rowSpan={3} className="text-center border-r border-gray-200 min-w-[200px] bg-teal-50/50 text-grey-700">Forecast Summary</TableHead>
                                     <TableHead colSpan={9} className="text-center border-r border-gray-200 bg-blue-50">Sales Team</TableHead>
                                     <TableHead colSpan={9} className="text-center border-r border-gray-200 bg-green-50">Marketing Team</TableHead>
-                                    <TableHead colSpan={9} className="text-center bg-purple-50">Finance Team</TableHead>
+                                    <TableHead colSpan={3} className="text-center bg-purple-50">Finance Team</TableHead>
                                 </TableRow>
                                 <TableRow>
-                                    <TableHead className="border-r border-gray-200 sticky left-0 bg-white z-10 min-w-[150px]"></TableHead>
                                     <TableHead className="text-center border-r border-gray-200 font-semibold">Oct</TableHead>
                                     <TableHead className="text-center border-r border-gray-200 font-semibold">Nov</TableHead>
                                     <TableHead className="text-center border-r border-gray-200 font-semibold">Dec</TableHead>
@@ -234,7 +114,6 @@ const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => 
                                     <TableHead colSpan={3} className="text-center">Dec</TableHead>
                                 </TableRow>
                                 <TableRow>
-                                    <TableHead className="border-r border-gray-200 sticky left-0 bg-white z-10 min-w-[150px]"></TableHead>
                                     {[...Array(9)].map((_, i) => <TableHead key={i} className="text-center border-r border-gray-200"></TableHead>)}
                                     {[1, 2, 3].map(i => (<React.Fragment key={`s${i}`}><TableHead className="text-center border-r border-gray-200 min-w-[80px]">Value</TableHead><TableHead className="text-center border-r border-gray-200 min-w-[120px]">Comment</TableHead><TableHead className="text-center border-r border-gray-200 min-w-[120px]">Owner</TableHead></React.Fragment>))}
                                     {[1, 2, 3].map(i => (<React.Fragment key={`m${i}`}><TableHead className="text-center border-r border-gray-200 min-w-[80px]">Value</TableHead><TableHead className="text-center border-r border-gray-200 min-w-[120px]">Comment</TableHead><TableHead className="text-center border-r border-gray-200 min-w-[120px]">Owner</TableHead></React.Fragment>))}
@@ -247,10 +126,22 @@ const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => 
                                     <React.Fragment key={row.name}>
                                         <TableRow className="bg-white hover:bg-gray-50 group">
                                             <TableCell className="sticky left-0 bg-white group-hover:bg-gray-50 z-10 min-w-[180px] border-r border-gray-200">
-                                                <button onClick={() => toggleItemExpansion(row.name)} className="flex items-center w-full text-left font-medium text-gray-800 hover:text-indigo-600 transition-colors">
-                                                    {row.name}
-                                                    <ChevronDown className={`ml-2 h-4 w-4 transition-transform ${expandedItems[row.name] ? 'rotate-180' : ''}`} />
-                                                </button>
+                                                <div className="flex items-center w-full justify-between">
+                                                    <span
+                                                        onClick={() => toggleItemExpansion(row.name)}
+                                                        className="font-medium text-gray-800 hover:text-indigo-600 hover:underline cursor-pointer transition-colors flex-1 truncate mr-2"
+                                                        title={`Expand ${row.name}`}
+                                                    >
+                                                        {row.name}
+                                                    </span>
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); toggleItemExpansion(row.name); }}
+                                                        className="p-1 hover:bg-gray-200 rounded-full transition-colors focus:outline-none"
+                                                        title="Toggle Expansion"
+                                                    >
+                                                        <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${expandedItems[row.name] ? 'rotate-180' : ''}`} />
+                                                    </button>
+                                                </div>
                                             </TableCell>
 
                                             {/* LY Values */}
@@ -274,6 +165,23 @@ const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => 
                                                 {(consensusValues[row.name]?.dec ?? Math.round(row.ForecastDec)).toLocaleString()}
                                             </TableCell>
 
+                                            {/* Intelligence Columns */}
+                                            <TableCell className="text-center border-r border-gray-200 text-xs font-medium text-orange-800 bg-orange-50/20">{row.Recent_Trend_Category || "Stable"}</TableCell>
+                                            <TableCell className="text-center border-r border-gray-200 text-xs font-medium text-indigo-800 bg-indigo-50/20">{row.Long_Term_Trend_Category || "Upward"}</TableCell>
+                                            <TableCell className="text-center border-r border-gray-200 text-xs font-medium text-teal-800 bg-teal-50/20 max-w-[200px]">
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <div className="w-full truncate px-2 py-1 cursor-help hover:text-teal-900 transition-colors">
+                                                            {row.Forecast_Summary || "Normal"}
+                                                        </div>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent className="max-w-xs bg-teal-900 text-teal-50 border-teal-800 shadow-xl p-3">
+                                                        <p className="font-semibold mb-1 text-teal-200 text-xs uppercase tracking-wider">Forecast Summary</p>
+                                                        <p className="text-sm leading-relaxed">{row.Forecast_Summary || "Normal"}</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TableCell>
+
                                             {/* Sales Inputs */}
                                             {['oct', 'nov', 'dec'].map(month => (
                                                 <TeamInputCell
@@ -290,31 +198,48 @@ const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => 
                                                 />
                                             ))}
                                             {/* Marketing & Finance Inputs */}
-                                            {['oct', 'nov', 'dec'].map(month => (<TeamInputCell key={`mkt-${month}`} row={row} team="marketing" month={month} activeInputs={activeInputs} handleInputFocus={handleInputFocus} handleTeamInputChange={handleTeamInputChange} setActiveInputs={setActiveInputs} colorClass="green" value="" comment="" owner="" />))}
-                                            {['oct', 'nov', 'dec'].map(month => (<TeamInputCell key={`fin-${month}`} row={row} team="finance" month={month} activeInputs={activeInputs} handleInputFocus={handleInputFocus} handleTeamInputChange={handleTeamInputChange} setActiveInputs={setActiveInputs} colorClass="purple" value="" comment="" owner="" />))}
+                                            {['oct', 'nov', 'dec'].map(month => (
+                                                <TeamInputCell
+                                                    key={`mkt-${month}`}
+                                                    row={row} team="marketing" month={month}
+                                                    activeInputs={activeInputs}
+                                                    handleInputFocus={handleInputFocus}
+                                                    handleTeamInputChange={handleTeamInputChange}
+                                                    setActiveInputs={setActiveInputs}
+                                                    colorClass="green"
+                                                    value={teamInputs[row.name]?.marketing?.[month]?.value || ""}
+                                                    comment={teamInputs[row.name]?.marketing?.[month]?.comment || ""}
+                                                    owner={teamInputs[row.name]?.marketing?.[month]?.owner || ""}
+                                                />
+                                            ))}
+                                            {['oct', 'nov', 'dec'].map(month => (
+                                                <TeamInputCell
+                                                    key={`fin-${month}`}
+                                                    row={row} team="finance" month={month}
+                                                    activeInputs={activeInputs}
+                                                    handleInputFocus={handleInputFocus}
+                                                    handleTeamInputChange={handleTeamInputChange}
+                                                    setActiveInputs={setActiveInputs}
+                                                    colorClass="purple"
+                                                    value={teamInputs[row.name]?.finance?.[month]?.value || ""}
+                                                    comment={teamInputs[row.name]?.finance?.[month]?.comment || ""}
+                                                    owner={teamInputs[row.name]?.finance?.[month]?.owner || ""}
+                                                />
+                                            ))}
                                         </TableRow>
                                         {/* Waterfall Charts */}
                                         {expandedItems[row.name] && (
-                                            <TableRow className="bg-white">
-                                                <TableCell colSpan={37} className="p-0">
-                                                    <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                        {['oct', 'nov', 'dec'].map(m => (
-                                                            <div key={m} className="border rounded-lg overflow-hidden">
-                                                                <div className="px-4 py-3 bg-gray-100 font-medium capitalize">{row.name} - {m} Waterfall</div>
-                                                                <div className="p-4">
-                                                                    <WaterfallChart data={[
-                                                                        { label: "Forecast", value: row[`Forecast${m.charAt(0).toUpperCase() + m.slice(1)}`] },
-                                                                        { label: "Sales", value: parseFloat(teamInputs[row.name]?.sales?.[m]?.value) || 0 },
-                                                                        { label: "Marketing", value: parseFloat(teamInputs[row.name]?.marketing?.[m]?.value) || 0 },
-                                                                        { label: "Finance", value: parseFloat(teamInputs[row.name]?.finance?.[m]?.value) || 0 },
-                                                                        { label: "Consensus", value: consensusValues[row.name]?.[m] }
-                                                                    ]} />
-                                                                </div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
+                                            <ExpandedRowContent
+                                                row={row}
+                                                itemLevel={itemLevel}
+                                                globalData={data}
+                                                teamInputs={teamInputs}
+                                                consensusValues={consensusValues}
+                                                handleTeamInputChange={handleTeamInputChange}
+                                                handleInputFocus={handleInputFocus}
+                                                activeInputs={activeInputs}
+                                                setActiveInputs={setActiveInputs}
+                                            />
                                         )}
                                     </React.Fragment>
                                 ))}
@@ -327,6 +252,237 @@ const ForecastTable = forwardRef(({ data, selections, onPivotRequest }, ref) => 
         </div>
     )
 });
+
+// Helper to determine next level
+const getNextLevel = (currentLevel) => {
+    const levels = ['Channel', 'Chain', 'Depot', 'SubCat', 'SKU'];
+    const idx = levels.indexOf(currentLevel);
+    if (idx >= 0 && idx < levels.length - 1) return levels[idx + 1];
+    return null;
+}
+
+const ExpandedRowContent = ({ row, itemLevel, globalData, teamInputs, consensusValues, handleTeamInputChange, handleInputFocus, activeInputs, setActiveInputs }) => {
+    const nextLevel = getNextLevel(itemLevel);
+
+    // Aggregation Logic (Replicated from Planning.jsx for robustness)
+    const getChildRows = () => {
+        if (!nextLevel || !globalData) return [];
+
+        // Filter for children of this row
+        const filtered = globalData.filter(item => item[itemLevel] === row.name);
+
+        // Group by next level
+        const grouped = filtered.reduce((acc, item) => {
+            const key = item[nextLevel] || "Unassigned"; // Handle missing keys
+            if (!acc[key]) {
+                acc[key] = {
+                    name: key,
+                    LYOct: 0, LYNov: 0, LYDec: 0,
+                    ForecastOct: 0, ForecastNov: 0, ForecastDec: 0,
+                    // Initialize as null to find first non-null later
+                    Recent_Trend_Category: null,
+                    Long_Term_Trend_Category: null,
+                    Forecast_Summary: null,
+                }
+            }
+
+            // Capture first valid occurrence of metadata for this group
+            if (!acc[key].Recent_Trend_Category && item.Recent_Trend_Category) {
+                acc[key].Recent_Trend_Category = item.Recent_Trend_Category;
+            }
+            if (!acc[key].Long_Term_Trend_Category) {
+                const ltt = item.Long_Term_Trend_Category || item["Long-term_Trend_Category"];
+                if (ltt) acc[key].Long_Term_Trend_Category = ltt;
+            }
+            if (!acc[key].Forecast_Summary && item.Forecast_Summary) {
+                acc[key].Forecast_Summary = item.Forecast_Summary;
+            }
+
+            // LY Logic
+            if (item.Date && item.Date.includes('2023-10')) acc[key].LYOct += Number(item.actual) || 0
+            if (item.Date && item.Date.includes('2023-11')) acc[key].LYNov += Number(item.actual) || 0
+            if (item.Date && item.Date.includes('2023-12')) acc[key].LYDec += Number(item.actual) || 0
+
+            // Forecast Logic
+            if (item.Date && item.Date.includes('2024-10')) acc[key].ForecastOct += Number(item.forecast) || 0;
+            if (item.Date && item.Date.includes('2024-11')) acc[key].ForecastNov += Number(item.forecast) || 0;
+            if (item.Date && item.Date.includes('2024-12')) acc[key].ForecastDec += Number(item.forecast) || 0;
+
+            return acc;
+        }, {});
+
+        return Object.values(grouped);
+    };
+
+    const childRows = nextLevel ? getChildRows() : [];
+
+    if (childRows.length > 0) {
+        return (
+            <TableRow>
+                <TableCell colSpan={37} className="p-0 border-0">
+                    <div className="w-full bg-slate-50/50 pl-4 border-l-4 border-indigo-100">
+                        <Table>
+                            {/* Inner headers matching outer headers widths if possible, or just a simplified clean header */}
+                            <TableHeader className="bg-transparent">
+                                <TableRow className="border-b border-gray-200">
+                                    <TableHead className="w-[180px]">{nextLevel}</TableHead>
+                                    <TableHead className="text-right">LY Oct</TableHead>
+                                    <TableHead className="text-right">LY Nov</TableHead>
+                                    <TableHead className="text-right">LY Dec</TableHead>
+                                    <TableHead className="text-right">Fcst Oct</TableHead>
+                                    <TableHead className="text-right">Fcst Nov</TableHead>
+                                    <TableHead className="text-right">Fcst Dec</TableHead>
+                                    <TableHead className="text-center min-w-[120px]">Recent Trend</TableHead>
+                                    <TableHead className="text-center min-w-[120px]">Long Term Trend</TableHead>
+                                    <TableHead className="text-center min-w-[120px]">Forecast Summary</TableHead>
+                                    <TableHead className="text-center" colSpan={9}>Team Inputs (View Only)</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {childRows.map(child => (
+                                    <TableRow key={child.name} className="hover:bg-gray-50">
+                                        <TableCell className="font-medium max-w-[180px] truncate" title={child.name}>{child.name}</TableCell>
+                                        <TableCell className="text-right font-mono text-xs">{Math.round(child.LYOct).toLocaleString()}</TableCell>
+                                        <TableCell className="text-right font-mono text-xs">{Math.round(child.LYNov).toLocaleString()}</TableCell>
+                                        <TableCell className="text-right font-mono text-xs">{Math.round(child.LYDec).toLocaleString()}</TableCell>
+                                        <TableCell className="text-right font-mono text-xs">{Math.round(child.ForecastOct).toLocaleString()}</TableCell>
+                                        <TableCell className="text-right font-mono text-xs">{Math.round(child.ForecastNov).toLocaleString()}</TableCell>
+                                        <TableCell className="text-right font-mono text-xs">{Math.round(child.ForecastDec).toLocaleString()}</TableCell>
+
+                                        {/* Intelligence Columns Content */}
+                                        <TableCell className="text-center border-r border-gray-200 text-xs font-medium text-orange-800 bg-orange-50/20">
+                                            {child.Recent_Trend_Category || "Stable"}
+                                        </TableCell>
+                                        <TableCell className="text-center border-r border-gray-200 text-xs font-medium text-indigo-800 bg-indigo-50/20">
+                                            {child.Long_Term_Trend_Category || "Upward"}
+                                        </TableCell>
+                                        <TableCell className="text-center border-r border-gray-200 text-xs font-medium text-teal-800 bg-teal-50/20 max-w-[200px] truncate">
+                                            {child.Forecast_Summary || "Normal"}
+                                        </TableCell>
+                                        {/* Simplified Inputs Display - Non-editable in this view primarily to avoid state complexity, or editable if we match keys? */}
+                                        {/* Start: Editable Inputs matching main table structure but ignoring complex layout to fit */}
+                                        {['oct', 'nov', 'dec'].map(m => (
+                                            <React.Fragment key={m}>
+                                                <TableCell className="p-1 min-w-[60px] text-xs text-center border-l bg-blue-50/30">
+                                                    {teamInputs[child.name]?.sales?.[m]?.value || "-"}
+                                                </TableCell>
+                                                <TableCell className="p-1 min-w-[60px] text-xs text-center bg-green-50/30">
+                                                    {teamInputs[child.name]?.marketing?.[m]?.value || "-"}
+                                                </TableCell>
+                                                <TableCell className="p-1 min-w-[60px] text-xs text-center bg-purple-50/30">
+                                                    {teamInputs[child.name]?.finance?.[m]?.value || "-"}
+                                                </TableCell>
+                                            </React.Fragment>
+                                        ))}
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
+                </TableCell>
+            </TableRow>
+        )
+    }
+
+    // If it's a breakdown level (e.g. Channel -> Depots), show children as inline rows
+    // Note: In a real implementation with known hierarchy, you'd map over children here.
+    // For this mock, we'll pretend we "drill down" by just showing hypothetical child rows or just the charts.
+    // If the user request implies hierarchical expansion is ALREADY handled by the parent passed-in data structure or logic,
+    // we should respect that.
+    // However, looking at line 347, the previous logic tried to `row.children.map`.
+    // If we want "inline within the table", we simply return a React Fragment of TableRows found in children.
+
+    if (row.children && row.children.length > 0) {
+        return (
+            <>
+                {row.children.map(child => (
+                    <TableRow key={child.name} className="bg-slate-50 hover:bg-slate-100/80 transition-colors border-l-4 border-l-indigo-400">
+                        {/* 1. Name Column (Indented & clean) */}
+                        <TableCell className="sticky left-0 bg-slate-50 z-20 border-r border-gray-200 pl-8 h-12 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
+                            <div className="flex items-center gap-2">
+                                <CornerDownRight className="w-4 h-4 text-indigo-300" />
+                                <span className="text-slate-700 font-medium text-sm">{child.name}</span>
+                            </div>
+                        </TableCell>
+
+                        {/* 2. LY Values */}
+                        <TableCell className="text-right border-r border-gray-200 font-mono text-sm text-slate-600">{Math.round(child.LYOct).toLocaleString()}</TableCell>
+                        <TableCell className="text-right border-r border-gray-200 font-mono text-sm text-slate-600">{Math.round(child.LYNov).toLocaleString()}</TableCell>
+                        <TableCell className="text-right border-r border-gray-200 font-mono text-sm text-slate-600">{Math.round(child.LYDec).toLocaleString()}</TableCell>
+
+                        {/* 3. Forecast Values */}
+                        <TableCell className="text-right border-r border-gray-200 font-mono text-sm text-slate-600">{Math.round(child.ForecastOct).toLocaleString()}</TableCell>
+                        <TableCell className="text-right border-r border-gray-200 font-mono text-sm text-slate-600">{Math.round(child.ForecastNov).toLocaleString()}</TableCell>
+                        <TableCell className="text-right border-r border-gray-200 font-mono text-sm text-slate-600">{Math.round(child.ForecastDec).toLocaleString()}</TableCell>
+
+                        {/* 4. Consensus Values */}
+                        <TableCell className="text-right border-r border-gray-200 font-mono text-sm font-semibold text-slate-800 bg-yellow-50">
+                            {(consensusValues[child.name]?.oct ?? Math.round(child.ForecastOct)).toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-right border-r border-gray-200 font-mono text-sm font-semibold text-slate-800 bg-yellow-50">
+                            {(consensusValues[child.name]?.nov ?? Math.round(child.ForecastNov)).toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-right border-r border-gray-200 font-mono text-sm font-semibold text-slate-800 bg-yellow-50">
+                            {(consensusValues[child.name]?.dec ?? Math.round(child.ForecastDec)).toLocaleString()}
+                        </TableCell>
+
+                        {/* 5. Intelligence Columns (Placeholders) */}
+                        <TableCell className="text-center border-r border-gray-200 text-xs text-slate-300">-</TableCell>
+                        <TableCell className="text-center border-r border-gray-200 text-xs text-slate-300">-</TableCell>
+                        <TableCell className="text-center border-r border-gray-200 text-xs text-slate-300">-</TableCell>
+
+                        {/* 6. Inputs */}
+                        {['oct', 'nov', 'dec'].map(month => (
+                            <TeamInputCell
+                                key={`child-sales-${month}`}
+                                row={child} team="sales" month={month}
+                                activeInputs={activeInputs}
+                                handleInputFocus={handleInputFocus}
+                                handleTeamInputChange={handleTeamInputChange}
+                                setActiveInputs={setActiveInputs}
+                                colorClass="blue"
+                                value={teamInputs[child.name]?.sales?.[month]?.value || ""}
+                                comment={teamInputs[child.name]?.sales?.[month]?.comment || ""}
+                                owner={teamInputs[child.name]?.sales?.[month]?.owner || ""}
+                            />
+                        ))}
+                        {['oct', 'nov', 'dec'].map(month => (
+                            <TeamInputCell
+                                key={`child-mkt-${month}`}
+                                row={child} team="marketing" month={month}
+                                activeInputs={activeInputs}
+                                handleInputFocus={handleInputFocus}
+                                handleTeamInputChange={handleTeamInputChange}
+                                setActiveInputs={setActiveInputs}
+                                colorClass="green"
+                                value={teamInputs[child.name]?.marketing?.[month]?.value || ""}
+                                comment={teamInputs[child.name]?.marketing?.[month]?.comment || ""}
+                                owner={teamInputs[child.name]?.marketing?.[month]?.owner || ""}
+                            />
+                        ))}
+                        {['oct', 'nov', 'dec'].map(month => (
+                            <TeamInputCell
+                                key={`child-fin-${month}`}
+                                row={child} team="finance" month={month}
+                                activeInputs={activeInputs}
+                                handleInputFocus={handleInputFocus}
+                                handleTeamInputChange={handleTeamInputChange}
+                                setActiveInputs={setActiveInputs}
+                                colorClass="purple"
+                                value={teamInputs[child.name]?.finance?.[month]?.value || ""}
+                                comment={teamInputs[child.name]?.finance?.[month]?.comment || ""}
+                                owner={teamInputs[child.name]?.finance?.[month]?.owner || ""}
+                            />
+                        ))}
+                    </TableRow>
+                ))}
+            </>
+        );
+    }
+
+    // If no children and we are asked NOT to show charts (blue chart) in this flow:
+    return null;
+};
 
 // Helper Component
 const TeamInputCell = ({ row, team, month, activeInputs, handleInputFocus, handleTeamInputChange, setActiveInputs, colorClass, value, comment, owner }) => {

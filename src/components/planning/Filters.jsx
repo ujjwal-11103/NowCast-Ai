@@ -20,27 +20,68 @@ const Filters = ({ showFilters }) => {
         setForecastValue,
         setYoyGrowth,
         setParentLevelForecast,
+        filters, // Added filters to sync back
         setFilters,
         setAccuracyLevel,
         setAccuracy,
         setBias
     } = useForecast();
 
-    // State for dropdown selections
-    const [selectedChannel, setSelectedChannel] = useState(null);
-    const [selectedChain, setSelectedChain] = useState(null);
-    const [selectedDepot, setSelectedDepot] = useState(null);
-    const [selectedSubCat, setSelectedSubCat] = useState(null);
-    const [selectedSubSKU, setSelectedSubSKU] = useState(null);
-    const [selectedAccuracy, setSelectedAccuracy] = useState("95%");
-
-    // Options for dropdowns
+    // State for dropdown options
     const [channelOptions, setChannelOptions] = useState([]);
     const [chainOptions, setChainOptions] = useState([]);
     const [depotOptions, setDepotOptions] = useState([]);
     const [subCatOptions, setSubCatOptions] = useState([]);
     const [skuOptions, setSkuOptions] = useState([]);
     const accuracyOptions = ["90%", "95%", "98%", "99%", "99.5%"];
+
+    // --- HANDLERS FOR DROPDOWN CHANGES (Direct Context Update) ---
+    const handleChannelChange = (val) => {
+        setFilters(prev => ({
+            ...prev,
+            channel: val,
+            chain: null,
+            depot: null,
+            subCat: null,
+            sku: null
+        }));
+    };
+
+    const handleChainChange = (val) => {
+        setFilters(prev => ({
+            ...prev,
+            chain: val,
+            depot: val === 'All' ? 'All' : null, // If Chain is All, effectively reset or set default for children
+            subCat: val === 'All' ? 'All' : null,
+            sku: val === 'All' ? 'All' : null
+        }));
+    };
+
+    const handleDepotChange = (val) => {
+        setFilters(prev => ({
+            ...prev,
+            depot: val,
+            subCat: val === 'All' ? 'All' : null,
+            sku: val === 'All' ? 'All' : null
+        }));
+    };
+
+    const handleSubCatChange = (val) => {
+        setFilters(prev => ({
+            ...prev,
+            subCat: val,
+            sku: val === 'All' ? 'All' : null
+        }));
+    };
+
+    const handleSkuChange = (val) => {
+        setFilters(prev => ({
+            ...prev,
+            sku: val
+        }));
+    };
+
+    // --- OPTIONS LOGIC (Derived from Context) ---
 
     // 1. Load Channels
     useEffect(() => {
@@ -52,71 +93,64 @@ const Filters = ({ showFilters }) => {
 
     // 2. Chain Logic
     useEffect(() => {
-        if (selectedChannel && globalData) {
-            const filtered = globalData.filter(item => item.Channel === selectedChannel);
+        if (filters.channel && globalData) {
+            const filtered = globalData.filter(item => item.Channel === filters.channel);
             setChainOptions([...new Set(filtered.map(item => item.Chain))]);
+        } else {
+            setChainOptions([]);
         }
-    }, [selectedChannel, globalData]);
-
-    useEffect(() => {
-        setSelectedChain(null); setSelectedDepot(null); setSelectedSubCat(null); setSelectedSubSKU(null);
-        setDepotOptions([]); setSubCatOptions([]); setSkuOptions([]);
-    }, [selectedChannel]);
+    }, [filters.channel, globalData]);
 
     // 3. Depot Logic
     useEffect(() => {
-        if (selectedChain && globalData) {
-            if (selectedChain !== "All") {
-                const filtered = globalData.filter(item => item.Channel === selectedChannel && item.Chain === selectedChain);
+        if (filters.chain && globalData) {
+            if (filters.chain !== "All") {
+                const filtered = globalData.filter(item => item.Channel === filters.channel && item.Chain === filters.chain);
                 setDepotOptions([...new Set(filtered.map(item => item.Depot))]);
+            } else {
+                setDepotOptions([]);
             }
-        }
-    }, [selectedChain, selectedChannel, globalData]);
-
-    useEffect(() => {
-        if (selectedChain === "All") {
-            setSelectedDepot("All"); setSelectedSubCat("All"); setSelectedSubSKU("All");
-            setDepotOptions([]); setSubCatOptions([]); setSkuOptions([]);
         } else {
-            setSelectedDepot(null); setSelectedSubCat(null); setSelectedSubSKU(null);
-            setSubCatOptions([]); setSkuOptions([]);
+            setDepotOptions([]);
         }
-    }, [selectedChain]);
+    }, [filters.chain, filters.channel, globalData]);
 
     // 4. SubCat Logic
     useEffect(() => {
-        if (selectedDepot && globalData) {
-            if (selectedDepot !== "All") {
-                const filtered = globalData.filter(item => item.Channel === selectedChannel && item.Chain === selectedChain && item.Depot === selectedDepot);
+        if (filters.depot && globalData) {
+            if (filters.depot !== "All") {
+                const filtered = globalData.filter(item =>
+                    item.Channel === filters.channel &&
+                    item.Chain === filters.chain &&
+                    item.Depot === filters.depot
+                );
                 setSubCatOptions([...new Set(filtered.map(item => item.SubCat))]);
+            } else {
+                setSubCatOptions([]);
             }
-        }
-    }, [selectedDepot, selectedChannel, selectedChain, globalData]);
-
-    useEffect(() => {
-        if (selectedDepot === "All") {
-            setSelectedSubCat("All"); setSelectedSubSKU("All");
-            setSubCatOptions([]); setSkuOptions([]);
         } else {
-            setSelectedSubCat(null); setSelectedSubSKU(null); setSkuOptions([]);
+            setSubCatOptions([]);
         }
-    }, [selectedDepot]);
+    }, [filters.depot, filters.chain, filters.channel, globalData]);
 
     // 5. SKU Logic
     useEffect(() => {
-        if (selectedSubCat && globalData) {
-            if (selectedSubCat !== "All") {
-                const filtered = globalData.filter(item => item.Channel === selectedChannel && item.Chain === selectedChain && item.Depot === selectedDepot && item.SubCat === selectedSubCat);
+        if (filters.subCat && globalData) {
+            if (filters.subCat !== "All") {
+                const filtered = globalData.filter(item =>
+                    item.Channel === filters.channel &&
+                    item.Chain === filters.chain &&
+                    item.Depot === filters.depot &&
+                    item.SubCat === filters.subCat
+                );
                 setSkuOptions([...new Set(filtered.map(item => item.SKU))]);
+            } else {
+                setSkuOptions([]);
             }
+        } else {
+            setSkuOptions([]);
         }
-    }, [selectedSubCat, selectedChannel, selectedChain, selectedDepot, globalData]);
-
-    useEffect(() => {
-        if (selectedSubCat === "All") { setSelectedSubSKU("All"); setSkuOptions([]); }
-        else { setSelectedSubSKU(null); }
-    }, [selectedSubCat]);
-
+    }, [filters.subCat, filters.channel, filters.chain, filters.depot, globalData]);
 
     // ==========================================
     //  UPDATED METRICS CALCULATION
@@ -126,11 +160,11 @@ const Filters = ({ showFilters }) => {
 
             // 1. Filter Data
             const filteredData = globalData.filter(item => {
-                if (selectedChannel && item.Channel !== selectedChannel) return false;
-                if (selectedChain && selectedChain !== "All" && item.Chain !== selectedChain) return false;
-                if (selectedDepot && selectedDepot !== "All" && item.Depot !== selectedDepot) return false;
-                if (selectedSubCat && selectedSubCat !== "All" && item.SubCat !== selectedSubCat) return false;
-                if (selectedSubSKU && selectedSubSKU !== "All" && item.SKU !== selectedSubSKU) return false;
+                if (filters.channel && item.Channel !== filters.channel) return false;
+                if (filters.chain && filters.chain !== "All" && item.Chain !== filters.chain) return false;
+                if (filters.depot && filters.depot !== "All" && item.Depot !== filters.depot) return false;
+                if (filters.subCat && filters.subCat !== "All" && item.SubCat !== filters.subCat) return false;
+                if (filters.sku && filters.sku !== "All" && item.SKU !== filters.sku) return false;
                 return true;
             });
 
@@ -139,25 +173,26 @@ const Filters = ({ showFilters }) => {
             const historyData = filteredData.filter(item => item.Period === "History");
 
             // --- A. Forecast Volume ---
-            const totalForecastVolume = forecastData.reduce((sum, item) => sum + (Number(item.forecast) || 0), 0);
+            // Use ConsensusForecast to reflect the latest user/chatbot plan, not just the static baseline 'forecast'
+            const totalForecastVolume = forecastData.reduce((sum, item) => sum + (Number(item.ConsensusForecast) || 0), 0);
             setForecastSum(Math.round(totalForecastVolume));
 
             // --- B. Forecast Value ---
             const totalForecastValue = forecastData.reduce((sum, item) => {
                 const price = Number(item.Price) || 0;
-                return sum + ((Number(item.forecast) || 0) * price);
+                return sum + ((Number(item.ConsensusForecast) || 0) * price);
             }, 0);
             setForecastValue(Math.round(totalForecastValue));
 
             // --- C. YoY Growth ---
-            const forecastMonths = [...new Set(forecastData.map(d => d.Date.substring(0, 7)))];
+            const forecastMonths = [...new Set(forecastData.map(d => d.Date ? d.Date.substring(0, 7) : ""))].filter(Boolean);
             const lyMonths = forecastMonths.map(dateStr => {
                 const year = parseInt(dateStr.substring(0, 4));
                 const month = dateStr.substring(5, 7);
                 return `${year - 1}-${month}`;
             });
             const lyData = filteredData.filter(item => {
-                const itemMonth = item.Date.substring(0, 7);
+                const itemMonth = item.Date ? item.Date.substring(0, 7) : "";
                 return lyMonths.includes(itemMonth) && item.Period === "History";
             });
             const totalLYActuals = lyData.reduce((sum, item) => sum + (Number(item.actual) || 0), 0);
@@ -212,19 +247,13 @@ const Filters = ({ showFilters }) => {
             setForecastSum(null); setForecastValue(null); setYoyGrowth(null); setParentLevelForecast(null);
             setAccuracy(null); setBias(null);
         }
-    }, [selectedChannel, selectedChain, selectedDepot, selectedSubCat, selectedSubSKU, globalData]);
-
-    useEffect(() => {
-        setFilters({
-            channel: selectedChannel, chain: selectedChain, depot: selectedDepot, subCat: selectedSubCat, sku: selectedSubSKU,
-        });
-    }, [selectedChannel, selectedChain, selectedDepot, selectedSubCat, selectedSubSKU]);
+    }, [filters.channel, filters.chain, filters.depot, filters.subCat, filters.sku, globalData]);
 
     // Render helpers
-    const showChainDropdown = selectedChannel;
-    const showDepotDropdown = selectedChain && selectedChain !== "All";
-    const showSubCatDropdown = selectedDepot && selectedDepot !== "All";
-    const showSKUDropdown = selectedSubCat && selectedSubCat !== "All";
+    const showChainDropdown = filters.channel;
+    const showDepotDropdown = filters.chain && filters.chain !== "All";
+    const showSubCatDropdown = filters.depot && filters.depot !== "All";
+    const showSKUDropdown = filters.subCat && filters.subCat !== "All";
     const location = useLocation();
     const isNormsPage = location.pathname === "/norms";
 
@@ -242,7 +271,7 @@ const Filters = ({ showFilters }) => {
                     {/* Channel */}
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700">Channel</label>
-                        <Select onValueChange={setSelectedChannel} value={selectedChannel || ""}>
+                        <Select onValueChange={handleChannelChange} value={filters.channel || ""}>
                             <SelectTrigger className="w-full"><SelectValue placeholder="Select channel" /></SelectTrigger>
                             <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
                                 {channelOptions.map(channel => <SelectItem key={channel} value={channel}>{channel.toUpperCase()}</SelectItem>)}
@@ -253,7 +282,7 @@ const Filters = ({ showFilters }) => {
                     {showChainDropdown && (
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-gray-700">Chain</label>
-                            <Select value={selectedChain || ""} onValueChange={setSelectedChain} disabled={!selectedChannel}>
+                            <Select value={filters.chain || ""} onValueChange={handleChainChange} disabled={!filters.channel}>
                                 <SelectTrigger className="w-full"><SelectValue placeholder="Select chain" /></SelectTrigger>
                                 <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
                                     <SelectItem value="All">ALL</SelectItem>
@@ -266,7 +295,7 @@ const Filters = ({ showFilters }) => {
                     {showDepotDropdown && (
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-gray-700">Depot</label>
-                            <Select value={selectedDepot || ""} onValueChange={setSelectedDepot} disabled={!selectedChain}>
+                            <Select value={filters.depot || ""} onValueChange={handleDepotChange} disabled={!filters.chain}>
                                 <SelectTrigger className="w-full"><SelectValue placeholder="Select depot" /></SelectTrigger>
                                 <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
                                     <SelectItem value="All">ALL</SelectItem>
@@ -278,12 +307,12 @@ const Filters = ({ showFilters }) => {
                     {/* SubCat */}
                     {showSubCatDropdown && (
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">SubCat</label>
-                            <Select value={selectedSubCat || ""} onValueChange={setSelectedSubCat} disabled={!selectedDepot}>
-                                <SelectTrigger className="w-full"><SelectValue placeholder="Select subcat" /></SelectTrigger>
+                            <label className="text-sm font-medium text-gray-700">Sub Category</label>
+                            <Select value={filters.subCat || ""} onValueChange={handleSubCatChange} disabled={!filters.depot}>
+                                <SelectTrigger className="w-full"><SelectValue placeholder="Select sub-category" /></SelectTrigger>
                                 <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
                                     <SelectItem value="All">ALL</SelectItem>
-                                    {subCatOptions.map(subcat => <SelectItem key={subcat} value={subcat}>{subcat.toUpperCase()}</SelectItem>)}
+                                    {subCatOptions.map(subCat => <SelectItem key={subCat} value={subCat}>{subCat.toUpperCase()}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>
@@ -292,7 +321,7 @@ const Filters = ({ showFilters }) => {
                     {showSKUDropdown && (
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-gray-700">SKU</label>
-                            <Select value={selectedSubSKU || ""} onValueChange={setSelectedSubSKU} disabled={!selectedSubCat}>
+                            <Select value={filters.sku || ""} onValueChange={handleSkuChange} disabled={!filters.subCat}>
                                 <SelectTrigger className="w-full"><SelectValue placeholder="Select SKU" /></SelectTrigger>
                                 <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
                                     <SelectItem value="All">ALL</SelectItem>
