@@ -25,6 +25,7 @@ import Filters from "@/components/planning/Filters";
 import PivotTableComponent from "@/components/planning/PivotTableComponent";
 import Chatbot from "@/components/Chatbot/Chatbot";
 import { formatIndianNumber as formatForecastValue } from "@/utils/formatters";
+import MarqueeAnnouncement from "@/components/common/MarqueeAnnouncement";
 
 
 const Planning = () => {
@@ -411,6 +412,35 @@ const Planning = () => {
 
 
 
+    // --- Marquee Messages Logic ---
+    const marqueeMessages = React.useMemo(() => {
+        if (!globalData || globalData.length === 0) return null;
+
+        const uniqueKeys = new Set();
+        const messages = [];
+
+        // Prioritize items with active alerts
+        const sortedData = [...globalData].sort((a, b) => {
+            const aAlert = a.Alert && a.Alert !== 'No Alert' ? 1 : 0;
+            const bAlert = b.Alert && b.Alert !== 'No Alert' ? 1 : 0;
+            return bAlert - aAlert; // Descending order of importance
+        });
+
+        for (const item of sortedData) {
+            if (item.key_new && item.Forecast_Summary && !uniqueKeys.has(item.key_new)) {
+                // If Alert is available (and explicitly not 'No Alert'), show it.
+                // Or if we just want to show summaries for everything:
+                // User said: "if alert is available, show forecast summary".
+                // We'll show the summary for all items that have one, but prioritized by Alert presence.
+                messages.push(`(${item.key_new}) ${item.Forecast_Summary}`);
+                uniqueKeys.add(item.key_new);
+            }
+            if (messages.length >= 10) break; // Limit to 10 items
+        }
+
+        return messages.length > 0 ? messages : null;
+    }, [globalData]);
+
     if (isLoading) {
         return (
             <div className="flex h-screen items-center justify-center bg-gray-50">
@@ -430,6 +460,8 @@ const Planning = () => {
                 </div>
 
                 <div className={`main transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-16"} flex-1 bg-gray-50 p-6`}>
+
+
                     <div className="max-w-7xl mx-auto space-y-6">
                         {/* Header */}
                         <div className="flex justify-between items-start">
@@ -533,6 +565,12 @@ const Planning = () => {
                                 </Card>
                             </div>
                         </Card>
+
+
+                        {/* Marquee Announcement - Above Graph */}
+                        <div className="w-full">
+                            <MarqueeAnnouncement announcements={marqueeMessages} />
+                        </div>
 
                         {/* OOS Analysis Chart & Forecast Bridge - RESPONSIVE CONTAINER */}
                         <div className="flex flex-col lg:flex-row w-full gap-6 mb-6">

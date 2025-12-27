@@ -7,7 +7,7 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
     const { filters, globalData, whatIfData } = useForecast();
 
     const {
-        chartDates, chartActuals, chartForecasts, chartConsensus, chartWhatIf, chartOOS, chartSeasonality, chartTrends,
+        chartDates, chartActuals, chartForecasts, chartConsensus, chartConsensusText, chartWhatIf, chartOOS, chartSeasonality, chartTrends,
         chartUpperBand, chartLowerBand,
         showConsensusLine, showWhatIfLine
     } = useMemo(() => {
@@ -172,11 +172,33 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
             return null;
         });
 
+        // Generate Alert Text for Consensus
+        // Compare Consensus vs Baseline for each point
+        const consensusTextData = sortedDates.map((date, index) => {
+            const consensusVal = consensusData[index];
+            const baselineVal = forecastsData[index];
+
+            if (consensusVal !== null && baselineVal !== null) {
+                const diff = consensusVal - baselineVal;
+                // Only show alert if there is a significant difference (e.g. > 1)
+                if (Math.abs(diff) > 1) {
+                    const label = diff > 0 ? "Overstretched" : "Understretched";
+                    // Format number nicely (e.g. 1.2k or local string)
+                    const formattedDiff = Math.abs(Math.round(diff)).toLocaleString();
+                    const sign = diff > 0 ? "+" : "-";
+                    // HTML styling for Plotly hover
+                    return `<span style="color: #ef4444; font-weight: bold;">${label} (${sign}${formattedDiff})</span>`;
+                }
+            }
+            return "";
+        });
+
         return {
             chartDates: sortedDates,
             chartActuals: actualsData,
             chartForecasts: forecastsData,
             chartConsensus: consensusData,
+            chartConsensusText: consensusTextData, // Export the text array
             chartWhatIf: whatIfChartData,
             chartOOS: oosData,
             chartSeasonality: seasonalityData,
@@ -249,6 +271,8 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
         chartTraces.push({
             x: chartDates,
             y: chartConsensus,
+            text: chartConsensusText,
+            hoverinfo: 'x+y+text',
             type: 'scatter',
             mode: 'lines+markers',
             name: 'Consensus (Updated)',

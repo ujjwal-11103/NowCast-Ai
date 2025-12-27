@@ -55,6 +55,8 @@ export const ForecastProvider = ({ children }) => {
             Recent_Trend_Category: item.Recent_Trend_Category,
             Long_Term_Trend_Category: item["Long-term_Trend_Category"],
             Forecast_Summary: item.Forecast_Summary,
+            key_new: item.key_new,
+            Alert: item.Alert,
             isEdited: false
           }));
           setGlobalData(mappedData);
