@@ -9,6 +9,8 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { Button } from "@/components/ui/button"
+import { Download } from "lucide-react"
 
 // Mini Waterfall Component for Forecast Components (Hybrid: Supports both Consensus and System Decomposition)
 export const ForecastBridge = ({
@@ -189,12 +191,51 @@ export const ConsensusBridge = ForecastBridge;
 const ForecastBreakupTable = ({ tableData }) => {
     if (!tableData || tableData.length === 0) return null;
 
+    const handleDownload = () => {
+        if (!tableData || tableData.length === 0) return;
+
+        const headers = ['Item Name', 'Month', 'Trend', 'Seasonality', 'Discount', 'Spends', 'Lag3', 'MA4', 'Final Forecast'];
+        const csvRows = [headers.join(',')];
+
+        tableData.forEach(row => {
+            ['oct', 'nov', 'dec'].map(m => {
+                const suffix = m.charAt(0).toUpperCase() + m.slice(1);
+                const values = [
+                    `"${row.name}"`,
+                    suffix,
+                    row[`Trend${suffix}`] || 0,
+                    row[`Seasonality${suffix}`] || 0,
+                    row[`Discount${suffix}`] || 0,
+                    row[`Spends${suffix}`] || 0,
+                    row[`Lag3${suffix}`] || 0,
+                    row[`MA4${suffix}`] || 0,
+                    row[`Forecast${suffix}`] || 0
+                ];
+                csvRows.push(values.join(','));
+            });
+        });
+
+        const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `forecast_breakup_data_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    };
+
     return (
         <Card className="overflow-hidden border border-gray-200 mt-4 p-0 shadow-sm">
             <div className="p-4 bg-white border-b border-gray-200 flex justify-between items-center">
                 <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                     Forecast Component Analysis <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">System Decomposition</span>
                 </h3>
+                <Button variant="outline" size="sm" onClick={handleDownload} className="flex items-center gap-2 border-gray-300 hover:bg-gray-50">
+                    <Download className="w-4 h-4" />
+                    Export CSV
+                </Button>
             </div>
             <div className="overflow-x-auto">
                 <Table>
@@ -202,7 +243,7 @@ const ForecastBreakupTable = ({ tableData }) => {
                         <TableRow className="bg-gray-50/80 hover:bg-gray-50/80">
                             <TableHead className="w-[120px]">Item</TableHead>
                             <TableHead className="w-[80px]">Month</TableHead>
-                            <TableHead className="w-[300px]">Forecast Bridge</TableHead>
+
                             <TableHead className="text-right w-[80px] text-indigo-600">
                                 <div className="flex items-center justify-end gap-1"><div className="w-2 h-2 rounded-full bg-indigo-600"></div>Trend</div>
                             </TableHead>
@@ -247,18 +288,7 @@ const ForecastBreakupTable = ({ tableData }) => {
                                             )}
                                             <TableCell className="capitalize text-gray-500 text-sm">{m}</TableCell>
 
-                                            {/* Waterfall Visual Column */}
-                                            <TableCell>
-                                                <ForecastBridge
-                                                    trend={trend}
-                                                    seasonality={seasonality}
-                                                    discount={discount}
-                                                    spends={spends}
-                                                    lag3={lag3}
-                                                    ma4={ma4}
-                                                    final={forecast}
-                                                />
-                                            </TableCell>
+
 
                                             <TableCell className="text-right font-mono text-indigo-600 text-sm">{Math.round(trend).toLocaleString()}</TableCell>
                                             <TableCell className="text-right font-mono text-cyan-600 text-sm">{Math.round(seasonality).toLocaleString()}</TableCell>

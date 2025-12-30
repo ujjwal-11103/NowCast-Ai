@@ -11,12 +11,20 @@ export const WaterfallChart = ({ data }) => {
         );
     }
 
-    const measures = ["absolute", "relative", "relative", "relative", "total"];
-    const labels = data.map(d => d?.label || '');
-    const values = data.map(d => Number(d?.value) || 0);
-    const text = values.map(v => v?.toString() || '0');
+    // Dynamic Data Processing
+    const processedData = [...data];
 
-    console.log("Data in chart:", { data, labels, values, text });
+    // Arrays for Plotly
+    const measures = processedData.map((_, i) => i === 0 ? "absolute" : "relative");
+    const labels = processedData.map(d => d.label);
+    const values = processedData.map(d => Number(d.value) || 0);
+    const text = values.map(v => (v > 0 ? '+' : '') + Math.round(v).toLocaleString());
+
+    // Add Final Total Column automatically
+    measures.push("total");
+    labels.push("Final");
+    values.push(0); // Plotly calculates this
+    text.push(""); // Optional text for total, or let Plotly handle it
 
     return (
         <Plot
@@ -28,23 +36,25 @@ export const WaterfallChart = ({ data }) => {
                 y: values,
                 text: text,
                 connector: { line: { color: 'rgb(63, 63, 63)' } },
-                increasing: { marker: { color: '#4CAF50' } }, // Green for positive
-                decreasing: { marker: { color: '#F44336' } }, // Red for negative
-                totals: { marker: { color: '#2196F3' } } // Blue for totals
+                increasing: { marker: { color: '#10B981' } }, // Green-500
+                decreasing: { marker: { color: '#EF4444' } }, // Red-500
+                totals: { marker: { color: '#3B82F6' } }, // Blue-500
+                textposition: 'outside',
+                hoverinfo: 'x+y+delta',
             }]}
             layout={{
-                title: 'Forecast to Consensus',
+                title: false,
                 waterfallgap: 0.3,
                 showlegend: false,
-                margin: { t: 30, b: 30, l: 40, r: 30 },
+                margin: { t: 20, b: 70, l: 40, r: 20 },
                 paper_bgcolor: 'rgba(0,0,0,0)',
                 plot_bgcolor: 'rgba(0,0,0,0)'
             }}
-            config={{ 
+            config={{
                 displayModeBar: false,
                 responsive: true
             }}
-            style={{ width: '100%', height: '400px' }}
+            style={{ width: '100%', height: '100%' }}
             useResizeHandler={true}
         />
     );

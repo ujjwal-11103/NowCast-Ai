@@ -249,7 +249,8 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
         type: 'scatter',
         mode: 'lines+markers',
         name: 'Actual Sales',
-        line: { color: '#3b82f6', width: 2 },
+        line: { color: '#3b82f6', width: 3, shape: 'spline', smoothing: 1.3 },
+        marker: { size: 6, symbol: 'circle', line: { width: 2, color: '#ffffff' } },
         connectgaps: false,
         yaxis: 'y1'
     });
@@ -261,7 +262,8 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
         type: 'scatter',
         mode: 'lines+markers',
         name: 'Baseline Forecast',
-        line: { color: '#22c55e', width: 2, dash: 'dot' },
+        line: { color: '#22c55e', width: 3, dash: 'dot', shape: 'spline', smoothing: 1.3 },
+        marker: { size: 6, symbol: 'circle', line: { width: 2, color: '#ffffff' } },
         connectgaps: false,
         yaxis: 'y1'
     });
@@ -276,7 +278,8 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
             type: 'scatter',
             mode: 'lines+markers',
             name: 'Consensus (Updated)',
-            line: { color: '#f97316', width: 2 },
+            line: { color: '#f97316', width: 3, shape: 'spline', smoothing: 1.3 },
+            marker: { size: 8, symbol: 'diamond', line: { width: 2, color: '#ffffff' } },
             connectgaps: false,
             yaxis: 'y1'
         });
@@ -290,7 +293,8 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
             type: 'scatter',
             mode: 'lines+markers',
             name: 'OOS Days',
-            line: { color: '#ef4444', width: 2, dash: 'dot' },
+            line: { color: '#ef4444', width: 2, dash: 'dot', shape: 'hv' },
+            marker: { size: 4 },
             connectgaps: false,
             yaxis: 'y2'
         });

@@ -21,20 +21,28 @@ const MarqueeAnnouncement = ({ message, announcements }) => {
                     <div className="absolute whitespace-nowrap animate-marquee flex items-center gap-12">
 
                         {/* Content Repeated to ensure seamless loop */}
-                        {(announcements && announcements.length > 0 ? announcements : [
-                            "🚀 New Feature: AI-driven consensus adjustments now live!",
-                            "📢 Notification: Q4 Forecast Reviews are due by Friday 5 PM.",
-                            "⚠️ Maintenance: System update scheduled for Saturday 10 PM."
-                        ]).map((msg, i) => (
-                            <React.Fragment key={i}>
-                                <span className="flex items-center gap-2 text-sm font-medium tracking-wide">
-                                    {msg}
-                                </span>
-                                <span className="flex items-center gap-2 text-sm font-medium tracking-wide text-indigo-200">
-                                    •
-                                </span>
-                            </React.Fragment>
-                        ))}
+                        {/* Content Repeated to ensure seamless loop */
+                            (announcements && announcements.length > 0 ? announcements : [
+                                "🚀 New Feature: AI-driven consensus adjustments now live!",
+                                "📢 Notification: Q4 Forecast Reviews are due by Friday 5 PM.",
+                                "⚠️ Maintenance: System update scheduled for Saturday 10 PM."
+                            ])
+                                // DUPLICATE CONTENT FOR SEAMLESS LOOP
+                                .reduce((acc, item) => [...acc, item], [...(announcements && announcements.length > 0 ? announcements : [
+                                    "🚀 New Feature: AI-driven consensus adjustments now live!",
+                                    "📢 Notification: Q4 Forecast Reviews are due by Friday 5 PM.",
+                                    "⚠️ Maintenance: System update scheduled for Saturday 10 PM."
+                                ])])
+                                .map((msg, i) => (
+                                    <React.Fragment key={i}>
+                                        <span className="flex items-center gap-2 text-sm font-medium tracking-wide">
+                                            {msg}
+                                        </span>
+                                        <span className="flex items-center gap-2 text-sm font-medium tracking-wide text-indigo-200">
+                                            •
+                                        </span>
+                                    </React.Fragment>
+                                ))}
 
                     </div>
                 </div>
