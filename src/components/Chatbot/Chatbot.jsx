@@ -245,27 +245,30 @@ const Chatbot = ({ filters = {} }) => {
 
                                         {/* TABLE RENDERER FOR UPDATED RECORDS */}
                                         {msg.tableData && msg.tableData.length > 0 && (
-                                            <div className="mt-4 w-full overflow-x-auto border rounded-lg border-gray-200 shadow-sm">
+                                            <div className="mt-4 w-full overflow-x-auto border rounded-2xl border-gray-200 shadow-sm bg-white">
                                                 <table className="w-full text-xs text-left text-gray-700">
-                                                    <thead className="bg-gray-100 text-gray-600 font-semibold uppercase tracking-wider">
+                                                    <thead className="bg-gray-50 text-gray-600 font-semibold uppercase tracking-wider border-b border-gray-100">
                                                         <tr>
-                                                            <th className="px-3 py-2 border-b whitespace-nowrap">Date</th>
-                                                            <th className="px-3 py-2 border-b whitespace-nowrap">SKU</th>
-                                                            <th className="px-3 py-2 border-b text-right whitespace-nowrap">Pred. Fcst</th>
-                                                            <th className="px-3 py-2 border-b text-right whitespace-nowrap">Cons. Fcst</th>
-                                                            <th className="px-3 py-2 border-b text-center whitespace-nowrap">Status</th>
-                                                            <th className="px-3 py-2 border-b text-right whitespace-nowrap text-gray-500">Lower CL</th>
-                                                            <th className="px-3 py-2 border-b text-right whitespace-nowrap text-gray-500">Upper CL</th>
+                                                            <th className="px-4 py-3 whitespace-nowrap">Date</th>
+                                                            <th className="px-4 py-3 whitespace-nowrap">SKU</th>
+                                                            <th className="px-4 py-3 text-right whitespace-nowrap">PredictedForecast</th>
+                                                            <th className="px-4 py-3 text-right whitespace-nowrap">ConsensusForecast</th>
+                                                            <th className="px-4 py-3 text-center whitespace-nowrap">Over/Under Stretch %</th>
+                                                            <th className="px-4 py-3 text-right whitespace-nowrap text-gray-500">Lower_CL</th>
+                                                            <th className="px-4 py-3 text-right whitespace-nowrap text-gray-500">Upper_CL</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody className="divide-y divide-gray-100 bg-white">
+                                                    <tbody className="divide-y divide-gray-100">
                                                         {msg.tableData.map((row, rIdx) => {
-                                                            const predicted = Number(row.PredictedForecast) || 0;
-                                                            const consensus = Number(row.ConsensusForecast) || 0;
+                                                            // Robust Data Accessors (Case-insensitive / various keys)
+                                                            const predicted = Number(row.PredictedForecast || row.predicted_forecast || row.predicted || 0);
+                                                            const consensus = Number(row.ConsensusForecast || row.consensus_forecast || row.consensus || 0);
+                                                            const sku = row.sku || row.SKU || row.item_id || '-';
+                                                            const dateStr = String(row.Date || row.date || '').substring(0, 10);
 
-                                                            // Confidence Limits (Handle various casing or missing keys)
-                                                            const lowerCL = Number(row.LOWER_CL || row.lower_band || 0);
-                                                            const upperCL = Number(row.UPPER_CL || row.upper_band || 0);
+                                                            // Confidence Limits
+                                                            const lowerCL = Number(row.LOWER_CL || row.Lower_CL || row.lower_cl || row.lower_band || 0);
+                                                            const upperCL = Number(row.UPPER_CL || row.Upper_CL || row.upper_cl || row.upper_band || 0);
 
                                                             const diff = consensus - predicted;
                                                             const pct = predicted !== 0 ? (diff / predicted) * 100 : 0;
@@ -273,35 +276,35 @@ const Chatbot = ({ filters = {} }) => {
                                                             let statusBadge;
                                                             if (Math.abs(pct) < 0.1) {
                                                                 statusBadge = (
-                                                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-800">
-                                                                        No Change
+                                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-gray-100 text-gray-600 border border-gray-200">
+                                                                        0%
                                                                     </span>
                                                                 );
                                                             } else if (pct > 0) {
                                                                 statusBadge = (
-                                                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-red-100 text-red-800">
+                                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-100">
                                                                         Overstretch ↑ {pct.toFixed(1)}%
                                                                     </span>
                                                                 );
                                                             } else {
                                                                 statusBadge = (
-                                                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-yellow-100 text-yellow-800">
+                                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-100">
                                                                         Understretch ↓ {Math.abs(pct).toFixed(1)}%
                                                                     </span>
                                                                 );
                                                             }
 
                                                             return (
-                                                                <tr key={rIdx} className="hover:bg-gray-50 transition-colors">
-                                                                    <td className="px-3 py-2 font-medium whitespace-nowrap">{String(row.Date).substring(0, 10)}</td>
-                                                                    <td className="px-3 py-2 text-gray-500 whitespace-nowrap">{row.sku || row.item_id || '-'}</td>
-                                                                    <td className="px-3 py-2 text-right text-gray-600">{Math.round(predicted).toLocaleString()}</td>
-                                                                    <td className="px-3 py-2 text-right font-bold text-indigo-700">{Math.round(consensus).toLocaleString()}</td>
-                                                                    <td className="px-3 py-2 text-center whitespace-nowrap">
+                                                                <tr key={rIdx} className="hover:bg-blue-50/50 transition-colors duration-150">
+                                                                    <td className="px-4 py-3 font-medium whitespace-nowrap text-slate-700">{dateStr}</td>
+                                                                    <td className="px-4 py-3 text-slate-500 whitespace-nowrap">{sku}</td>
+                                                                    <td className="px-4 py-3 text-right text-slate-600 font-medium">{Math.round(predicted).toLocaleString()}</td>
+                                                                    <td className="px-4 py-3 text-right font-bold text-indigo-600">{Math.round(consensus).toLocaleString()}</td>
+                                                                    <td className="px-4 py-3 text-center whitespace-nowrap">
                                                                         {statusBadge}
                                                                     </td>
-                                                                    <td className="px-3 py-2 text-right text-gray-400 text-[10px]">{Math.round(lowerCL).toLocaleString()}</td>
-                                                                    <td className="px-3 py-2 text-right text-gray-400 text-[10px]">{Math.round(upperCL).toLocaleString()}</td>
+                                                                    <td className="px-4 py-3 text-right text-slate-400 text-[11px] font-mono">{Math.round(lowerCL).toLocaleString()}</td>
+                                                                    <td className="px-4 py-3 text-right text-slate-400 text-[11px] font-mono">{Math.round(upperCL).toLocaleString()}</td>
                                                                 </tr>
                                                             );
                                                         })}
