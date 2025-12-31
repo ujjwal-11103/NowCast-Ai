@@ -384,15 +384,15 @@ const ForecastTable = forwardRef(({ data, selections, onPivotRequest, tableData,
     return (
         <div className="w-full flex flex-col space-y-4">
             <style>{heightStyles}</style>
-            <Card className="w-full h-auto overflow-hidden border border-gray-200 shadow-lg p-0 flex flex-col">
-                <div className="p-4 bg-white border-b border-gray-200 flex justify-between items-center shrink-0">
-                    <h3 className="text-lg font-semibold text-gray-800">Forecast Data (Q4 2024)</h3>
+            <Card className="w-full h-auto overflow-hidden border border-blue-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] rounded-3xl p-0 flex flex-col bg-gradient-to-br from-white/90 to-blue-50/50 backdrop-blur-md hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-shadow duration-500">
+                <div className="p-6 border-b border-blue-100/50 flex justify-between items-center shrink-0">
+                    <h3 className="text-lg font-bold text-slate-800 tracking-tight">Forecast Data (Q4 2024)</h3>
                     <div className="flex gap-2">
-                        <Button variant="outline" onClick={() => onPivotRequest(tableData)} className="flex items-center gap-2 border-gray-300 hover:bg-gray-100">
-                            <Table2 className="w-4 h-4" /> Pivot Analysis
+                        <Button variant="outline" onClick={() => onPivotRequest(tableData)} className="flex items-center gap-2 border-slate-200 hover:bg-white hover:shadow-sm transition-all rounded-full h-9">
+                            <Table2 className="w-4 h-4 text-indigo-600" /> <span className="text-slate-700 font-medium">Pivot Analysis</span>
                         </Button>
-                        <Button variant="outline" onClick={handleExportSelection} className="flex items-center gap-2 border-gray-300 hover:bg-gray-100">
-                            <Download className="w-4 h-4" /> Export Selection
+                        <Button variant="outline" onClick={handleExportSelection} className="flex items-center gap-2 border-slate-200 hover:bg-white hover:shadow-sm transition-all rounded-full h-9">
+                            <Download className="w-4 h-4 text-indigo-600" /> <span className="text-slate-700 font-medium">Export Selection</span>
                         </Button>
                     </div>
                 </div>

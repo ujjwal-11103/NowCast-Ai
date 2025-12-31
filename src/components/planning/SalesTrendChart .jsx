@@ -340,10 +340,10 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
 
     // Build layout based on whether OOS is toggled
     const layoutConfig = {
-        title: customTitle !== undefined ? customTitle : 'Actual vs Forecast',
+        title: customTitle !== undefined ? customTitle : '',
         plot_bgcolor: '#ffffff',
         paper_bgcolor: '#ffffff',
-        font: { family: 'Inter, sans-serif', size: 12 },
+        font: { family: 'Outfit, sans-serif', size: 12 },
         margin: { t: 40, r: chartToggle.oos ? 80 : 20, l: 60, b: 50 },
         xaxis: { title: 'Date', tickangle: -45, gridcolor: '#f3f4f6' },
         yaxis: {

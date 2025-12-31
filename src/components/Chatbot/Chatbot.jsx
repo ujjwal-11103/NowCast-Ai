@@ -8,15 +8,17 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useForecast } from "@/context/ForecastContext/ForecastContext";
 
-const Chatbot = ({ filters = {} }) => {
+const Chatbot = ({ filters = {}, externalMode, setExternalMode, compact = false }) => {
     const [input, setInput] = useState("");
     const [messages, setMessages] = useState([
         { type: 'bot', text: 'Hello! I can help you simulate scenarios. Select a mode below or type a command.' }
     ]);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Mode State: "default" | "what-if" | "rca" | "explorer"
-    const [activeMode, setActiveMode] = useState("default");
+    // Mode State: Priority to external props if provided
+    const [localMode, setLocalMode] = useState("default");
+    const activeMode = externalMode || localMode;
+    const setActiveMode = setExternalMode || setLocalMode;
 
     const chatContainerRef = useRef(null);
     const { updateForecastData, handleWhatIfScenario } = useForecast();
@@ -108,8 +110,6 @@ const Chatbot = ({ filters = {} }) => {
                     chart: data.chart || null // Capture chart data if present (mainly for what-if)
                 };
 
-                setMessages(prev => [...prev, botResponse]);
-
                 // B. Handle Data Side-Effects based on Mode (Only for Standard API)
                 if (activeMode !== "explorer") {
                     const records = data.updated_records || data.data || [];
@@ -131,6 +131,9 @@ const Chatbot = ({ filters = {} }) => {
                         }
                     }
                 }
+
+                // Update Messages State AFTER all data (including tableData) is attached
+                setMessages(prev => [...prev, botResponse]);
 
             } else {
                 setMessages(prev => [...prev, {
@@ -160,69 +163,137 @@ const Chatbot = ({ filters = {} }) => {
     };
 
     return (
-        <Card className="w-full h-full flex flex-col border border-gray-200 shadow-xl overflow-hidden bg-white rounded-xl">
+        <Card className="w-full h-full flex flex-col border border-gray-200 shadow-xl overflow-hidden bg-white rounded-xl relative">
 
-            {/* Header */}
-            <div className="p-4 bg-white border-b flex justify-between items-center flex-none">
-                <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg border ${getModeColor()}`}>
-                        {activeMode === 'default' && <RefreshCcw className="h-5 w-5" />}
-                        {activeMode === 'what-if' && <Zap className="h-5 w-5" />}
-                        {activeMode === 'rca' && <FileText className="h-5 w-5" />}
-                        {activeMode === 'explorer' && <Sparkles className="h-5 w-5" />}
+            {/* Premium Left Vertical Rail - Light & Dynamic */}
+            {compact && (
+                <div className="absolute left-0 top-0 h-full w-[72px] z-30 flex flex-col items-center py-6 bg-white/70 backdrop-blur-xl border-r border-white/50 shadow-[4px_0_24px_rgba(0,0,0,0.02)] transition-all duration-300">
+
+                    {/* Brand / Logo */}
+                    <div className="flex flex-col items-center gap-1.5 mb-8 group cursor-default select-none">
+                        <div className={`p-2.5 rounded-xl bg-gradient-to-br ${activeMode === 'what-if' ? 'from-purple-500 to-indigo-600 shadow-purple-200' :
+                            activeMode === 'rca' ? 'from-orange-400 to-red-500 shadow-orange-200' :
+                                activeMode === 'explorer' ? 'from-emerald-400 to-teal-500 shadow-emerald-200' :
+                                    'from-blue-500 to-indigo-600 shadow-blue-200'
+                            } shadow-lg text-white transform transition-transform duration-500 group-hover:rotate-12`}>
+                            <Bot className="w-5 h-5" />
+                        </div>
+                        <div className="flex flex-col items-center">
+                            <span className="text-[10px] font-bold text-gray-800 tracking-tight leading-none">Nowcast</span>
+                            <span className="text-[9px] font-semibold text-gray-400 tracking-widest">AI</span>
+                        </div>
                     </div>
-                    <div>
-                        <h3 className="font-bold text-gray-800">Nowcast AI Bot</h3>
-                        <p className="text-xs text-gray-500 capitalize">{activeMode === 'default' ? 'Consensus' : activeMode} Mode Active</p>
+
+                    {/* Vertical Mode Toggles */}
+                    <div className="flex flex-col w-full px-3 gap-3">
+                        {[
+                            { id: 'default', icon: RefreshCcw, label: 'Consensus', color: 'text-blue-600', activeBg: 'bg-blue-50 border-blue-100' },
+                            { id: 'what-if', icon: Zap, label: 'What-If', color: 'text-purple-600', activeBg: 'bg-purple-50 border-purple-100' },
+                            { id: 'rca', icon: FileText, label: 'RCA', color: 'text-orange-600', activeBg: 'bg-orange-50 border-orange-100' },
+                            { id: 'explorer', icon: Sparkles, label: 'Explorer', color: 'text-teal-600', activeBg: 'bg-teal-50 border-teal-100' }
+                        ].map((mode) => (
+                            <div key={mode.id} className="relative group/tooltip flex justify-center">
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setActiveMode(mode.id)}
+                                    className={`w-10 h-10 rounded-xl transition-all duration-300 ${activeMode === mode.id
+                                        ? `${mode.activeBg} ${mode.color} shadow-sm border`
+                                        : "text-gray-400 hover:text-gray-600 hover:bg-gray-100/80"
+                                        }`}
+                                >
+                                    <mode.icon className={`w-5 h-5 transition-transform duration-300 ${activeMode === mode.id ? 'scale-110' : 'group-hover:scale-110'}`} />
+                                </Button>
+                                {/* Custom Tooltip (Right) */}
+                                <div className="absolute left-10 top-1/2 -translate-y-1/2 ml-2 px-2.5 py-1.5 bg-gray-900/90 text-white text-[10px] font-semibold rounded-md opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-xl backdrop-blur-sm">
+                                    {mode.label}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Dynamic Status Indicator at Bottom */}
+                    <div className="mt-auto mb-2">
+                        <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${activeMode === 'what-if' ? 'bg-purple-500' :
+                            activeMode === 'rca' ? 'bg-orange-500' :
+                                activeMode === 'explorer' ? 'bg-teal-500' :
+                                    'bg-blue-500'
+                            }`} title="System Active"
+                        />
                     </div>
                 </div>
-            </div>
+            )}
 
-            {/* Mode Toggles */}
-            <div className="flex p-2 bg-gray-50/50 border-b gap-2 justify-center flex-none">
-                {[
-                    { id: 'default', icon: RefreshCcw, label: 'Consensus', color: 'bg-blue-600' },
-                    { id: 'what-if', icon: Zap, label: 'What-If', color: 'bg-purple-600' },
-                    { id: 'rca', icon: FileText, label: 'RCA', color: 'bg-orange-500' },
-                    { id: 'explorer', icon: Sparkles, label: 'Explorer', color: 'bg-green-600' }
-                ].map((mode) => (
-                    <Button
-                        key={mode.id}
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setActiveMode(mode.id)}
-                        className={`transition-all duration-200 ${activeMode === mode.id
-                            ? `${mode.color} text-white shadow-md hover:${mode.color} hover:text-white`
-                            : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-100"
-                            }`}
-                    >
-                        <mode.icon className="w-3.5 h-3.5 mr-2" />
-                        {mode.label}
-                    </Button>
-                ))}
-            </div>
+            {/* Header - Conditionally Rendered */}
+            {!compact && (
+                <div className="p-4 bg-white border-b flex justify-between items-center flex-none">
+                    <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-lg border ${getModeColor()}`}>
+                            {activeMode === 'default' && <RefreshCcw className="h-5 w-5" />}
+                            {activeMode === 'what-if' && <Zap className="h-5 w-5" />}
+                            {activeMode === 'rca' && <FileText className="h-5 w-5" />}
+                            {activeMode === 'explorer' && <Sparkles className="h-5 w-5" />}
+                        </div>
+                        <div>
+                            <h3 className="font-bold text-gray-800">Nowcast AI Bot</h3>
+                            <p className="text-xs text-gray-500 capitalize">{activeMode === 'default' ? 'Consensus' : activeMode} Mode Active</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Mode Toggles - Conditionally Rendered */}
+            {!compact && (
+                <div className="flex p-2 bg-gray-50/50 border-b gap-2 justify-center flex-none">
+                    {[
+                        { id: 'default', icon: RefreshCcw, label: 'Consensus', color: 'bg-blue-600' },
+                        { id: 'what-if', icon: Zap, label: 'What-If', color: 'bg-purple-600' },
+                        { id: 'rca', icon: FileText, label: 'RCA', color: 'bg-orange-500' },
+                        { id: 'explorer', icon: Sparkles, label: 'Explorer', color: 'bg-green-600' }
+                    ].map((mode) => (
+                        <Button
+                            key={mode.id}
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setActiveMode(mode.id)}
+                            className={`transition-all duration-200 ${activeMode === mode.id
+                                ? `${mode.color} text-white shadow-md hover:${mode.color} hover:text-white`
+                                : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-100"
+                                }`}
+                        >
+                            <mode.icon className="w-3.5 h-3.5 mr-2" />
+                            {mode.label}
+                        </Button>
+                    ))}
+                </div>
+            )}
 
             {/* Messages Area */}
             <div
                 ref={chatContainerRef}
-                className="flex-1 overflow-y-auto p-4 bg-slate-50 space-y-6 scroll-smooth"
+                className={`flex-1 overflow-y-auto p-6 bg-slate-50/50 space-y-6 scroll-smooth ${compact ? 'pl-[90px]' : ''}`}
+                style={{ backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '24px 24px' }}
             >
                 {messages.map((msg, idx) => {
                     const isUser = msg.type === 'user';
                     return (
-                        <div key={idx} className={`flex gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
-                            {/* Bot Avatar */}
+                        <div
+                            key={idx}
+                            className={`flex gap-4 ${isUser ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 fade-in duration-500 fill-mode-both`}
+                            style={{ animationDelay: `${idx * 50}ms` }}
+                        >
+                            {/* Bot Avatar - Premium Gradient */}
                             {!isUser && (
-                                <div className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center flex-none shadow-sm">
-                                    <Sparkles className="w-4 h-4 text-indigo-500" />
+                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-blue-600 flex items-center justify-center flex-none shadow-md shadow-indigo-200 ring-2 ring-white transform hover:scale-105 transition-transform duration-300">
+                                    <Bot className="w-5 h-5 text-white" />
                                 </div>
                             )}
 
-                            {/* Message Bubble */}
-                            <div className={`max-w-[90%] rounded-2xl p-4 shadow-sm text-sm leading-relaxed 
+                            {/* Message Bubble - Premium Refinement */}
+                            <div className={`max-w-[80%] rounded-2xl p-4 text-[13px] leading-relaxed font-medium shadow-sm relative group transition-all duration-300
                                 ${isUser
-                                    ? 'bg-blue-600 text-white rounded-br-none'
-                                    : 'bg-white border border-gray-100 text-gray-800 rounded-bl-none'
+                                    ? 'bg-gradient-to-br from-violet-600 to-indigo-600 text-white rounded-tr-none shadow-indigo-500/20 hover:shadow-indigo-500/30'
+                                    : 'bg-white border border-gray-100 text-gray-700 rounded-tl-none shadow-[0_2px_8px_rgb(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgb(0,0,0,0.06)]'
                                 }`}>
 
                                 {/* Text Response */}
@@ -245,17 +316,17 @@ const Chatbot = ({ filters = {} }) => {
 
                                         {/* TABLE RENDERER FOR UPDATED RECORDS */}
                                         {msg.tableData && msg.tableData.length > 0 && (
-                                            <div className="mt-4 w-full overflow-x-auto border rounded-2xl border-gray-200 shadow-sm bg-white">
-                                                <table className="w-full text-xs text-left text-gray-700">
+                                            <div className="mt-4 w-full overflow-x-auto border rounded-2xl border-gray-200 shadow-sm bg-white scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent pb-2">
+                                                <table className="min-w-full text-xs text-left text-gray-700">
                                                     <thead className="bg-gray-50 text-gray-600 font-semibold uppercase tracking-wider border-b border-gray-100">
                                                         <tr>
-                                                            <th className="px-4 py-3 whitespace-nowrap">Date</th>
-                                                            <th className="px-4 py-3 whitespace-nowrap">SKU</th>
-                                                            <th className="px-4 py-3 text-right whitespace-nowrap">PredictedForecast</th>
-                                                            <th className="px-4 py-3 text-right whitespace-nowrap">ConsensusForecast</th>
-                                                            <th className="px-4 py-3 text-center whitespace-nowrap">Over/Under Stretch %</th>
-                                                            <th className="px-4 py-3 text-right whitespace-nowrap text-gray-500">Lower_CL</th>
-                                                            <th className="px-4 py-3 text-right whitespace-nowrap text-gray-500">Upper_CL</th>
+                                                            <th className="px-3 py-3 whitespace-nowrap">Date</th>
+                                                            <th className="px-3 py-3 whitespace-nowrap">SKU</th>
+                                                            <th className="px-3 py-3 text-right whitespace-nowrap">Predicted</th>
+                                                            <th className="px-3 py-3 text-right whitespace-nowrap">Consensus</th>
+                                                            <th className="px-3 py-3 text-center whitespace-nowrap">Status</th>
+                                                            <th className="px-3 py-3 text-right whitespace-nowrap text-gray-500">Lower CL</th>
+                                                            <th className="px-3 py-3 text-right whitespace-nowrap text-gray-500 pr-6">Upper CL</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody className="divide-y divide-gray-100">
@@ -276,35 +347,35 @@ const Chatbot = ({ filters = {} }) => {
                                                             let statusBadge;
                                                             if (Math.abs(pct) < 0.1) {
                                                                 statusBadge = (
-                                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-gray-100 text-gray-600 border border-gray-200">
+                                                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-600 border border-gray-200">
                                                                         0%
                                                                     </span>
                                                                 );
                                                             } else if (pct > 0) {
                                                                 statusBadge = (
-                                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-100">
-                                                                        Overstretch ↑ {pct.toFixed(1)}%
+                                                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-100">
+                                                                        Over {pct.toFixed(0)}%
                                                                     </span>
                                                                 );
                                                             } else {
                                                                 statusBadge = (
-                                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-100">
-                                                                        Understretch ↓ {Math.abs(pct).toFixed(1)}%
+                                                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-100">
+                                                                        Under {Math.abs(pct).toFixed(0)}%
                                                                     </span>
                                                                 );
                                                             }
 
                                                             return (
                                                                 <tr key={rIdx} className="hover:bg-blue-50/50 transition-colors duration-150">
-                                                                    <td className="px-4 py-3 font-medium whitespace-nowrap text-slate-700">{dateStr}</td>
-                                                                    <td className="px-4 py-3 text-slate-500 whitespace-nowrap">{sku}</td>
-                                                                    <td className="px-4 py-3 text-right text-slate-600 font-medium">{Math.round(predicted).toLocaleString()}</td>
-                                                                    <td className="px-4 py-3 text-right font-bold text-indigo-600">{Math.round(consensus).toLocaleString()}</td>
-                                                                    <td className="px-4 py-3 text-center whitespace-nowrap">
+                                                                    <td className="px-3 py-2.5 font-medium whitespace-nowrap text-slate-700">{dateStr}</td>
+                                                                    <td className="px-3 py-2.5 text-slate-500 whitespace-nowrap">{sku}</td>
+                                                                    <td className="px-3 py-2.5 text-right text-slate-600 font-medium">{Math.round(predicted).toLocaleString()}</td>
+                                                                    <td className="px-3 py-2.5 text-right font-bold text-indigo-600">{Math.round(consensus).toLocaleString()}</td>
+                                                                    <td className="px-3 py-2.5 text-center whitespace-nowrap">
                                                                         {statusBadge}
                                                                     </td>
-                                                                    <td className="px-4 py-3 text-right text-slate-400 text-[11px] font-mono">{Math.round(lowerCL).toLocaleString()}</td>
-                                                                    <td className="px-4 py-3 text-right text-slate-400 text-[11px] font-mono">{Math.round(upperCL).toLocaleString()}</td>
+                                                                    <td className="px-3 py-2.5 text-right text-slate-400 text-[11px] font-mono">{Math.round(lowerCL).toLocaleString()}</td>
+                                                                    <td className="px-3 py-2.5 text-right text-slate-400 text-[11px] font-mono pr-6">{Math.round(upperCL).toLocaleString()}</td>
                                                                 </tr>
                                                             );
                                                         })}
@@ -340,33 +411,33 @@ const Chatbot = ({ filters = {} }) => {
                                 )}
                             </div>
 
-                            {/* User Avatar */}
+                            {/* User Avatar - Clean & Minimal */}
                             {isUser && (
-                                <div className="w-8 h-8 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center flex-none shadow-sm">
-                                    <User className="w-4 h-4 text-blue-600" />
+                                <div className="w-10 h-10 rounded-xl bg-slate-200 border border-slate-300 flex items-center justify-center flex-none shadow-sm ring-2 ring-white">
+                                    <User className="w-5 h-5 text-slate-600" />
                                 </div>
                             )}
                         </div>
                     );
                 })}
 
-                {/* Loading State */}
+                {/* Loading State - Consistent Avatar */}
                 {isLoading && (
-                    <div className="flex gap-3 justify-start">
-                        <div className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center flex-none shadow-sm">
-                            <Bot className="w-4 h-4 text-gray-500 animate-pulse" />
+                    <div className="flex gap-4 justify-start animate-in fade-in zoom-in duration-300">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-blue-600 flex items-center justify-center flex-none shadow-md shadow-indigo-200 ring-2 ring-white animate-pulse">
+                            <Bot className="w-5 h-5 text-white" />
                         </div>
-                        <div className="bg-white border border-gray-100 p-4 rounded-2xl rounded-bl-none shadow-sm flex items-center gap-2">
-                            <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" />
-                            <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce delay-75" />
-                            <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce delay-150" />
+                        <div className="bg-white/80 border border-gray-100 p-4 rounded-2xl rounded-bl-sm shadow-sm flex items-center gap-1.5">
+                            <div className="w-2 h-2 bg-indigo-500 rounded-full animate-[bounce_1s_infinite_0ms]" />
+                            <div className="w-2 h-2 bg-indigo-500 rounded-full animate-[bounce_1s_infinite_200ms]" />
+                            <div className="w-2 h-2 bg-indigo-500 rounded-full animate-[bounce_1s_infinite_400ms]" />
                         </div>
                     </div>
                 )}
             </div>
 
             {/* Input Area */}
-            <div className="p-4 bg-white border-t flex-none">
+            <div className={`p-4 bg-white/80 backdrop-blur-sm border-t border-gray-100 flex-none relative z-20 ${compact ? 'pl-[90px]' : ''}`}>
                 <div className="relative flex items-center">
                     <Input
                         placeholder={
@@ -378,17 +449,17 @@ const Chatbot = ({ filters = {} }) => {
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                        className="pr-12 py-6 rounded-full border-gray-300 focus-visible:ring-indigo-500 focus-visible:ring-offset-0 bg-gray-50"
+                        className="pr-12 py-6 rounded-full border-gray-200 focus-visible:ring-indigo-500 focus-visible:ring-offset-0 bg-gray-50/50 transition-all hover:bg-white focus:bg-white shadow-sm"
                     />
                     <Button
                         onClick={handleSend}
                         disabled={isLoading}
                         size="icon"
-                        className={`absolute right-2 h-9 w-9 rounded-full shadow-sm transition-all
-                            ${activeMode === "default" ? "bg-blue-600 hover:bg-blue-700" :
-                                activeMode === "what-if" ? "bg-purple-600 hover:bg-purple-700" :
-                                    activeMode === "explorer" ? "bg-green-600 hover:bg-green-700" :
-                                        "bg-orange-500 hover:bg-orange-600"
+                        className={`absolute right-2 h-10 w-10 rounded-full shadow-md transition-all duration-300 hover:scale-105
+                            ${activeMode === "default" ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700" :
+                                activeMode === "what-if" ? "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700" :
+                                    activeMode === "explorer" ? "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700" :
+                                        "bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700"
                             }`}
                     >
                         <Send className="h-4 w-4 text-white" />

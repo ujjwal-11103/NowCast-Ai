@@ -31,6 +31,16 @@ import WaterfallChart from '@/components/planning/WaterfallChart';
 
 const Planning = () => {
     const { isSidebarOpen } = useSidebar();
+
+    // Fix: Trigger resize event when sidebar toggles to update charts (Plotly/Handsontable)
+    // Placed at top level to avoid "Rendered fewer hooks than expected" error
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+        }, 350); // Single trigger after transition
+        return () => clearTimeout(timeout);
+    }, [isSidebarOpen]);
+
     const {
         forecastSum,
         forecastValue,
@@ -48,9 +58,11 @@ const Planning = () => {
     const [showPivotTable, setShowPivotTable] = useState(false);
     const [pivotData, setPivotData] = useState([]);
     const [chartToggle, setChartToggle] = useState({
-        oos: false
-        // seasonalityTrends: false
+        oos: false,
+        seasonalityTrends: false
     });
+
+    const [chatMode, setChatMode] = useState("default");
 
     // --- LIFTED STATE & LOGIC ---
     const selections = [
@@ -468,6 +480,9 @@ const Planning = () => {
         );
     }
 
+    // Fix: Trigger resize event when sidebar toggles to update charts
+
+
     return (
         <div>
             <div className="flex min-h-screen relative">
@@ -475,19 +490,32 @@ const Planning = () => {
                     <SideBar />
                 </div>
 
-                <div className={`main transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-16"} flex-1 bg-gradient-to-br from-slate-50 via-white to-slate-100 p-6 font-sans`}>
+                <div className={`main transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-16"} flex-1 bg-slate-50 relative min-h-screen p-8 font-sans overflow-x-hidden`}>
 
+                    {/* Vibrant Light Weight Background Decoration */}
+                    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+                        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-gradient-to-br from-indigo-100/40 to-blue-100/40 rounded-full blur-[120px]" />
+                        <div className="absolute top-[10%] right-[-10%] w-[50%] h-[50%] bg-gradient-to-bl from-rose-100/30 to-amber-100/30 rounded-full blur-[100px]" />
+                        <div className="absolute bottom-[-10%] left-[20%] w-[40%] h-[40%] bg-teal-100/30 rounded-full blur-[100px]" />
+                    </div>
 
-                    <div className="max-w-7xl mx-auto space-y-6">
+                    <div className="max-w-[1600px] mx-auto space-y-8 relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both">
                         {/* Header */}
-                        <div className="flex justify-between items-start">
+                        {/* Header - Premium */}
+                        <div className="flex justify-between items-end">
                             <div>
-                                <h1 className="text-3xl font-bold text-indigo-600 mb-2">Planning Module</h1>
-                                <p className="text-gray-600">Make data-driven decisions with advanced forecasting</p>
+                                <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Planning</h1>
+                                <p className="text-slate-500 font-medium text-lg">Orchestrate your supply chain with precision.</p>
                             </div>
-                            <div className="flex gap-3">
-                                <Button variant="outline" onClick={toggleFilters} className="flex items-center gap-2 border-gray-300 hover:bg-gray-100 transition-colors">
-                                    <Filter className="w-4 h-4" /> Filters <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
+                            <div className="flex gap-4">
+                                <Button
+                                    variant="outline"
+                                    onClick={toggleFilters}
+                                    className={`h-11 px-6 rounded-full border-slate-200 font-semibold shadow-sm hover:shadow-md transition-all duration-300 ${showFilters ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-white text-slate-700 hover:bg-slate-50'}`}
+                                >
+                                    <Filter className="w-4 h-4 mr-2" />
+                                    Filters
+                                    <ChevronDown className={`w-4 h-4 ml-2 transition-transform duration-300 ${showFilters ? 'rotate-180' : ''}`} />
                                 </Button>
                             </div>
                         </div>
@@ -496,7 +524,7 @@ const Planning = () => {
                         <Filters showFilters={showFilters} />
 
                         {/* KPI Cards */}
-                        <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-lg transition-shadow duration-200">
+                        <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-lg transition-shadow duration-200 rounded-2xl">
                             <div className="flex justify-between items-center mb-6">
                                 <h2 className="text-xl font-semibold text-gray-800">Forecast Period: Oct-Nov-Dec '24</h2>
                                 <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -508,7 +536,7 @@ const Planning = () => {
                             {/* UPDATED GRID TO 5 COLUMNS - RESPONSIVE & COMPACT */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                                 {/* 1. Forecast Volume */}
-                                <Card className="relative overflow-hidden p-6 bg-white hover:bg-blue-50/50 border border-slate-200 hover:border-blue-200 shadow-sm hover:shadow-lg transition-all duration-300 group">
+                                <Card className="relative overflow-hidden p-6 bg-white hover:bg-blue-50/50 border border-slate-200 hover:border-blue-200 shadow-sm hover:shadow-lg transition-all duration-300 group rounded-xl">
                                     <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
                                         <Package className="w-16 h-16 text-blue-600" />
                                     </div>
@@ -525,7 +553,7 @@ const Planning = () => {
                                 </Card>
 
                                 {/* 2. Forecast Value */}
-                                <Card className="relative overflow-hidden p-6 bg-white hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-200 shadow-sm hover:shadow-lg transition-all duration-300 group">
+                                <Card className="relative overflow-hidden p-6 bg-white hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-200 shadow-sm hover:shadow-lg transition-all duration-300 group rounded-xl">
                                     <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
                                         <DollarSign className="w-16 h-16 text-emerald-600" />
                                     </div>
@@ -542,7 +570,7 @@ const Planning = () => {
                                 </Card>
 
                                 {/* 3. YoY Growth */}
-                                <Card className="relative overflow-hidden p-6 bg-white hover:bg-amber-50/50 border border-slate-200 hover:border-amber-200 shadow-sm hover:shadow-lg transition-all duration-300 group">
+                                <Card className="relative overflow-hidden p-6 bg-white hover:bg-amber-50/50 border border-slate-200 hover:border-amber-200 shadow-sm hover:shadow-lg transition-all duration-300 group rounded-xl">
                                     <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
                                         <LineChart className="w-16 h-16 text-amber-600" />
                                     </div>
@@ -561,7 +589,7 @@ const Planning = () => {
                                 </Card>
 
                                 {/* 4. YTD Volume */}
-                                <Card className="relative overflow-hidden p-6 bg-white hover:bg-violet-50/50 border border-slate-200 hover:border-violet-200 shadow-sm hover:shadow-lg transition-all duration-300 group">
+                                <Card className="relative overflow-hidden p-6 bg-white hover:bg-violet-50/50 border border-slate-200 hover:border-violet-200 shadow-sm hover:shadow-lg transition-all duration-300 group rounded-xl">
                                     <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
                                         <Calendar className="w-16 h-16 text-violet-600" />
                                     </div>
@@ -578,7 +606,7 @@ const Planning = () => {
                                 </Card>
 
                                 {/* 5. Accuracy & Bias */}
-                                <Card className="relative overflow-hidden p-6 bg-white hover:bg-rose-50/50 border border-slate-200 hover:border-rose-200 shadow-sm hover:shadow-lg transition-all duration-300 group">
+                                <Card className="relative overflow-hidden p-6 bg-white hover:bg-rose-50/50 border border-slate-200 hover:border-rose-200 shadow-sm hover:shadow-lg transition-all duration-300 group rounded-xl">
                                     <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
                                         <Activity className="w-16 h-16 text-rose-600" />
                                     </div>
@@ -611,17 +639,24 @@ const Planning = () => {
 
 
 
+
+                        {/* Marquee Announcement - Above Graph */}
+                        <div className="w-full">
+                            <MarqueeAnnouncement announcements={marqueeMessages} />
+                        </div>
+
                         {/* OOS Analysis Chart & Forecast Bridge - RESPONSIVE CONTAINER */}
-                        <div className="w-full h-[450px] lg:h-[500px] mb-6">
-                            <Card className="w-full h-full flex flex-col p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden rounded-xl">
-                                <div className="flex justify-between items-center mb-4 flex-none">
-                                    <div className="flex items-center gap-2">
-                                        <div className="p-2 bg-indigo-50 rounded-lg">
-                                            <LineChart className="w-5 h-5 text-indigo-600" />
+                        <div className="w-full h-[450px] lg:h-[500px]">
+                            <Card className="w-full h-full flex flex-col p-6 bg-gradient-to-br from-white/90 to-indigo-50/50 backdrop-blur-md border border-indigo-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] rounded-3xl overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-shadow duration-500">
+                                <div className="flex justify-between items-center mb-6 flex-none">
+
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2.5 bg-gradient-to-br from-indigo-50 to-indigo-100 text-indigo-600 rounded-xl shadow-sm border border-indigo-200/50">
+                                            <LineChart className="w-5 h-5" />
                                         </div>
                                         <div>
-                                            <h3 className="text-lg font-bold text-gray-800 tracking-tight">Actual vs Forecast</h3>
-                                            <p className="text-xs text-gray-500">Historical performance and OOS impact</p>
+                                            <h3 className="text-lg font-bold text-slate-800 tracking-tight">Actual vs Forecast</h3>
+                                            <p className="text-xs text-slate-500 font-medium">Historical performance and OOS impact</p>
                                         </div>
                                     </div>
                                     {/* Chart Toggle Buttons */}
@@ -664,22 +699,25 @@ const Planning = () => {
                             </Card>
                         </div>
 
-
-                        {/* Marquee Announcement - Above Chatbot */}
-                        <div className="w-full">
-                            <MarqueeAnnouncement announcements={marqueeMessages} />
-                        </div>
-
                         {/* --- ROW 2: Chatbot (Full Width) --- */}
-                        <div className="w-full h-[600px]">
-                            <Chatbot filters={filters} />
+                        {/* --- ROW 2: Chatbot (Full Width) --- */}
+                        <div className="w-full h-[600px] rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-indigo-100/50 bg-gradient-to-b from-white to-slate-50/50">
+                            <Chatbot
+                                filters={filters}
+                                compact={true}
+                            />
                         </div>
 
                         {/* Forecast Bridge (Increased Width below Chatbot) */}
-                        <div className="w-full h-auto mb-6">
-                            <Card className="w-full flex flex-col p-6 bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+                        <div className="w-full h-auto">
+                            <Card className="w-full flex flex-col p-6 bg-gradient-to-br from-white/90 to-violet-50/50 backdrop-blur-md border border-violet-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] rounded-3xl overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-shadow duration-500">
                                 <div className="flex justify-between items-center mb-4 flex-none">
-                                    <h3 className="text-lg font-semibold text-gray-800">Forecast Analysis</h3>
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2.5 bg-gradient-to-br from-violet-50 to-violet-100 text-violet-600 rounded-xl shadow-sm border border-violet-200/50">
+                                            <ChartPie className="w-5 h-5" />
+                                        </div>
+                                        <h3 className="text-lg font-bold text-slate-800 tracking-tight">Forecast Analysis</h3>
+                                    </div>
                                 </div>
 
                                 <Accordion type="single" collapsible defaultValue="consensus" className="w-full">
@@ -868,11 +906,11 @@ const Planning = () => {
                     </div>
 
                     {/* Download Report Button - Fixed Bottom */}
-                    <div className="mt-8 flex justify-end pb-8 max-w-7xl mx-auto px-6">
+                    <div className="mt-12 flex justify-end pb-12 max-w-[1600px] mx-auto px-6">
                         <Button
                             onClick={handleDownloadReport}
                             disabled={isDownloading}
-                            className="bg-indigo-600 hover:bg-indigo-700 text-white min-w-[200px]"
+                            className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white min-w-[200px] h-12 rounded-full shadow-lg shadow-indigo-200 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5"
                         >
                             {isDownloading ? (
                                 <>
