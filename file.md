@@ -19,3 +19,13 @@ Here is a summary of the changes I've made since cloning the repo.
 ### Other
 - **Download Button**: Added a "Download Forecast Report" button to the top of the Planning page.
 - **Dependencies**: `package-lock.json` updated slightly (probably just from running `npm install`).
+
+### Recent Updates (KrisJarvis)
+- **Dynamic Marquee Alerts**:
+  - Upgraded the Marquee component to display dynamic, prioritized alerts from the API.
+  - Logic added to surface items with active "Alert" flags, showing their ID (`key_new`) and summary.
+  - **Layout Update**: Relocated the Marquee bar from the page header to immediately above the "Actual vs Forecast" graph to provide better context to the visual data.
+- **Data Mapping**:
+  - Updated `ForecastContext.jsx` to correctly map and expose `key_new` and `Alert` fields from the API response.
+- **Project Cleanup**:
+  - Removed temporary testing files (`api_*.json`, `inspect_api.js`, `all_keys.json`, etc.) to maintain a clean codebase.

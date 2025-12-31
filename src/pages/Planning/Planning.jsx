@@ -25,10 +25,22 @@ import Filters from "@/components/planning/Filters";
 import PivotTableComponent from "@/components/planning/PivotTableComponent";
 import Chatbot from "@/components/Chatbot/Chatbot";
 import { formatIndianNumber as formatForecastValue } from "@/utils/formatters";
+import MarqueeAnnouncement from "@/components/common/MarqueeAnnouncement";
+import WaterfallChart from '@/components/planning/WaterfallChart';
 
 
 const Planning = () => {
     const { isSidebarOpen } = useSidebar();
+
+    // Fix: Trigger resize event when sidebar toggles to update charts (Plotly/Handsontable)
+    // Placed at top level to avoid "Rendered fewer hooks than expected" error
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+        }, 350); // Single trigger after transition
+        return () => clearTimeout(timeout);
+    }, [isSidebarOpen]);
+
     const {
         forecastSum,
         forecastValue,
@@ -46,9 +58,11 @@ const Planning = () => {
     const [showPivotTable, setShowPivotTable] = useState(false);
     const [pivotData, setPivotData] = useState([]);
     const [chartToggle, setChartToggle] = useState({
-        oos: false
-        // seasonalityTrends: false
+        oos: false,
+        seasonalityTrends: false
     });
+
+    const [chatMode, setChatMode] = useState("default");
 
     // --- LIFTED STATE & LOGIC ---
     const selections = [
@@ -313,30 +327,43 @@ const Planning = () => {
     }, [globalData, filters]); // Re-run when data or filters change
 
 
-    // Handle MANUAL input changes
-    const handleTeamInputChange = (itemName, team, month, field, value) => {
+    // Handle MANUAL input changes (Supports Batch or Single)
+    const handleTeamInputChange = (arg1, team, month, field, value) => {
+        const changes = Array.isArray(arg1) ? arg1 : [{ itemName: arg1, team, month, field, value }];
+
         setTeamInputs(prev => {
             const newInputs = { ...prev };
-            if (!newInputs[itemName]) newInputs[itemName] = { sales: {}, marketing: {}, finance: {} };
-            if (!newInputs[itemName][team]) newInputs[itemName][team] = {};
-            if (!newInputs[itemName][team][month]) newInputs[itemName][team][month] = {};
 
-            newInputs[itemName][team][month][field] = value;
+            changes.forEach(({ itemName, team, month, field, value }) => {
+                if (!newInputs[itemName]) newInputs[itemName] = { sales: {}, marketing: {}, finance: {} };
+                if (!newInputs[itemName][team]) newInputs[itemName][team] = {};
+                if (!newInputs[itemName][team][month]) newInputs[itemName][team][month] = {};
+                newInputs[itemName][team][month][field] = value;
+            });
 
-            // Recalculate Consensus for this row immediately (Client Side Calc)
-            const row = tableData.find(r => r.name === itemName);
-            if (row) {
-                const getVal = (t, m) => parseFloat(newInputs[itemName]?.[t]?.[m]?.value) || 0;
-                const calcMonth = (m, base) => base + getVal('sales', m) + getVal('marketing', m) + getVal('finance', m);
+            // Recalculate Consensus for affected rows
+            // We need access to the UPDATED inputs to calc consensus. 'newInputs' has them.
+            setConsensusValues(curr => {
+                const newConsensus = { ...curr };
+                const affectedRows = new Set(changes.map(c => c.itemName));
 
-                setConsensusValues(curr => ({
-                    ...curr,
-                    [itemName]: {
-                        ...curr[itemName], // Keep other months
-                        [month]: Math.round(calcMonth(month, row[`Forecast${month.charAt(0).toUpperCase() + month.slice(1)}`]))
+                affectedRows.forEach(name => {
+                    const row = tableData.find(r => r.name === name);
+                    if (row) {
+                        const getVal = (t, m) => parseFloat(newInputs[name]?.[t]?.[m]?.value) || 0;
+                        const calcMonth = (m, base) => base + getVal('sales', m) + getVal('marketing', m) + getVal('finance', m);
+
+                        // Recalculate all months for this row (or just affected ones? easier to do all)
+                        newConsensus[name] = {
+                            oct: Math.round(calcMonth('oct', row.ForecastOct)),
+                            nov: Math.round(calcMonth('nov', row.ForecastNov)),
+                            dec: Math.round(calcMonth('dec', row.ForecastDec))
+                        };
                     }
-                }));
-            }
+                });
+                return newConsensus;
+            });
+
             return newInputs;
         });
     };
@@ -411,6 +438,37 @@ const Planning = () => {
 
 
 
+    // --- Marquee Messages Logic ---
+    // --- Marquee Messages Logic ---
+    const marqueeMessages = React.useMemo(() => {
+        // Use filteredData instead of globalData to honor active filters
+        if (!filteredData || filteredData.length === 0) return null;
+
+        const uniqueKeys = new Set();
+        const messages = [];
+
+        // Prioritize items with active alerts
+        const sortedData = [...filteredData].sort((a, b) => {
+            const aAlert = a.Alert && a.Alert !== 'No Alert' ? 1 : 0;
+            const bAlert = b.Alert && b.Alert !== 'No Alert' ? 1 : 0;
+            return bAlert - aAlert; // Descending order of importance
+        });
+
+        for (const item of sortedData) {
+            if (item.key_new && item.Forecast_Summary && !uniqueKeys.has(item.key_new)) {
+                // If Alert is available (and explicitly not 'No Alert'), show it.
+                // Or if we just want to show summaries for everything:
+                // User said: "if alert is available, show forecast summary".
+                // We'll show the summary for all items that have one, but prioritized by Alert presence.
+                messages.push(`(${item.key_new}) ${item.Forecast_Summary}`);
+                uniqueKeys.add(item.key_new);
+            }
+            if (messages.length >= 10) break; // Limit to 10 items
+        }
+
+        return messages.length > 0 ? messages : null;
+    }, [filteredData]);
+
     if (isLoading) {
         return (
             <div className="flex h-screen items-center justify-center bg-gray-50">
@@ -422,6 +480,9 @@ const Planning = () => {
         );
     }
 
+    // Fix: Trigger resize event when sidebar toggles to update charts
+
+
     return (
         <div>
             <div className="flex min-h-screen relative">
@@ -429,17 +490,32 @@ const Planning = () => {
                     <SideBar />
                 </div>
 
-                <div className={`main transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-16"} flex-1 bg-gray-50 p-6`}>
-                    <div className="max-w-7xl mx-auto space-y-6">
+                <div className={`main transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-16"} flex-1 bg-slate-50 relative min-h-screen p-8 font-sans overflow-x-hidden`}>
+
+                    {/* Vibrant Light Weight Background Decoration */}
+                    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+                        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-gradient-to-br from-indigo-100/40 to-blue-100/40 rounded-full blur-[120px]" />
+                        <div className="absolute top-[10%] right-[-10%] w-[50%] h-[50%] bg-gradient-to-bl from-rose-100/30 to-amber-100/30 rounded-full blur-[100px]" />
+                        <div className="absolute bottom-[-10%] left-[20%] w-[40%] h-[40%] bg-teal-100/30 rounded-full blur-[100px]" />
+                    </div>
+
+                    <div className="max-w-[1600px] mx-auto space-y-8 relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both">
                         {/* Header */}
-                        <div className="flex justify-between items-start">
+                        {/* Header - Premium */}
+                        <div className="flex justify-between items-end">
                             <div>
-                                <h1 className="text-3xl font-bold text-indigo-600 mb-2">Planning Module</h1>
-                                <p className="text-gray-600">Make data-driven decisions with advanced forecasting</p>
+                                <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Planning</h1>
+                                <p className="text-slate-500 font-medium text-lg">Orchestrate your supply chain with precision.</p>
                             </div>
-                            <div className="flex gap-3">
-                                <Button variant="outline" onClick={toggleFilters} className="flex items-center gap-2 border-gray-300 hover:bg-gray-100 transition-colors">
-                                    <Filter className="w-4 h-4" /> Filters <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
+                            <div className="flex gap-4">
+                                <Button
+                                    variant="outline"
+                                    onClick={toggleFilters}
+                                    className={`h-11 px-6 rounded-full border-slate-200 font-semibold shadow-sm hover:shadow-md transition-all duration-300 ${showFilters ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-white text-slate-700 hover:bg-slate-50'}`}
+                                >
+                                    <Filter className="w-4 h-4 mr-2" />
+                                    Filters
+                                    <ChevronDown className={`w-4 h-4 ml-2 transition-transform duration-300 ${showFilters ? 'rotate-180' : ''}`} />
                                 </Button>
                             </div>
                         </div>
@@ -448,7 +524,7 @@ const Planning = () => {
                         <Filters showFilters={showFilters} />
 
                         {/* KPI Cards */}
-                        <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-lg transition-shadow duration-200">
+                        <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-lg transition-shadow duration-200 rounded-2xl">
                             <div className="flex justify-between items-center mb-6">
                                 <h2 className="text-xl font-semibold text-gray-800">Forecast Period: Oct-Nov-Dec '24</h2>
                                 <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -457,76 +533,102 @@ const Planning = () => {
                                 </div>
                             </div>
 
-                            {/* UPDATED GRID TO 5 COLUMNS - RESPONSIVE */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                            {/* UPDATED GRID TO 5 COLUMNS - RESPONSIVE & COMPACT */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                                 {/* 1. Forecast Volume */}
-                                <Card className="p-6 bg-blue-50 border border-blue-100 hover:scale-105 transition-transform">
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            <Package className="w-5 h-5 text-blue-600" />
-                                            <p className="text-sm font-medium text-blue-600">Forecast Volume</p>
+                                <Card className="relative overflow-hidden p-6 bg-white hover:bg-blue-50/50 border border-slate-200 hover:border-blue-200 shadow-sm hover:shadow-lg transition-all duration-300 group rounded-xl">
+                                    <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                                        <Package className="w-16 h-16 text-blue-600" />
+                                    </div>
+                                    <div className="space-y-1 relative z-10">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="p-1.5 bg-blue-100 rounded-lg">
+                                                <Package className="w-4 h-4 text-blue-600" />
+                                            </div>
+                                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Forecast Volume</p>
                                         </div>
-                                        <div className="text-3xl font-bold text-gray-900">{Math.round(forecastSum).toLocaleString()}</div>
-                                        <p className="text-xs text-gray-600">Total predicted units</p>
+                                        <div className="text-2xl font-bold text-slate-900 tracking-tight">{Math.round(forecastSum).toLocaleString()}</div>
+                                        <p className="text-xs text-slate-500 font-medium pt-1">Total predicted units</p>
                                     </div>
                                 </Card>
 
                                 {/* 2. Forecast Value */}
-                                <Card className="p-6 bg-green-50 border border-green-100 hover:scale-105 transition-transform">
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            <DollarSign className="w-5 h-5 text-green-600" />
-                                            <p className="text-sm font-medium text-green-600">Forecast Value</p>
+                                <Card className="relative overflow-hidden p-6 bg-white hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-200 shadow-sm hover:shadow-lg transition-all duration-300 group rounded-xl">
+                                    <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                                        <DollarSign className="w-16 h-16 text-emerald-600" />
+                                    </div>
+                                    <div className="space-y-1 relative z-10">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="p-1.5 bg-emerald-100 rounded-lg">
+                                                <DollarSign className="w-4 h-4 text-emerald-600" />
+                                            </div>
+                                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Forecast Value</p>
                                         </div>
-                                        <div className="text-3xl font-bold text-gray-900">{formatForecastValue(forecastValue, true)}</div>
-                                        <p className="text-xs text-gray-600">Total predicted revenue</p>
+                                        <div className="text-2xl font-bold text-slate-900 tracking-tight">{formatForecastValue(forecastValue, true)}</div>
+                                        <p className="text-xs text-slate-500 font-medium pt-1">Total predicted revenue</p>
                                     </div>
                                 </Card>
 
                                 {/* 3. YoY Growth */}
-                                <Card className="p-6 bg-yellow-50 border border-yellow-100 hover:scale-105 transition-transform">
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            <LineChart className="w-5 h-5 text-yellow-600" />
-                                            <p className="text-sm font-medium text-yellow-600">YoY Growth</p>
+                                <Card className="relative overflow-hidden p-6 bg-white hover:bg-amber-50/50 border border-slate-200 hover:border-amber-200 shadow-sm hover:shadow-lg transition-all duration-300 group rounded-xl">
+                                    <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                                        <LineChart className="w-16 h-16 text-amber-600" />
+                                    </div>
+                                    <div className="space-y-1 relative z-10">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="p-1.5 bg-amber-100 rounded-lg">
+                                                <LineChart className="w-4 h-4 text-amber-600" />
+                                            </div>
+                                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">YoY Growth</p>
                                         </div>
-                                        <div className={`text-3xl font-bold ${yoyGrowth < 0 ? "text-red-500" : "text-green-500"}`}>
+                                        <div className={`text-2xl font-bold tracking-tight ${yoyGrowth < 0 ? "text-rose-600" : "text-emerald-600"}`}>
                                             {yoyGrowth != null ? `${yoyGrowth > 0 ? '+' : ''}${yoyGrowth}%` : "N/A"}
                                         </div>
-                                        <p className="text-xs text-gray-600">vs Same Period Last Year</p>
+                                        <p className="text-xs text-slate-500 font-medium pt-1">vs Same Period Last Year</p>
                                     </div>
                                 </Card>
 
                                 {/* 4. YTD Volume */}
-                                <Card className="p-6 bg-purple-50 border border-purple-100 hover:scale-105 transition-transform">
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            <Calendar className="w-5 h-5 text-purple-600" />
-                                            <p className="text-sm font-medium text-purple-600">YTD Volume (2024)</p>
+                                <Card className="relative overflow-hidden p-6 bg-white hover:bg-violet-50/50 border border-slate-200 hover:border-violet-200 shadow-sm hover:shadow-lg transition-all duration-300 group rounded-xl">
+                                    <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                                        <Calendar className="w-16 h-16 text-violet-600" />
+                                    </div>
+                                    <div className="space-y-1 relative z-10">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="p-1.5 bg-violet-100 rounded-lg">
+                                                <Calendar className="w-4 h-4 text-violet-600" />
+                                            </div>
+                                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">YTD Volume (2024)</p>
                                         </div>
-                                        <div className="text-3xl font-bold text-gray-900">{Math.round(parentLevelForecast).toLocaleString()}</div>
-                                        <p className="text-xs text-gray-600">Total Actuals 2024</p>
+                                        <div className="text-2xl font-bold text-slate-900 tracking-tight">{Math.round(parentLevelForecast).toLocaleString()}</div>
+                                        <p className="text-xs text-slate-500 font-medium pt-1">Total Actuals 2024</p>
                                     </div>
                                 </Card>
 
-                                {/* 5. Accuracy & Bias (NEW) */}
-                                <Card className="p-6 bg-red-50 border border-red-100 hover:scale-105 transition-transform">
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            <Activity className="w-5 h-5 text-red-600" />
-                                            <p className="text-sm font-medium text-red-600">Model Accuracy</p>
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <div className="flex justify-between items-end">
-                                                <span className="text-2xl font-bold text-gray-900">{accuracy ? `${accuracy}%` : "N/A"}</span>
-                                                <span className="text-xs font-medium text-gray-500 mb-1">Acc.</span>
+                                {/* 5. Accuracy & Bias */}
+                                <Card className="relative overflow-hidden p-6 bg-white hover:bg-rose-50/50 border border-slate-200 hover:border-rose-200 shadow-sm hover:shadow-lg transition-all duration-300 group rounded-xl">
+                                    <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                                        <Activity className="w-16 h-16 text-rose-600" />
+                                    </div>
+                                    <div className="space-y-1 relative z-10">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="p-1.5 bg-rose-100 rounded-lg">
+                                                <Activity className="w-4 h-4 text-rose-600" />
                                             </div>
-                                            <div className="w-full h-px bg-red-200 my-1"></div>
+                                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Model Accuracy</p>
+                                        </div>
+
+                                        <div className="flex flex-col gap-1">
                                             <div className="flex justify-between items-end">
-                                                <span className={`text-lg font-bold ${bias > 0 ? "text-blue-600" : "text-orange-600"}`}>
+                                                <span className="text-xl font-bold text-slate-900">{accuracy ? `${accuracy}%` : "N/A"}</span>
+                                                <span className="text-[10px] font-bold text-slate-400 uppercase">Acc.</span>
+                                            </div>
+                                            <div className="w-full h-px bg-slate-100"></div>
+                                            <div className="flex justify-between items-end">
+                                                <span className={`text-base font-bold ${bias > 0 ? "text-blue-600" : "text-orange-600"}`}>
                                                     {bias ? `${bias > 0 ? '+' : ''}${bias}%` : "N/A"}
                                                 </span>
-                                                <span className="text-xs font-medium text-gray-500 mb-1">Bias</span>
+                                                <span className="text-[10px] font-bold text-slate-400 uppercase">Bias</span>
                                             </div>
                                         </div>
                                     </div>
@@ -534,54 +636,88 @@ const Planning = () => {
                             </div>
                         </Card>
 
-                        {/* OOS Analysis Chart & Forecast Bridge - RESPONSIVE CONTAINER */}
-                        <div className="flex flex-col lg:flex-row w-full gap-6 mb-6">
-                            {/* OOS Days Analysis (100% since Forecast Analysis moved) */}
-                            <div className="w-full h-[450px] lg:h-[500px] min-w-0">
-                                <Card className="w-full h-full flex flex-col p-6 bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-200 overflow-hidden">
-                                    <div className="flex justify-between items-center mb-4 flex-none">
-                                        <h3 className="text-lg font-semibold text-gray-800">Actual vs Forecast</h3>
-                                    </div>
 
+
+
+
+                        {/* Marquee Announcement - Above Graph */}
+                        <div className="w-full">
+                            <MarqueeAnnouncement announcements={marqueeMessages} />
+                        </div>
+
+                        {/* OOS Analysis Chart & Forecast Bridge - RESPONSIVE CONTAINER */}
+                        <div className="w-full h-[450px] lg:h-[500px]">
+                            <Card className="w-full h-full flex flex-col p-6 bg-gradient-to-br from-white/90 to-indigo-50/50 backdrop-blur-md border border-indigo-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] rounded-3xl overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-shadow duration-500">
+                                <div className="flex justify-between items-center mb-6 flex-none">
+
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2.5 bg-gradient-to-br from-indigo-50 to-indigo-100 text-indigo-600 rounded-xl shadow-sm border border-indigo-200/50">
+                                            <LineChart className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-lg font-bold text-slate-800 tracking-tight">Actual vs Forecast</h3>
+                                            <p className="text-xs text-slate-500 font-medium">Historical performance and OOS impact</p>
+                                        </div>
+                                    </div>
                                     {/* Chart Toggle Buttons */}
-                                    <div className="flex gap-3 mb-4 flex-none flex-wrap z-10">
+                                    <div className="flex gap-2">
                                         <Button
+                                            variant="outline"
+                                            size="sm"
                                             onClick={() => handleToggleChart('oos')}
-                                            className={`font-medium transition-all duration-200 ${chartToggle.oos
-                                                ? 'bg-red-600 hover:bg-red-700 text-white shadow-md'
-                                                : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                                            className={`font-medium transition-all duration-200 border ${chartToggle.oos
+                                                ? 'bg-red-50 border-red-200 text-red-700 shadow-sm'
+                                                : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
                                                 }`}
                                         >
                                             OOS Days
                                         </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => handleToggleChart('seasonalityTrends')}
+                                            className={`font-medium transition-all duration-200 border ${chartToggle.seasonalityTrends
+                                                ? 'bg-amber-50 border-amber-200 text-amber-700 shadow-sm'
+                                                : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                                                }`}
+                                        >
+                                            Trends
+                                        </Button>
                                     </div>
+                                </div>
 
-                                    <div className="flex-1 min-h-0 w-full">
-                                        <SalesTrendChart
-                                            chartToggle={chartToggle}
-                                            manualConsensus={{
-                                                '2024-10-01': Object.values(consensusValues).reduce((acc, curr) => acc + (curr.oct || 0), 0),
-                                                '2024-11-01': Object.values(consensusValues).reduce((acc, curr) => acc + (curr.nov || 0), 0),
-                                                '2024-12-01': Object.values(consensusValues).reduce((acc, curr) => acc + (curr.dec || 0), 0)
-                                            }}
-                                        />
-                                    </div>
-                                </Card>
-                            </div>
-
-
+                                <div className="flex-1 min-h-0 w-full relative">
+                                    <SalesTrendChart
+                                        chartToggle={chartToggle}
+                                        manualConsensus={{
+                                            '2024-10-01': Object.values(consensusValues).reduce((acc, curr) => acc + (curr.oct || 0), 0),
+                                            '2024-11-01': Object.values(consensusValues).reduce((acc, curr) => acc + (curr.nov || 0), 0),
+                                            '2024-12-01': Object.values(consensusValues).reduce((acc, curr) => acc + (curr.dec || 0), 0)
+                                        }}
+                                    />
+                                </div>
+                            </Card>
                         </div>
 
                         {/* --- ROW 2: Chatbot (Full Width) --- */}
-                        <div className="w-full h-[600px]">
-                            <Chatbot filters={filters} />
+                        {/* --- ROW 2: Chatbot (Full Width) --- */}
+                        <div className="w-full h-[600px] rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-indigo-100/50 bg-gradient-to-b from-white to-slate-50/50">
+                            <Chatbot
+                                filters={filters}
+                                compact={true}
+                            />
                         </div>
 
                         {/* Forecast Bridge (Increased Width below Chatbot) */}
-                        <div className="w-full h-auto mb-6">
-                            <Card className="w-full flex flex-col p-6 bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+                        <div className="w-full h-auto">
+                            <Card className="w-full flex flex-col p-6 bg-gradient-to-br from-white/90 to-violet-50/50 backdrop-blur-md border border-violet-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] rounded-3xl overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-shadow duration-500">
                                 <div className="flex justify-between items-center mb-4 flex-none">
-                                    <h3 className="text-lg font-semibold text-gray-800">Forecast Analysis</h3>
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2.5 bg-gradient-to-br from-violet-50 to-violet-100 text-violet-600 rounded-xl shadow-sm border border-violet-200/50">
+                                            <ChartPie className="w-5 h-5" />
+                                        </div>
+                                        <h3 className="text-lg font-bold text-slate-800 tracking-tight">Forecast Analysis</h3>
+                                    </div>
                                 </div>
 
                                 <Accordion type="single" collapsible defaultValue="consensus" className="w-full">
@@ -590,7 +726,7 @@ const Planning = () => {
                                             <span className="text-base font-medium text-gray-700">Consensus Breakup</span>
                                         </AccordionTrigger>
                                         <AccordionContent>
-                                            <div className="h-[600px] w-full pt-2">
+                                            <div className="h-[500px] w-full pt-2">
                                                 <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-4 h-full">
                                                     {/* 1. Consensus Breakup Section */}
                                                     <div className="space-y-3 h-full flex flex-col">
@@ -662,39 +798,27 @@ const Planning = () => {
                                                     </div>
 
                                                     {/* 2. Forecast Breakup (Waterfalls) Section */}
-                                                    <div className="flex flex-col gap-3 h-full min-h-0">
+                                                    <div className="flex flex-col gap-3 h-full min-h-0 col-span-2 lg:col-span-1">
                                                         <div className="flex justify-between items-center shrink-0">
-                                                            <h4 className="text-sm font-medium text-gray-700">Consensus Bridge</h4>
-                                                            {/* Legend */}
-                                                            <div className="flex flex-wrap gap-2">
-                                                                <div className="flex items-center gap-1">
-                                                                    <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                                                                    <span className="text-[10px] text-gray-500">Sales</span>
-                                                                </div>
-                                                                <div className="flex items-center gap-1">
-                                                                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                                                                    <span className="text-[10px] text-gray-500">Mkt</span>
-                                                                </div>
-                                                                <div className="flex items-center gap-1">
-                                                                    <div className="w-2 h-2 rounded-full bg-purple-500"></div>
-                                                                    <span className="text-[10px] text-gray-500">Fin</span>
-                                                                </div>
-                                                            </div>
+                                                            <h4 className="text-sm font-medium text-gray-700">Consensus Bridge Analysis</h4>
                                                         </div>
 
-                                                        <div className="bg-white border border-gray-200 rounded-lg overflow-x-hidden p-3 space-y-4 flex-1 min-h-0 overflow-y-auto">
-                                                            {bridgeData.map((monthData, idx) => (
-                                                                <div key={idx} className="flex flex-col gap-1">
-                                                                    <div className="flex justify-between items-center text-sm">
-                                                                        <span className="font-semibold text-gray-700">{monthData.label}</span>
-                                                                        <span className="text-xs text-gray-400">Target: {Math.round(monthData.final)}</span>
+                                                        {/* Horizontal Scroll or Grid for 3 months */}
+                                                        <div className="bg-white border border-gray-200 rounded-lg p-2 flex gap-4 overflow-x-auto flex-1 min-h-0">
+                                                            {bridgeData.map((monthData, idx) => {
+                                                                const chartData = [
+                                                                    { label: 'Baseline', value: monthData.baseline },
+                                                                    { label: 'Sales', value: monthData.sales },
+                                                                    { label: 'Marketing', value: monthData.marketing },
+                                                                    { label: 'Finance', value: monthData.finance }
+                                                                ];
+                                                                return (
+                                                                    <div key={idx} className="min-w-[300px] flex-1">
+                                                                        <h5 className="text-center font-semibold text-gray-600 mb-2">{monthData.label}</h5>
+                                                                        <WaterfallChart data={chartData} />
                                                                     </div>
-                                                                    <ForecastBridge
-                                                                        {...monthData}
-                                                                        className="h-52 w-full text-base shadow-sm bg-slate-50 border border-slate-100"
-                                                                    />
-                                                                </div>
-                                                            ))}
+                                                                );
+                                                            })}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -707,41 +831,41 @@ const Planning = () => {
                                             <span className="text-base font-medium text-gray-700">Forecast Breakup</span>
                                         </AccordionTrigger>
                                         <AccordionContent>
-                                            <div className="pt-2">
-                                                {/* 1. Forecast System Breakup Section (Commented Out) */}
-                                                {/* <div className="space-y-3">
-                                                    <div className="flex justify-between items-center">
-                                                        <h4 className="text-sm font-medium text-gray-700">System Forecast Bridge</h4>
-                                                        
-                                                        <div className="flex flex-wrap gap-2">
-                                                            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-indigo-600"></div><span className="text-[10px] text-gray-500">Trend</span></div>
-                                                            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-cyan-500"></div><span className="text-[10px] text-gray-500">Seas.</span></div>
-                                                            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-amber-500"></div><span className="text-[10px] text-gray-500">Disc.</span></div>
-                                                            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-500"></div><span className="text-[10px] text-gray-500">Spends</span></div>
-                                                        </div>
+                                            <div className="pt-4 space-y-6">
+                                                {/* 1. Forecast System Breakup Section - VERTICAL WATERFALLS */}
+                                                <div className="flex flex-col gap-3 h-[400px]">
+                                                    <div className="flex justify-between items-center shrink-0">
+                                                        <h4 className="text-sm font-bold text-gray-700 tracking-tight">System Forecast Decomposition</h4>
                                                     </div>
 
-                                                    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden p-3 space-y-4">
-                                                        {bridgeData.map((monthData, idx) => (
-                                                            <div key={idx} className="flex flex-col gap-1">
-                                                                <div className="flex justify-between items-center text-sm">
-                                                                    <span className="font-semibold text-gray-700">{monthData.label}</span>
-                                                                    <span className="text-xs text-gray-400">Total: {Math.round(monthData.systemFinal).toLocaleString()}</span>
+                                                    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 p-4 flex gap-6 overflow-x-auto relative flex-1 min-h-0">
+                                                        {/* Background Grid Pattern */}
+                                                        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none opacity-50"></div>
+
+                                                        {bridgeData.map((monthData, idx) => {
+                                                            const chartData = [
+                                                                { label: 'Trend', value: monthData.trend },
+                                                                { label: 'Seas.', value: monthData.seasonality },
+                                                                { label: 'Disc.', value: monthData.discount },
+                                                                { label: 'Sup.', value: monthData.spends }, // Renamed Spends to Sup. for brevity if needed, or keep Spends
+                                                                { label: 'Lag3', value: monthData.lag3 },
+                                                                { label: 'MA4', value: monthData.ma4 }
+                                                            ];
+                                                            return (
+                                                                <div key={idx} className="min-w-[320px] flex-1 z-10 flex flex-col">
+                                                                    <div className="text-center mb-2">
+                                                                        <span className="inline-block px-3 py-1 rounded-full bg-slate-50 border border-slate-100 text-[10px] font-bold text-slate-500 uppercase tracking-wide">
+                                                                            {monthData.label} Breakdown
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="flex-1 w-full min-h-0">
+                                                                        <WaterfallChart data={chartData} />
+                                                                    </div>
                                                                 </div>
-                                                                <ForecastBridge
-                                                                    trend={monthData.trend}
-                                                                    seasonality={monthData.seasonality}
-                                                                    discount={monthData.discount}
-                                                                    spends={monthData.spends}
-                                                                    lag3={monthData.lag3}
-                                                                    ma4={monthData.ma4}
-                                                                    final={monthData.systemFinal}
-                                                                    className="h-32 w-full text-base shadow-sm bg-slate-50 border border-slate-100"
-                                                                />
-                                                            </div>
-                                                        ))}
+                                                            );
+                                                        })}
                                                     </div>
-                                                </div> */}
+                                                </div>
 
                                                 <ForecastBreakupTable
                                                     tableData={tableData}
@@ -782,11 +906,11 @@ const Planning = () => {
                     </div>
 
                     {/* Download Report Button - Fixed Bottom */}
-                    <div className="mt-8 flex justify-end pb-8 max-w-7xl mx-auto px-6">
+                    <div className="mt-12 flex justify-end pb-12 max-w-[1600px] mx-auto px-6">
                         <Button
                             onClick={handleDownloadReport}
                             disabled={isDownloading}
-                            className="bg-indigo-600 hover:bg-indigo-700 text-white min-w-[200px]"
+                            className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white min-w-[200px] h-12 rounded-full shadow-lg shadow-indigo-200 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5"
                         >
                             {isDownloading ? (
                                 <>

@@ -7,7 +7,7 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
     const { filters, globalData, whatIfData } = useForecast();
 
     const {
-        chartDates, chartActuals, chartForecasts, chartConsensus, chartWhatIf, chartOOS, chartSeasonality, chartTrends,
+        chartDates, chartActuals, chartForecasts, chartConsensus, chartConsensusText, chartWhatIf, chartOOS, chartSeasonality, chartTrends,
         chartUpperBand, chartLowerBand,
         showConsensusLine, showWhatIfLine
     } = useMemo(() => {
@@ -59,8 +59,8 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
         const forecastsData = sortedDates.map(date => {
             const dayData = groupedGlobal[date] || [];
 
-            // Lock baseline to ONLY unedited forecast rows
-            const baselineRows = dayData.filter(d => !d.isEdited);
+            // Lock baseline to display ALL forecast rows (Edited or Not) to serve as a reference
+            const baselineRows = dayData;
 
             if (baselineRows.length === 0) return null;
 
@@ -125,7 +125,7 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
         // 7a. Confidence Intervals (Upper/Lower Band)
         const upperBandData = sortedDates.map(date => {
             const dayData = groupedGlobal[date] || [];
-            const baselineRows = dayData.filter(d => !d.isEdited);
+            const baselineRows = dayData; // Use ALL rows for bands too
             if (baselineRows.length === 0) return null;
 
             // Check if data has bands
@@ -138,7 +138,7 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
 
         const lowerBandData = sortedDates.map(date => {
             const dayData = groupedGlobal[date] || [];
-            const baselineRows = dayData.filter(d => !d.isEdited);
+            const baselineRows = dayData; // Use ALL rows for bands too
             if (baselineRows.length === 0) return null;
 
             const hasBand = baselineRows.some(d => d.lowerBand !== null && d.lowerBand !== undefined);
@@ -172,11 +172,33 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
             return null;
         });
 
+        // Generate Alert Text for Consensus
+        // Compare Consensus vs Baseline for each point
+        const consensusTextData = sortedDates.map((date, index) => {
+            const consensusVal = consensusData[index];
+            const baselineVal = forecastsData[index];
+
+            if (consensusVal !== null && baselineVal !== null) {
+                const diff = consensusVal - baselineVal;
+                // Only show alert if there is a significant difference (e.g. > 1)
+                if (Math.abs(diff) > 1) {
+                    const label = diff > 0 ? "Overstretched" : "Understretched";
+                    // Format number nicely (e.g. 1.2k or local string)
+                    const formattedDiff = Math.abs(Math.round(diff)).toLocaleString();
+                    const sign = diff > 0 ? "+" : "-";
+                    // HTML styling for Plotly hover
+                    return `<span style="color: #ef4444; font-weight: bold;">${label} (${sign}${formattedDiff})</span>`;
+                }
+            }
+            return "";
+        });
+
         return {
             chartDates: sortedDates,
             chartActuals: actualsData,
             chartForecasts: forecastsData,
             chartConsensus: consensusData,
+            chartConsensusText: consensusTextData, // Export the text array
             chartWhatIf: whatIfChartData,
             chartOOS: oosData,
             chartSeasonality: seasonalityData,
@@ -227,7 +249,8 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
         type: 'scatter',
         mode: 'lines+markers',
         name: 'Actual Sales',
-        line: { color: '#3b82f6', width: 2 },
+        line: { color: '#3b82f6', width: 3, shape: 'spline', smoothing: 1.3 },
+        marker: { size: 6, symbol: 'circle', line: { width: 2, color: '#ffffff' } },
         connectgaps: false,
         yaxis: 'y1'
     });
@@ -239,7 +262,8 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
         type: 'scatter',
         mode: 'lines+markers',
         name: 'Baseline Forecast',
-        line: { color: '#22c55e', width: 2, dash: 'dot' },
+        line: { color: '#22c55e', width: 3, dash: 'dot', shape: 'spline', smoothing: 1.3 },
+        marker: { size: 6, symbol: 'circle', line: { width: 2, color: '#ffffff' } },
         connectgaps: false,
         yaxis: 'y1'
     });
@@ -249,10 +273,13 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
         chartTraces.push({
             x: chartDates,
             y: chartConsensus,
+            text: chartConsensusText,
+            hoverinfo: 'x+y+text',
             type: 'scatter',
             mode: 'lines+markers',
             name: 'Consensus (Updated)',
-            line: { color: '#f97316', width: 2 },
+            line: { color: '#f97316', width: 3, shape: 'spline', smoothing: 1.3 },
+            marker: { size: 8, symbol: 'diamond', line: { width: 2, color: '#ffffff' } },
             connectgaps: false,
             yaxis: 'y1'
         });
@@ -266,7 +293,8 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
             type: 'scatter',
             mode: 'lines+markers',
             name: 'OOS Days',
-            line: { color: '#ef4444', width: 2, dash: 'dot' },
+            line: { color: '#ef4444', width: 2, dash: 'dot', shape: 'hv' },
+            marker: { size: 4 },
             connectgaps: false,
             yaxis: 'y2'
         });
@@ -312,10 +340,10 @@ const SalesTrendChart = ({ chartToggle = { oos: false, seasonalityTrends: false 
 
     // Build layout based on whether OOS is toggled
     const layoutConfig = {
-        title: customTitle !== undefined ? customTitle : 'Actual vs Forecast',
+        title: customTitle !== undefined ? customTitle : '',
         plot_bgcolor: '#ffffff',
         paper_bgcolor: '#ffffff',
-        font: { family: 'Inter, sans-serif', size: 12 },
+        font: { family: 'Outfit, sans-serif', size: 12 },
         margin: { t: 40, r: chartToggle.oos ? 80 : 20, l: 60, b: 50 },
         xaxis: { title: 'Date', tickangle: -45, gridcolor: '#f3f4f6' },
         yaxis: {
