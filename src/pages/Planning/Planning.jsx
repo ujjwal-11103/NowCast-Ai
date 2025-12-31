@@ -804,7 +804,7 @@ const Planning = () => {
                                                         </div>
 
                                                         {/* Horizontal Scroll or Grid for 3 months */}
-                                                        <div className="bg-white border border-gray-200 rounded-lg p-2 flex gap-4 overflow-x-auto flex-1 min-h-0">
+                                                        <div className="bg-white border border-gray-200 rounded-lg p-4 grid grid-cols-3 gap-4 flex-1 min-h-0 overflow-hidden">
                                                             {bridgeData.map((monthData, idx) => {
                                                                 const chartData = [
                                                                     { label: 'Baseline', value: monthData.baseline },
@@ -813,9 +813,11 @@ const Planning = () => {
                                                                     { label: 'Finance', value: monthData.finance }
                                                                 ];
                                                                 return (
-                                                                    <div key={idx} className="min-w-[300px] flex-1">
-                                                                        <h5 className="text-center font-semibold text-gray-600 mb-2">{monthData.label}</h5>
-                                                                        <WaterfallChart data={chartData} />
+                                                                    <div key={idx} className="w-full h-full min-w-0 flex flex-col">
+                                                                        <h5 className="text-center font-semibold text-gray-600 mb-2 text-sm">{monthData.label}</h5>
+                                                                        <div className="flex-1 min-h-0 relative">
+                                                                            <WaterfallChart data={chartData} />
+                                                                        </div>
                                                                     </div>
                                                                 );
                                                             })}
