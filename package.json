@@ -30,6 +30,7 @@
     "clsx": "^2.0.0",
     "d3": "^7.8.5",
     "handsontable": "^14.0.0",
+    "hyperformula": "^3.1.1",
     "lucide-react": "latest",
     "next-themes": "^0.2.1",
     "pivottable": "^2.23.0",
