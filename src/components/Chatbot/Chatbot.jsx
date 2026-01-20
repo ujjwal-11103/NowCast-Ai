@@ -597,35 +597,38 @@ const Chatbot = ({ filters = {}, externalMode, setExternalMode, compact = false 
             </div>
 
             {/* Input Area */}
-            <div className={`p-4 bg-white/80 backdrop-blur-sm border-t border-gray-100 flex-none relative z-20 ${compact ? 'pl-[90px]' : ''}`}>
-                <div className="relative flex items-center">
-                    <Input
-                        placeholder={
-                            activeMode === "default" ? "e.g. Increase forecast by 10% for GT..." :
-                                activeMode === "what-if" ? "e.g. What if we raise prices by 5%?..." :
-                                    activeMode === "explorer" ? "e.g. Need trend for Jan 2023..." :
-                                        "Ask about root causes..."
-                        }
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                        className="pr-12 py-6 rounded-full border-gray-200 focus-visible:ring-indigo-500 focus-visible:ring-offset-0 bg-gray-50/50 transition-all hover:bg-white focus:bg-white shadow-sm"
-                    />
-                    <Button
-                        onClick={handleSend}
-                        disabled={isLoading}
-                        size="icon"
-                        className={`absolute right-2 h-10 w-10 rounded-full shadow-md transition-all duration-300 hover:scale-105
-                            ${activeMode === "default" ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700" :
-                                activeMode === "what-if" ? "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700" :
-                                    activeMode === "explorer" ? "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700" :
-                                        "bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700"
-                            }`}
-                    >
-                        <Send className="h-4 w-4 text-white" />
-                    </Button>
+            {/* Input Area - Hidden in RCA Mode */}
+            {activeMode !== 'rca' && (
+                <div className={`p-4 bg-white/80 backdrop-blur-sm border-t border-gray-100 flex-none relative z-20 ${compact ? 'pl-[90px]' : ''}`}>
+                    <div className="relative flex items-center">
+                        <Input
+                            placeholder={
+                                activeMode === "default" ? "e.g. Increase forecast by 10% for GT..." :
+                                    activeMode === "what-if" ? "e.g. What if we raise prices by 5%?..." :
+                                        activeMode === "explorer" ? "e.g. Need trend for Jan 2023..." :
+                                            "Ask about root causes..."
+                            }
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                            className="pr-12 py-6 rounded-full border-gray-200 focus-visible:ring-indigo-500 focus-visible:ring-offset-0 bg-gray-50/50 transition-all hover:bg-white focus:bg-white shadow-sm"
+                        />
+                        <Button
+                            onClick={handleSend}
+                            disabled={isLoading}
+                            size="icon"
+                            className={`absolute right-2 h-10 w-10 rounded-full shadow-md transition-all duration-300 hover:scale-105
+                                ${activeMode === "default" ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700" :
+                                    activeMode === "what-if" ? "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700" :
+                                        activeMode === "explorer" ? "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700" :
+                                            "bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700"
+                                }`}
+                        >
+                            <Send className="h-4 w-4 text-white" />
+                        </Button>
+                    </div>
                 </div>
-            </div>
+            )}
         </Card>
     );
 };
