@@ -22,6 +22,16 @@ import Norms from './pages/Norms/Norms';
 import AuthPage from './pages/auth/AuthPage';
 import ForecastTestPage from './testing/ForecastTestPage';
 import PricingPage from './testing/PricingPage';
+import MEIO from './pages/MEIO/MEIO';
+import Chemical from './pages/Chemical/ChemicalApp';
+import CVR from './pages/CVR/CVRApp';
+import SalesPerformance from './pages/Sales/SalesPerformance';
+import PricingAnalytics from './pages/PricingAnalyst/PricingAnalytics';
+import MarketMixModeling from './pages/PricingAnalyst/MarketMixModeling';
+import CEODashboard from './pages/PricingAnalyst/CEODashboard';
+import CustomReporting from './pages/Reporting/CustomReporting';
+
+
 
 const App = () => {
   return (
@@ -91,11 +101,61 @@ const App = () => {
                 </ProtectedRoute>
               } />
 
+              <Route path="/meio" element={
+                <ProtectedRoute>
+                  <MEIO />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/chemical" element={
+                <ProtectedRoute>
+                  <Chemical />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/cvr" element={
+                <ProtectedRoute>
+                  <CVR />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/salesPerformance" element={
+                <ProtectedRoute>
+                  <SalesPerformance />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/marketMixModeling" element={
+                <ProtectedRoute>
+                  <MarketMixModeling />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/ceoDashboard" element={
+                <ProtectedRoute>
+                  <CEODashboard />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/pricingAnalytics" element={
+                <ProtectedRoute>
+                  <PricingAnalytics />
+                </ProtectedRoute>
+              } />
+
               <Route path="/supplyChain" element={
                 <ProtectedRoute>
                   <SupplyChainTower />
                 </ProtectedRoute>
               } />
+
+              <Route path="/custom-reporting" element={
+                <ProtectedRoute>
+                  <CustomReporting />
+                </ProtectedRoute>
+              } />
+
+
             </Routes>
           </AuthProvider>
         </SidebarProvider>

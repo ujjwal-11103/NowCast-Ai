@@ -16,7 +16,8 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Outfit', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        heading: ['Outfit', 'sans-serif'],
       },
 
       /* ──────────────────────────────────────── Keyframes ─────────────────────────────────────── */
