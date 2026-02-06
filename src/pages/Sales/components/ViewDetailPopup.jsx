@@ -21,7 +21,7 @@ function ViewDetailPopup({ visible, closeAction, rowData }) {
     const shadowIcon = <img src={shadow} />
 
     const axiosInstance = axios.create({
-        baseURL: "http://13.71.126.202:8085/",
+        baseURL: "/alfred",
         headers: {
             "Content-Type": "application/json",
         },

@@ -13,10 +13,16 @@ import axiosnew from '@/utils/axiosnew'; // 🔁 API LOGIN (kept for later)
 const USE_DUMMY_AUTH = true; // 👉 change to false to enable API login
 
 // 🔐 Dummy credentials
-const DUMMY_CREDENTIALS = {
-  username: "admin",
-  password: "admin123",
-};
+const DUMMY_CREDENTIALS = [
+  {
+    username: "admin",
+    password: "admin123",
+  },
+  {
+    username: "rahulranjan@intellimark.ai",
+    password: "rahulfromintellimark",
+  }
+];
 
 const LoginForm = () => {
   const { login } = useAuth();
@@ -40,13 +46,14 @@ const LoginForm = () => {
          🟦 DUMMY LOGIN (CURRENT)
          ===================================================== */
       if (USE_DUMMY_AUTH) {
-        if (
-          username === DUMMY_CREDENTIALS.username &&
-          password === DUMMY_CREDENTIALS.password
-        ) {
+        const isValidUser = DUMMY_CREDENTIALS.some(
+          (cred) => cred.username === username && cred.password === password
+        );
+
+        if (isValidUser) {
           login("dummy-auth-token");
           toast.success("Login successful");
-          navigate("/overall");
+          navigate("/ingestion");
         } else {
           toast.error("Invalid username or password");
         }

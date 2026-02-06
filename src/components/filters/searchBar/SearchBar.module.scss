@@ -1,0 +1,26 @@
+.searchBar {
+  display: flex;
+  flex-direction: column;
+
+  label {
+    font-size: 8px;
+    color: #333;
+    margin-bottom: 0.2rem;
+  }
+
+  .searchBox {
+    height: 30px;
+    font-size: 12px;
+
+    span {
+      font-size: 12px;
+    }
+  }
+
+  .searchIcon {
+    height: 30px;
+    cursor: pointer;
+    font-size: 15px;
+
+  }
+}

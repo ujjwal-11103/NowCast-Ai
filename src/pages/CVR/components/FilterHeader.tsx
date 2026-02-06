@@ -19,7 +19,7 @@ const FilterHeader = () => {
           <span>Filters Applied</span>
         </div>
       </div>
-      
+
       <div className="flex flex-wrap gap-2">
         {filters.map((filter, index) => (
           <div key={index} className="relative">

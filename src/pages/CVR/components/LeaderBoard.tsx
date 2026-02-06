@@ -16,12 +16,12 @@ interface LeaderEntry {
 }
 
 const mockLeaderData: LeaderEntry[] = [
-  { 
-    id: '1', 
-    name: 'Sarah Chen', 
-    avgRating: 4.9, 
-    totalVisits: 847, 
-    safetyScore: 98, 
+  {
+    id: '1',
+    name: 'Sarah Chen',
+    avgRating: 4.9,
+    totalVisits: 847,
+    safetyScore: 98,
     badge: 'gold',
     feedback: {
       strengths: ['Exceptional safety protocol adherence', 'Outstanding team leadership', 'Consistent quality delivery'],
@@ -29,12 +29,12 @@ const mockLeaderData: LeaderEntry[] = [
       recentAchievements: ['Led zero-incident month in Q4', 'Implemented new safety checklist system', 'Mentored 3 junior staff members']
     }
   },
-  { 
-    id: '2', 
-    name: 'Michael Rodriguez', 
-    avgRating: 4.8, 
-    totalVisits: 792, 
-    safetyScore: 96, 
+  {
+    id: '2',
+    name: 'Michael Rodriguez',
+    avgRating: 4.8,
+    totalVisits: 792,
+    safetyScore: 96,
     badge: 'silver',
     feedback: {
       strengths: ['Strong analytical skills', 'Excellent problem-solving abilities', 'Great attention to detail'],
@@ -42,12 +42,12 @@ const mockLeaderData: LeaderEntry[] = [
       recentAchievements: ['Reduced chemical waste by 15%', 'Completed advanced safety certification', 'Improved process efficiency by 8%']
     }
   },
-  { 
-    id: '3', 
-    name: 'Emily Johnson', 
-    avgRating: 4.7, 
-    totalVisits: 756, 
-    safetyScore: 94, 
+  {
+    id: '3',
+    name: 'Emily Johnson',
+    avgRating: 4.7,
+    totalVisits: 756,
+    safetyScore: 94,
     badge: 'bronze',
     feedback: {
       strengths: ['Innovative approach to processes', 'Strong technical knowledge', 'Reliable performance'],
@@ -55,12 +55,12 @@ const mockLeaderData: LeaderEntry[] = [
       recentAchievements: ['Designed new quality control procedure', 'Achieved 100% compliance rating', 'Completed professional development course']
     }
   },
-  { 
-    id: '4', 
-    name: 'David Park', 
-    avgRating: 4.6, 
-    totalVisits: 678, 
-    safetyScore: 92, 
+  {
+    id: '4',
+    name: 'David Park',
+    avgRating: 4.6,
+    totalVisits: 678,
+    safetyScore: 92,
     badge: null,
     feedback: {
       strengths: ['Consistent work quality', 'Good team collaboration', 'Punctual and reliable'],
@@ -68,12 +68,12 @@ const mockLeaderData: LeaderEntry[] = [
       recentAchievements: ['Completed equipment training', 'Maintained clean safety record', 'Assisted in training new employees']
     }
   },
-  { 
-    id: '5', 
-    name: 'Lisa Wang', 
-    avgRating: 4.5, 
-    totalVisits: 634, 
-    safetyScore: 90, 
+  {
+    id: '5',
+    name: 'Lisa Wang',
+    avgRating: 4.5,
+    totalVisits: 634,
+    safetyScore: 90,
     badge: null,
     feedback: {
       strengths: ['Strong work ethic', 'Adaptable to changes', 'Good customer service skills'],
@@ -111,7 +111,7 @@ export const LeaderBoard: React.FC = () => {
         <h3 className="text-xl font-semibold text-gray-800">Performance Leaderboard</h3>
         <p className="text-sm text-gray-600 mt-1">Top performers by safety rating, visits, and overall excellence</p>
       </div>
-      
+
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50/50">
@@ -142,26 +142,24 @@ export const LeaderBoard: React.FC = () => {
                     <div className="flex items-center space-x-3">
                       <div className="text-base font-semibold text-gray-900">{entry.name}</div>
                       {entry.badge && (
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                          entry.badge === 'gold' 
-                            ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' 
-                            : entry.badge === 'silver' 
-                            ? 'bg-gray-100 text-gray-700 border border-gray-200' 
-                            : 'bg-orange-100 text-orange-800 border border-orange-200'
-                        }`}>
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${entry.badge === 'gold'
+                            ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+                            : entry.badge === 'silver'
+                              ? 'bg-gray-100 text-gray-700 border border-gray-200'
+                              : 'bg-orange-100 text-orange-800 border border-orange-200'
+                          }`}>
                           {entry.badge.charAt(0).toUpperCase() + entry.badge.slice(1)}
                         </span>
                       )}
                     </div>
                   </td>
                   <td className="px-6 py-5 whitespace-nowrap text-center">
-                    <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
-                      entry.safetyScore >= 95 
-                        ? 'bg-green-100 text-green-800' 
-                        : entry.safetyScore >= 90 
-                        ? 'bg-yellow-100 text-yellow-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
+                    <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${entry.safetyScore >= 95
+                        ? 'bg-green-100 text-green-800'
+                        : entry.safetyScore >= 90
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}>
                       {entry.safetyScore}%
                     </span>
                   </td>
@@ -178,16 +176,15 @@ export const LeaderBoard: React.FC = () => {
                     >
                       <MessageSquare size={14} className="mr-1" />
                       Feedback
-                      <ChevronDown 
-                        size={14} 
-                        className={`ml-1 transition-transform duration-200 ${
-                          expandedRows.has(entry.id) ? 'rotate-180' : ''
-                        }`} 
+                      <ChevronDown
+                        size={14}
+                        className={`ml-1 transition-transform duration-200 ${expandedRows.has(entry.id) ? 'rotate-180' : ''
+                          }`}
                       />
                     </button>
                   </td>
                 </tr>
-                
+
                 {expandedRows.has(entry.id) && (
                   <tr>
                     <td colSpan={6} className="px-6 py-6 bg-gray-50/30">

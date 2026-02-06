@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
-import SideBar from '@/components/Sidebar/SideBar';
+// SideBar moved to Layout
 import { meioService } from '@/services/meioService';
-import { useSidebar } from '@/context/sidebar/SidebarContext';
 import { Button } from '@/components/ui/button';
 import {
     Select,
@@ -32,7 +31,7 @@ import {
 } from "@/components/ui/card";
 
 const MEIO = () => {
-    const { isSidebarOpen } = useSidebar();
+    // const { isSidebarOpen } = useSidebar();
     const fileInputRef = useRef(null);
 
     // --- State Management ---
@@ -235,13 +234,8 @@ const MEIO = () => {
                 <div className="absolute bottom-[-10%] left-[20%] w-[40%] h-[40%] bg-teal-100/30 rounded-full blur-[100px]" />
             </div>
 
-            {/* Sidebar */}
-            <div className={`transition-all duration-300 ${isSidebarOpen ? "w-64" : "w-16"} fixed h-full z-20`}>
-                <SideBar />
-            </div>
-
             {/* Main content */}
-            <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-16"} p-8 overflow-y-auto h-screen relative z-10`}>
+            <main className="flex-1 p-8 overflow-y-auto h-screen relative z-10">
                 <div className="max-w-4xl mx-auto space-y-8 mt-4">
 
                     {/* Header */}

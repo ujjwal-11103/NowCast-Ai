@@ -13,7 +13,7 @@ interface MetricCardProps {
   title: string;
   value: string | number;
   icon: any;
-  color: "blue" | "green" | "orange" | "purple" | "red";
+  color: "blue" | "green" | "cyan" | "purple" | "red";
 }
 
 const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon: Icon, color }) => {
@@ -28,10 +28,10 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon: Icon, color
       text: "text-green-700",
       icon: "bg-green-500 text-white"
     },
-    orange: {
-      bg: "from-orange-50 to-orange-100",
-      text: "text-orange-700",
-      icon: "bg-orange-500 text-white"
+    cyan: {
+      bg: "from-cyan-50 to-cyan-100",
+      text: "text-cyan-700",
+      icon: "bg-cyan-500 text-white"
     },
     purple: {
       bg: "from-purple-50 to-purple-100",
@@ -92,7 +92,7 @@ export default function Preview() {
       title: "Healthy Stores%",
       value: "71%",
       icon: ThumbsUp,
-      color: "orange",
+      color: "cyan",
     },
     {
       title: "% Growth in Sales",

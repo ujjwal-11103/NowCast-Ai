@@ -6,7 +6,7 @@ interface MetricCardProps {
   change: string;
   trend: 'up' | 'down' | 'neutral';
   icon: any;
-  color: 'blue' | 'green' | 'orange' | 'purple';
+  color: 'blue' | 'green' | 'cyan' | 'purple';
 }
 
 const colorClasses = {
@@ -22,11 +22,11 @@ const colorClasses = {
     text: 'text-green-700',
     change: 'text-green-600'
   },
-  orange: {
-    bg: 'from-orange-50 to-orange-100',
-    icon: 'bg-orange-500 text-white',
-    text: 'text-orange-700',
-    change: 'text-orange-600'
+  cyan: {
+    bg: 'from-cyan-50 to-cyan-100',
+    icon: 'bg-cyan-500 text-white',
+    text: 'text-cyan-700',
+    change: 'text-cyan-600'
   },
   purple: {
     bg: 'from-purple-50 to-purple-100',
