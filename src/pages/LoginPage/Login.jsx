@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner"; // Using Sonner for toast notifications
-import logo from "../../assets/Login/Favicon.png"
 
 const Login = () => {
     const navigate = useNavigate();
@@ -28,8 +27,7 @@ const Login = () => {
                     <div className="absolute right-0 top-1/3 h-64 w-96 -rotate-45 transform bg-gradient-to-r from-blue-300/20 to-cyan-400/20 blur-3xl"></div>
                 </div>
                 <div className="relative z-10 flex h-full items-center justify-center px-12">
-                    <img src={logo} alt="favicon" className="w-10 h-10 mr-2" />
-                    <h1 className="text-3xl font-bold text-white">ProfitPulse AI</h1>
+                    <h1 className="text-3xl font-bold text-white">NowCast AI</h1>
                 </div>
             </div>
 

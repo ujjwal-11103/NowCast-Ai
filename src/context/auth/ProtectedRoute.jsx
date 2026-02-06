@@ -3,6 +3,8 @@ import { Navigate, useLocation } from "react-router-dom";
 import { Loader2 } from "lucide-react";        // ⬅️ spinner icon
 import { useAuth } from "./AuthContext";
 
+import Layout from "../../components/Layout/Layout";
+
 const ProtectedRoute = ({ children }) => {
     const { isAuthenticated, loading } = useAuth();
     const location = useLocation();
@@ -16,9 +18,15 @@ const ProtectedRoute = ({ children }) => {
         );
     }
 
-    return isAuthenticated
-        ? children
-        : <Navigate to="/" state={{ from: location }} replace />;
+    return isAuthenticated ? (
+        <Layout>
+            <div key={location.pathname} className="animate-fade-in w-full h-full">
+                {children}
+            </div>
+        </Layout>
+    ) : (
+        <Navigate to="/" state={{ from: location }} replace />
+    );
 };
 
 export default ProtectedRoute;

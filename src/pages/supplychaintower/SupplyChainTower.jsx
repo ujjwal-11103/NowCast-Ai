@@ -15,8 +15,7 @@ import ChannelCard from "./component/ChannelCard";
 import ChannelCredit from "./charts/ChannelCredit";
 import InventoryTable from "./component/InventoryTable"
 import NewLaunches from "./component/NewLaunches"
-import SideBar from "@/components/Sidebar/SideBar"
-import { useSidebar } from "@/context/sidebar/SidebarContext"
+// SideBar moved to Layout
 
 // Lazy load components for better performance in Vite
 const MapComponent = React.lazy(() => import("./charts/IndiaMap"))
@@ -106,19 +105,13 @@ const SupplyChainTower = () => {
         }
     ];
 
-    const { isSidebarOpen, toggleSidebar } = useSidebar(); // Get sidebar state and toggle function
+    // const { isSidebarOpen, toggleSidebar } = useSidebar(); // Layout handled globally
 
 
     return (
         <div>
-            <div className="flex">
-                <div
-                    className={`transition-all duration-300 ${isSidebarOpen ? "w-64" : "w-16"
-                        } fixed`}>
-                    <SideBar />
-                </div>
-
-                <div className={`main transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-16"} w-full`}>
+            <div>
+                <div className="w-full">
                     <div className="min-h-screen bg-slate-50">
                         {/* Navbar */}
                         {/* <NavBar /> */}

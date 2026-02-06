@@ -18,7 +18,10 @@ export const WaterfallChart = ({ data }) => {
     const measures = processedData.map((_, i) => i === 0 ? "absolute" : "relative");
     const labels = processedData.map(d => d.label);
     const values = processedData.map(d => Number(d.value) || 0);
-    const text = values.map(v => (v > 0 ? '+' : '') + Math.round(v).toLocaleString());
+    const text = values.map((v, i) => {
+        if (Math.abs(v) < 1 && i !== 0) return ""; // Hide 0s for clearer view
+        return (v > 0 && i !== 0 ? '+' : '') + Math.round(v).toLocaleString();
+    });
 
     // Add Final Total Column automatically
     measures.push("total");
@@ -39,16 +42,18 @@ export const WaterfallChart = ({ data }) => {
                 increasing: { marker: { color: '#10B981' } }, // Green-500
                 decreasing: { marker: { color: '#EF4444' } }, // Red-500
                 totals: { marker: { color: '#3B82F6' } }, // Blue-500
-                textposition: 'outside',
+                textposition: 'auto',
                 hoverinfo: 'x+y+delta',
             }]}
             layout={{
                 title: false,
-                waterfallgap: 0.3,
+                waterfallgap: 0.2,
                 showlegend: false,
-                margin: { t: 20, b: 70, l: 40, r: 20 },
+                margin: { t: 20, b: 40, l: 40, r: 10 },
                 paper_bgcolor: 'rgba(0,0,0,0)',
-                plot_bgcolor: 'rgba(0,0,0,0)'
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                autosize: true,
+                font: { size: 10 }
             }}
             config={{
                 displayModeBar: false,

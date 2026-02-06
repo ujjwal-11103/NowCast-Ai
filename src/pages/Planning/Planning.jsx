@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Activity, ArrowDown, ArrowUp, Calendar, DollarSign, ExternalLink, LineChart, Loader2, Minus } from "lucide-react"
+import { Activity, ArrowDown, ArrowUp, Calendar, DollarSign, ExternalLink, LineChart, Loader2, Minus, Users, Layers } from "lucide-react"
 import { Package } from 'lucide-react';
 import { ChartPie } from 'lucide-react';
 import { Filter, RefreshCw, Download, ChevronDown } from 'lucide-react';
@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-import SideBar from "@/components/Sidebar/SideBar";
+// SideBar moved to Layout
 import { useForecast } from "@/context/ForecastContext/ForecastContext";
 import SalesTrendChart from "@/components/planning/SalesTrendChart ";
 import ForecastTable from "@/components/planning/ForecastTable";
@@ -101,7 +101,7 @@ const Planning = () => {
 
             console.log("Sending Report Payload:", payload);
 
-            const response = await fetch('http://20.235.178.245:5500/generate-report', {
+            const response = await fetch(`${import.meta.env.VITE_EXPLORER_TARGET}/generate-report`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
@@ -484,448 +484,458 @@ const Planning = () => {
 
 
     return (
-        <div>
-            <div className="flex min-h-screen relative">
-                <div className={`transition-all duration-300 ${isSidebarOpen ? "w-64" : "w-16"} fixed z-[100] h-full`}>
-                    <SideBar />
+        <div className="bg-slate-50 relative min-h-screen p-8 font-sans overflow-x-hidden">
+
+            {/* Vibrant Light Weight Background Decoration */}
+            <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-gradient-to-br from-indigo-100/40 to-blue-100/40 rounded-full blur-[120px]" />
+                <div className="absolute top-[10%] right-[-10%] w-[50%] h-[50%] bg-gradient-to-bl from-rose-100/30 to-amber-100/30 rounded-full blur-[100px]" />
+                <div className="absolute bottom-[-10%] left-[20%] w-[40%] h-[40%] bg-teal-100/30 rounded-full blur-[100px]" />
+            </div>
+
+            <div className="max-w-[1600px] mx-auto space-y-8 relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both">
+                {/* Header */}
+                {/* Header - Premium */}
+                <div className="flex justify-between items-end">
+                    <div>
+                        <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Planning</h1>
+                        <p className="text-slate-500 font-medium text-lg">Orchestrate your supply chain with precision.</p>
+                    </div>
+                    <div className="flex gap-4">
+                        <Button
+                            variant="outline"
+                            onClick={toggleFilters}
+                            className={`h-11 px-6 rounded-full border-slate-200 font-semibold shadow-sm hover:shadow-md transition-all duration-300 ${showFilters ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-white text-slate-700 hover:bg-slate-50'}`}
+                        >
+                            <Filter className="w-4 h-4 mr-2" />
+                            Filters
+                            <ChevronDown className={`w-4 h-4 ml-2 transition-transform duration-300 ${showFilters ? 'rotate-180' : ''}`} />
+                        </Button>
+                    </div>
                 </div>
 
-                <div className={`main transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-16"} flex-1 bg-slate-50 relative min-h-screen p-8 font-sans overflow-x-hidden`}>
+                {/* Filters */}
+                <Filters showFilters={showFilters} />
 
-                    {/* Vibrant Light Weight Background Decoration */}
-                    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-                        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-gradient-to-br from-indigo-100/40 to-blue-100/40 rounded-full blur-[120px]" />
-                        <div className="absolute top-[10%] right-[-10%] w-[50%] h-[50%] bg-gradient-to-bl from-rose-100/30 to-amber-100/30 rounded-full blur-[100px]" />
-                        <div className="absolute bottom-[-10%] left-[20%] w-[40%] h-[40%] bg-teal-100/30 rounded-full blur-[100px]" />
+                {/* KPI Cards */}
+                <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-lg transition-shadow duration-200 rounded-2xl">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-xl font-semibold text-gray-800">Forecast Period: Oct-Nov-Dec '24</h2>
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                            <span>Last updated: Today</span>
+                            <RefreshCw className="w-4 h-4" />
+                        </div>
                     </div>
 
-                    <div className="max-w-[1600px] mx-auto space-y-8 relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both">
-                        {/* Header */}
-                        {/* Header - Premium */}
-                        <div className="flex justify-between items-end">
-                            <div>
-                                <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Planning</h1>
-                                <p className="text-slate-500 font-medium text-lg">Orchestrate your supply chain with precision.</p>
+                    {/* UPDATED GRID TO 5 COLUMNS - RESPONSIVE & COMPACT */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                        {/* 1. Forecast Volume */}
+                        <Card className="relative overflow-hidden p-6 bg-white hover:bg-blue-50/50 border border-slate-200 hover:border-blue-200 shadow-sm hover:shadow-lg transition-all duration-300 group rounded-xl">
+                            <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <Package className="w-16 h-16 text-blue-600" />
                             </div>
-                            <div className="flex gap-4">
+                            <div className="space-y-1 relative z-10">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <div className="p-1.5 bg-blue-100 rounded-lg">
+                                        <Package className="w-4 h-4 text-blue-600" />
+                                    </div>
+                                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Forecast Volume</p>
+                                </div>
+                                <div className="text-2xl font-bold text-slate-900 tracking-tight">{Math.round(forecastSum).toLocaleString()}</div>
+                                <p className="text-xs text-slate-500 font-medium pt-1">Total predicted units</p>
+                            </div>
+                        </Card>
+
+                        {/* 2. Forecast Value */}
+                        <Card className="relative overflow-hidden p-6 bg-white hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-200 shadow-sm hover:shadow-lg transition-all duration-300 group rounded-xl">
+                            <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <DollarSign className="w-16 h-16 text-emerald-600" />
+                            </div>
+                            <div className="space-y-1 relative z-10">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <div className="p-1.5 bg-emerald-100 rounded-lg">
+                                        <DollarSign className="w-4 h-4 text-emerald-600" />
+                                    </div>
+                                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Forecast Value</p>
+                                </div>
+                                <div className="text-2xl font-bold text-slate-900 tracking-tight">{formatForecastValue(forecastValue, true)}</div>
+                                <p className="text-xs text-slate-500 font-medium pt-1">Total predicted revenue</p>
+                            </div>
+                        </Card>
+
+                        {/* 3. YoY Growth */}
+                        <Card className="relative overflow-hidden p-6 bg-white hover:bg-amber-50/50 border border-slate-200 hover:border-amber-200 shadow-sm hover:shadow-lg transition-all duration-300 group rounded-xl">
+                            <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <LineChart className="w-16 h-16 text-amber-600" />
+                            </div>
+                            <div className="space-y-1 relative z-10">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <div className="p-1.5 bg-amber-100 rounded-lg">
+                                        <LineChart className="w-4 h-4 text-amber-600" />
+                                    </div>
+                                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">YoY Growth</p>
+                                </div>
+                                <div className={`text-2xl font-bold tracking-tight ${yoyGrowth < 0 ? "text-rose-600" : "text-emerald-600"}`}>
+                                    {yoyGrowth != null ? `${yoyGrowth > 0 ? '+' : ''}${yoyGrowth}%` : "N/A"}
+                                </div>
+                                <p className="text-xs text-slate-500 font-medium pt-1">vs Same Period Last Year</p>
+                            </div>
+                        </Card>
+
+                        {/* 4. YTD Volume */}
+                        <Card className="relative overflow-hidden p-6 bg-white hover:bg-violet-50/50 border border-slate-200 hover:border-violet-200 shadow-sm hover:shadow-lg transition-all duration-300 group rounded-xl">
+                            <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <Calendar className="w-16 h-16 text-violet-600" />
+                            </div>
+                            <div className="space-y-1 relative z-10">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <div className="p-1.5 bg-violet-100 rounded-lg">
+                                        <Calendar className="w-4 h-4 text-violet-600" />
+                                    </div>
+                                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">YTD Volume (2024)</p>
+                                </div>
+                                <div className="text-2xl font-bold text-slate-900 tracking-tight">{Math.round(parentLevelForecast).toLocaleString()}</div>
+                                <p className="text-xs text-slate-500 font-medium pt-1">Total Actuals 2024</p>
+                            </div>
+                        </Card>
+
+                        {/* 5. Accuracy & Bias */}
+                        <Card className="relative overflow-hidden p-6 bg-white hover:bg-rose-50/50 border border-slate-200 hover:border-rose-200 shadow-sm hover:shadow-lg transition-all duration-300 group rounded-xl">
+                            <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <Activity className="w-16 h-16 text-rose-600" />
+                            </div>
+                            <div className="space-y-1 relative z-10">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <div className="p-1.5 bg-rose-100 rounded-lg">
+                                        <Activity className="w-4 h-4 text-rose-600" />
+                                    </div>
+                                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Model Accuracy</p>
+                                </div>
+
+                                <div className="flex flex-col gap-1">
+                                    <div className="flex justify-between items-end">
+                                        <span className="text-xl font-bold text-slate-900">{accuracy ? `${accuracy}%` : "N/A"}</span>
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase">Acc.</span>
+                                    </div>
+                                    <div className="w-full h-px bg-slate-100"></div>
+                                    <div className="flex justify-between items-end">
+                                        <span className={`text-base font-bold ${bias > 0 ? "text-blue-600" : "text-orange-600"}`}>
+                                            {bias ? `${bias > 0 ? '+' : ''}${bias}%` : "N/A"}
+                                        </span>
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase">Bias</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                </Card>
+
+
+
+
+
+                {/* Marquee Announcement - Above Graph */}
+                <div className="w-full">
+                    <MarqueeAnnouncement announcements={marqueeMessages} />
+                </div>
+
+                {/* OOS Analysis Chart & Forecast Bridge - RESPONSIVE CONTAINER */}
+                <div className="w-full h-[450px] lg:h-[500px]">
+                    <Card className="w-full h-full flex flex-col p-6 bg-gradient-to-br from-white/90 to-indigo-50/50 backdrop-blur-md border border-indigo-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] rounded-3xl overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-shadow duration-500">
+                        <div className="flex justify-between items-center mb-6 flex-none">
+
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 bg-gradient-to-br from-indigo-50 to-indigo-100 text-indigo-600 rounded-xl shadow-sm border border-indigo-200/50">
+                                    <LineChart className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-slate-800 tracking-tight">Actual vs Forecast</h3>
+                                    <p className="text-xs text-slate-500 font-medium">Historical performance and OOS impact</p>
+                                </div>
+                            </div>
+                            {/* Chart Toggle Buttons */}
+                            <div className="flex gap-2">
                                 <Button
                                     variant="outline"
-                                    onClick={toggleFilters}
-                                    className={`h-11 px-6 rounded-full border-slate-200 font-semibold shadow-sm hover:shadow-md transition-all duration-300 ${showFilters ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-white text-slate-700 hover:bg-slate-50'}`}
+                                    size="sm"
+                                    onClick={() => handleToggleChart('oos')}
+                                    className={`font-medium transition-all duration-200 border ${chartToggle.oos
+                                        ? 'bg-red-50 border-red-200 text-red-700 shadow-sm'
+                                        : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                                        }`}
                                 >
-                                    <Filter className="w-4 h-4 mr-2" />
-                                    Filters
-                                    <ChevronDown className={`w-4 h-4 ml-2 transition-transform duration-300 ${showFilters ? 'rotate-180' : ''}`} />
+                                    OOS Days
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleToggleChart('seasonalityTrends')}
+                                    className={`font-medium transition-all duration-200 border ${chartToggle.seasonalityTrends
+                                        ? 'bg-amber-50 border-amber-200 text-amber-700 shadow-sm'
+                                        : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                                        }`}
+                                >
+                                    Trends
                                 </Button>
                             </div>
                         </div>
 
-                        {/* Filters */}
-                        <Filters showFilters={showFilters} />
-
-                        {/* KPI Cards */}
-                        <Card className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-lg transition-shadow duration-200 rounded-2xl">
-                            <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-xl font-semibold text-gray-800">Forecast Period: Oct-Nov-Dec '24</h2>
-                                <div className="flex items-center gap-2 text-sm text-gray-500">
-                                    <span>Last updated: Today</span>
-                                    <RefreshCw className="w-4 h-4" />
-                                </div>
-                            </div>
-
-                            {/* UPDATED GRID TO 5 COLUMNS - RESPONSIVE & COMPACT */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-                                {/* 1. Forecast Volume */}
-                                <Card className="relative overflow-hidden p-6 bg-white hover:bg-blue-50/50 border border-slate-200 hover:border-blue-200 shadow-sm hover:shadow-lg transition-all duration-300 group rounded-xl">
-                                    <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                                        <Package className="w-16 h-16 text-blue-600" />
-                                    </div>
-                                    <div className="space-y-1 relative z-10">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <div className="p-1.5 bg-blue-100 rounded-lg">
-                                                <Package className="w-4 h-4 text-blue-600" />
-                                            </div>
-                                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Forecast Volume</p>
-                                        </div>
-                                        <div className="text-2xl font-bold text-slate-900 tracking-tight">{Math.round(forecastSum).toLocaleString()}</div>
-                                        <p className="text-xs text-slate-500 font-medium pt-1">Total predicted units</p>
-                                    </div>
-                                </Card>
-
-                                {/* 2. Forecast Value */}
-                                <Card className="relative overflow-hidden p-6 bg-white hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-200 shadow-sm hover:shadow-lg transition-all duration-300 group rounded-xl">
-                                    <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                                        <DollarSign className="w-16 h-16 text-emerald-600" />
-                                    </div>
-                                    <div className="space-y-1 relative z-10">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <div className="p-1.5 bg-emerald-100 rounded-lg">
-                                                <DollarSign className="w-4 h-4 text-emerald-600" />
-                                            </div>
-                                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Forecast Value</p>
-                                        </div>
-                                        <div className="text-2xl font-bold text-slate-900 tracking-tight">{formatForecastValue(forecastValue, true)}</div>
-                                        <p className="text-xs text-slate-500 font-medium pt-1">Total predicted revenue</p>
-                                    </div>
-                                </Card>
-
-                                {/* 3. YoY Growth */}
-                                <Card className="relative overflow-hidden p-6 bg-white hover:bg-amber-50/50 border border-slate-200 hover:border-amber-200 shadow-sm hover:shadow-lg transition-all duration-300 group rounded-xl">
-                                    <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                                        <LineChart className="w-16 h-16 text-amber-600" />
-                                    </div>
-                                    <div className="space-y-1 relative z-10">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <div className="p-1.5 bg-amber-100 rounded-lg">
-                                                <LineChart className="w-4 h-4 text-amber-600" />
-                                            </div>
-                                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">YoY Growth</p>
-                                        </div>
-                                        <div className={`text-2xl font-bold tracking-tight ${yoyGrowth < 0 ? "text-rose-600" : "text-emerald-600"}`}>
-                                            {yoyGrowth != null ? `${yoyGrowth > 0 ? '+' : ''}${yoyGrowth}%` : "N/A"}
-                                        </div>
-                                        <p className="text-xs text-slate-500 font-medium pt-1">vs Same Period Last Year</p>
-                                    </div>
-                                </Card>
-
-                                {/* 4. YTD Volume */}
-                                <Card className="relative overflow-hidden p-6 bg-white hover:bg-violet-50/50 border border-slate-200 hover:border-violet-200 shadow-sm hover:shadow-lg transition-all duration-300 group rounded-xl">
-                                    <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                                        <Calendar className="w-16 h-16 text-violet-600" />
-                                    </div>
-                                    <div className="space-y-1 relative z-10">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <div className="p-1.5 bg-violet-100 rounded-lg">
-                                                <Calendar className="w-4 h-4 text-violet-600" />
-                                            </div>
-                                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">YTD Volume (2024)</p>
-                                        </div>
-                                        <div className="text-2xl font-bold text-slate-900 tracking-tight">{Math.round(parentLevelForecast).toLocaleString()}</div>
-                                        <p className="text-xs text-slate-500 font-medium pt-1">Total Actuals 2024</p>
-                                    </div>
-                                </Card>
-
-                                {/* 5. Accuracy & Bias */}
-                                <Card className="relative overflow-hidden p-6 bg-white hover:bg-rose-50/50 border border-slate-200 hover:border-rose-200 shadow-sm hover:shadow-lg transition-all duration-300 group rounded-xl">
-                                    <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                                        <Activity className="w-16 h-16 text-rose-600" />
-                                    </div>
-                                    <div className="space-y-1 relative z-10">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <div className="p-1.5 bg-rose-100 rounded-lg">
-                                                <Activity className="w-4 h-4 text-rose-600" />
-                                            </div>
-                                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Model Accuracy</p>
-                                        </div>
-
-                                        <div className="flex flex-col gap-1">
-                                            <div className="flex justify-between items-end">
-                                                <span className="text-xl font-bold text-slate-900">{accuracy ? `${accuracy}%` : "N/A"}</span>
-                                                <span className="text-[10px] font-bold text-slate-400 uppercase">Acc.</span>
-                                            </div>
-                                            <div className="w-full h-px bg-slate-100"></div>
-                                            <div className="flex justify-between items-end">
-                                                <span className={`text-base font-bold ${bias > 0 ? "text-blue-600" : "text-orange-600"}`}>
-                                                    {bias ? `${bias > 0 ? '+' : ''}${bias}%` : "N/A"}
-                                                </span>
-                                                <span className="text-[10px] font-bold text-slate-400 uppercase">Bias</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </Card>
-                            </div>
-                        </Card>
-
-
-
-
-
-                        {/* Marquee Announcement - Above Graph */}
-                        <div className="w-full">
-                            <MarqueeAnnouncement announcements={marqueeMessages} />
-                        </div>
-
-                        {/* OOS Analysis Chart & Forecast Bridge - RESPONSIVE CONTAINER */}
-                        <div className="w-full h-[450px] lg:h-[500px]">
-                            <Card className="w-full h-full flex flex-col p-6 bg-gradient-to-br from-white/90 to-indigo-50/50 backdrop-blur-md border border-indigo-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] rounded-3xl overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-shadow duration-500">
-                                <div className="flex justify-between items-center mb-6 flex-none">
-
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-2.5 bg-gradient-to-br from-indigo-50 to-indigo-100 text-indigo-600 rounded-xl shadow-sm border border-indigo-200/50">
-                                            <LineChart className="w-5 h-5" />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-lg font-bold text-slate-800 tracking-tight">Actual vs Forecast</h3>
-                                            <p className="text-xs text-slate-500 font-medium">Historical performance and OOS impact</p>
-                                        </div>
-                                    </div>
-                                    {/* Chart Toggle Buttons */}
-                                    <div className="flex gap-2">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => handleToggleChart('oos')}
-                                            className={`font-medium transition-all duration-200 border ${chartToggle.oos
-                                                ? 'bg-red-50 border-red-200 text-red-700 shadow-sm'
-                                                : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
-                                                }`}
-                                        >
-                                            OOS Days
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => handleToggleChart('seasonalityTrends')}
-                                            className={`font-medium transition-all duration-200 border ${chartToggle.seasonalityTrends
-                                                ? 'bg-amber-50 border-amber-200 text-amber-700 shadow-sm'
-                                                : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
-                                                }`}
-                                        >
-                                            Trends
-                                        </Button>
-                                    </div>
-                                </div>
-
-                                <div className="flex-1 min-h-0 w-full relative">
-                                    <SalesTrendChart
-                                        chartToggle={chartToggle}
-                                        manualConsensus={{
-                                            '2024-10-01': Object.values(consensusValues).reduce((acc, curr) => acc + (curr.oct || 0), 0),
-                                            '2024-11-01': Object.values(consensusValues).reduce((acc, curr) => acc + (curr.nov || 0), 0),
-                                            '2024-12-01': Object.values(consensusValues).reduce((acc, curr) => acc + (curr.dec || 0), 0)
-                                        }}
-                                    />
-                                </div>
-                            </Card>
-                        </div>
-
-                        {/* --- ROW 2: Chatbot (Full Width) --- */}
-                        {/* --- ROW 2: Chatbot (Full Width) --- */}
-                        <div className="w-full h-[600px] rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-indigo-100/50 bg-gradient-to-b from-white to-slate-50/50">
-                            <Chatbot
-                                filters={filters}
-                                compact={true}
-                            />
-                        </div>
-
-                        {/* Forecast Bridge (Increased Width below Chatbot) */}
-                        <div className="w-full h-auto">
-                            <Card className="w-full flex flex-col p-6 bg-gradient-to-br from-white/90 to-violet-50/50 backdrop-blur-md border border-violet-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] rounded-3xl overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-shadow duration-500">
-                                <div className="flex justify-between items-center mb-4 flex-none">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-2.5 bg-gradient-to-br from-violet-50 to-violet-100 text-violet-600 rounded-xl shadow-sm border border-violet-200/50">
-                                            <ChartPie className="w-5 h-5" />
-                                        </div>
-                                        <h3 className="text-lg font-bold text-slate-800 tracking-tight">Forecast Analysis</h3>
-                                    </div>
-                                </div>
-
-                                <Accordion type="single" collapsible defaultValue="consensus" className="w-full">
-                                    <AccordionItem value="consensus" className="border-b-0">
-                                        <AccordionTrigger className="hover:no-underline py-2 px-1">
-                                            <span className="text-base font-medium text-gray-700">Consensus Breakup</span>
-                                        </AccordionTrigger>
-                                        <AccordionContent>
-                                            <div className="h-[500px] w-full pt-2">
-                                                <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-4 h-full">
-                                                    {/* 1. Consensus Breakup Section */}
-                                                    <div className="space-y-3 h-full flex flex-col">
-                                                        <h4 className="text-sm font-medium text-gray-700">Consensus Breakup</h4>
-                                                        <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50/50 rounded-xl border border-blue-100 shadow-sm hover:shadow-md transition-shadow duration-300 flex-1 flex flex-col relative overflow-hidden">
-
-                                                            {/* Decorative Background Icon */}
-                                                            <div className="absolute -top-6 -right-6 opacity-5 rotate-12 pointer-events-none">
-                                                                <Package className="w-32 h-32 text-blue-600" />
-                                                            </div>
-
-                                                            <div className="flex flex-col h-full z-10">
-                                                                {/* Top: Total Consensus */}
-                                                                <div className="flex-none mb-4 border-b border-blue-200/60 pb-4">
-                                                                    <h4 className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2">Total Consensus</h4>
-                                                                    <div className="text-4xl font-extrabold text-slate-900 tracking-tight break-words">
-                                                                        {Math.round(
-                                                                            Object.values(consensusValues).reduce((acc, curr) =>
-                                                                                acc + (curr.oct || 0) + (curr.nov || 0) + (curr.dec || 0), 0
-                                                                            )
-                                                                        ).toLocaleString()}
-                                                                    </div>
-                                                                    <p className="text-[10px] text-slate-500 font-medium mt-1">Aggregated Volume (Oct - Dec)</p>
-                                                                </div>
-
-                                                                {/* Middle/Bottom: Vertically Distributed Monthly Data */}
-                                                                <div className="flex-1 flex flex-col justify-around">
-                                                                    {/* Oct */}
-                                                                    <div className="flex flex-col group">
-                                                                        <div className="flex justify-between items-end mb-1">
-                                                                            <span className="text-xs font-bold text-slate-400 uppercase">Oct</span>
-                                                                            <span className="text-2xl font-bold text-slate-700 group-hover:text-blue-600 transition-colors">
-                                                                                {Math.round(Object.values(consensusValues).reduce((acc, curr) => acc + (curr.oct || 0), 0)).toLocaleString()}
-                                                                            </span>
-                                                                        </div>
-                                                                        <div className="h-1.5 w-full bg-blue-100/50 rounded-full overflow-hidden">
-                                                                            <div className="h-full bg-blue-500 w-full opacity-20 group-hover:opacity-100 transition-opacity"></div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    {/* Nov */}
-                                                                    <div className="flex flex-col group">
-                                                                        <div className="flex justify-between items-end mb-1">
-                                                                            <span className="text-xs font-bold text-slate-400 uppercase">Nov</span>
-                                                                            <span className="text-2xl font-bold text-slate-700 group-hover:text-blue-600 transition-colors">
-                                                                                {Math.round(Object.values(consensusValues).reduce((acc, curr) => acc + (curr.nov || 0), 0)).toLocaleString()}
-                                                                            </span>
-                                                                        </div>
-                                                                        <div className="h-1.5 w-full bg-blue-100/50 rounded-full overflow-hidden">
-                                                                            <div className="h-full bg-blue-500 w-full opacity-20 group-hover:opacity-100 transition-opacity"></div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    {/* Dec */}
-                                                                    <div className="flex flex-col group">
-                                                                        <div className="flex justify-between items-end mb-1">
-                                                                            <span className="text-xs font-bold text-slate-400 uppercase">Dec</span>
-                                                                            <span className="text-2xl font-bold text-slate-700 group-hover:text-blue-600 transition-colors">
-                                                                                {Math.round(Object.values(consensusValues).reduce((acc, curr) => acc + (curr.dec || 0), 0)).toLocaleString()}
-                                                                            </span>
-                                                                        </div>
-                                                                        <div className="h-1.5 w-full bg-blue-100/50 rounded-full overflow-hidden">
-                                                                            <div className="h-full bg-blue-500 w-full opacity-20 group-hover:opacity-100 transition-opacity"></div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* 2. Forecast Breakup (Waterfalls) Section */}
-                                                    <div className="flex flex-col gap-3 h-full min-h-0 col-span-2 lg:col-span-1">
-                                                        <div className="flex justify-between items-center shrink-0">
-                                                            <h4 className="text-sm font-medium text-gray-700">Consensus Bridge Analysis</h4>
-                                                        </div>
-
-                                                        {/* Horizontal Scroll or Grid for 3 months */}
-                                                        <div className="bg-white border border-gray-200 rounded-lg p-2 flex gap-4 overflow-x-auto flex-1 min-h-0">
-                                                            {bridgeData.map((monthData, idx) => {
-                                                                const chartData = [
-                                                                    { label: 'Baseline', value: monthData.baseline },
-                                                                    { label: 'Sales', value: monthData.sales },
-                                                                    { label: 'Marketing', value: monthData.marketing },
-                                                                    { label: 'Finance', value: monthData.finance }
-                                                                ];
-                                                                return (
-                                                                    <div key={idx} className="min-w-[300px] flex-1">
-                                                                        <h5 className="text-center font-semibold text-gray-600 mb-2">{monthData.label}</h5>
-                                                                        <WaterfallChart data={chartData} />
-                                                                    </div>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </AccordionContent>
-                                    </AccordionItem>
-
-                                    <AccordionItem value="forecast" className="border-b-0">
-                                        <AccordionTrigger className="hover:no-underline py-2 px-1">
-                                            <span className="text-base font-medium text-gray-700">Forecast Breakup</span>
-                                        </AccordionTrigger>
-                                        <AccordionContent>
-                                            <div className="pt-4 space-y-6">
-                                                {/* 1. Forecast System Breakup Section - VERTICAL WATERFALLS */}
-                                                <div className="flex flex-col gap-3 h-[400px]">
-                                                    <div className="flex justify-between items-center shrink-0">
-                                                        <h4 className="text-sm font-bold text-gray-700 tracking-tight">System Forecast Decomposition</h4>
-                                                    </div>
-
-                                                    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 p-4 flex gap-6 overflow-x-auto relative flex-1 min-h-0">
-                                                        {/* Background Grid Pattern */}
-                                                        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none opacity-50"></div>
-
-                                                        {bridgeData.map((monthData, idx) => {
-                                                            const chartData = [
-                                                                { label: 'Trend', value: monthData.trend },
-                                                                { label: 'Seas.', value: monthData.seasonality },
-                                                                { label: 'Disc.', value: monthData.discount },
-                                                                { label: 'Sup.', value: monthData.spends }, // Renamed Spends to Sup. for brevity if needed, or keep Spends
-                                                                { label: 'Lag3', value: monthData.lag3 },
-                                                                { label: 'MA4', value: monthData.ma4 }
-                                                            ];
-                                                            return (
-                                                                <div key={idx} className="min-w-[320px] flex-1 z-10 flex flex-col">
-                                                                    <div className="text-center mb-2">
-                                                                        <span className="inline-block px-3 py-1 rounded-full bg-slate-50 border border-slate-100 text-[10px] font-bold text-slate-500 uppercase tracking-wide">
-                                                                            {monthData.label} Breakdown
-                                                                        </span>
-                                                                    </div>
-                                                                    <div className="flex-1 w-full min-h-0">
-                                                                        <WaterfallChart data={chartData} />
-                                                                    </div>
-                                                                </div>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                </div>
-
-                                                <ForecastBreakupTable
-                                                    tableData={tableData}
-                                                    teamInputs={teamInputs}
-                                                    consensusValues={consensusValues}
-                                                />
-                                            </div>
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                </Accordion>
-                            </Card>
-                        </div>
-
-                        {/* Forecast Table */}
-                        <div className="mb-8">
-                            <ForecastTable
-                                data={globalData}
-                                selections={selections}
-                                tableData={tableData}
-                                teamInputs={teamInputs}
-                                consensusValues={consensusValues}
-                                handleTeamInputChange={handleTeamInputChange}
-                                onDrillDown={handleDrillDown}
-                                onPivotRequest={(tableData) => {
-                                    setPivotData(tableData);
-                                    setShowPivotTable(true);
+                        <div className="flex-1 min-h-0 w-full relative">
+                            <SalesTrendChart
+                                chartToggle={chartToggle}
+                                manualConsensus={{
+                                    '2024-10-01': Object.values(consensusValues).reduce((acc, curr) => acc + (curr.oct || 0), 0),
+                                    '2024-11-01': Object.values(consensusValues).reduce((acc, curr) => acc + (curr.nov || 0), 0),
+                                    '2024-12-01': Object.values(consensusValues).reduce((acc, curr) => acc + (curr.dec || 0), 0)
                                 }}
                             />
                         </div>
-
-                        {/* Pivot Table */}
-                        {showPivotTable && (
-                            <PivotTableComponent
-                                tableData={pivotData}
-                                onClose={() => setShowPivotTable(false)}
-                            />
-                        )}
-                    </div>
-
-                    {/* Download Report Button - Fixed Bottom */}
-                    <div className="mt-12 flex justify-end pb-12 max-w-[1600px] mx-auto px-6">
-                        <Button
-                            onClick={handleDownloadReport}
-                            disabled={isDownloading}
-                            className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white min-w-[200px] h-12 rounded-full shadow-lg shadow-indigo-200 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5"
-                        >
-                            {isDownloading ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Generating PDF...
-                                </>
-                            ) : (
-                                <>
-                                    <Download className="mr-2 h-4 w-4" />
-                                    Download Forecast Report
-                                </>
-                            )}
-                        </Button>
-                    </div>
+                    </Card>
                 </div>
+
+                {/* --- ROW 2: Chatbot (Full Width) --- */}
+                {/* --- ROW 2: Chatbot (Full Width) --- */}
+                <div className="w-full h-[600px] rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-indigo-100/50 bg-gradient-to-b from-white to-slate-50/50">
+                    <Chatbot
+                        filters={filters}
+                        compact={true}
+                    />
+                </div>
+
+                {/* Forecast Bridge (Increased Width below Chatbot) */}
+                <div className="w-full h-auto">
+                    <Card className="w-full flex flex-col p-6 bg-gradient-to-br from-white/90 to-violet-50/50 backdrop-blur-md border border-violet-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] rounded-3xl overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-shadow duration-500">
+                        <div className="flex justify-between items-center mb-4 flex-none">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 bg-gradient-to-br from-violet-50 to-violet-100 text-violet-600 rounded-xl shadow-sm border border-violet-200/50">
+                                    <ChartPie className="w-5 h-5" />
+                                </div>
+                                <h3 className="text-lg font-bold text-slate-800 tracking-tight">Forecast Analysis</h3>
+                            </div>
+                        </div>
+
+                        <Accordion type="single" collapsible defaultValue="consensus" className="w-full space-y-4">
+                            <AccordionItem value="consensus" className="border border-slate-200 rounded-xl overflow-hidden shadow-sm bg-white">
+                                <AccordionTrigger className="group hover:no-underline px-6 py-4 hover:bg-slate-50/80 transition-all data-[state=open]:bg-slate-50/50 border-b border-transparent data-[state=open]:border-slate-100">
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl border border-blue-100/50 group-data-[state=open]:bg-blue-100 group-data-[state=open]:text-blue-700 transition-colors">
+                                            <Users className="w-5 h-5" />
+                                        </div>
+                                        <div className="text-left">
+                                            <span className="text-base font-bold text-slate-800 block">Consensus Breakup</span>
+                                            <span className="text-xs font-medium text-slate-500">Team alignment and manual adjustments</span>
+                                        </div>
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent className="bg-white/50 px-6 pb-6 pt-4">
+                                    <div className="h-[500px] w-full pt-2">
+                                        <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-4 h-full">
+                                            {/* 1. Consensus Breakup Section */}
+                                            <div className="space-y-3 h-full flex flex-col">
+                                                <h4 className="text-sm font-medium text-gray-700">Consensus Breakup</h4>
+                                                <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50/50 rounded-xl border border-blue-100 shadow-sm hover:shadow-md transition-shadow duration-300 flex-1 flex flex-col relative overflow-hidden">
+
+                                                    {/* Decorative Background Icon */}
+                                                    <div className="absolute -top-6 -right-6 opacity-5 rotate-12 pointer-events-none">
+                                                        <Package className="w-32 h-32 text-blue-600" />
+                                                    </div>
+
+                                                    <div className="flex flex-col h-full z-10">
+                                                        {/* Top: Total Consensus */}
+                                                        <div className="flex-none mb-4 border-b border-blue-200/60 pb-4">
+                                                            <h4 className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2">Total Consensus</h4>
+                                                            <div className="text-4xl font-extrabold text-slate-900 tracking-tight break-words">
+                                                                {Math.round(
+                                                                    Object.values(consensusValues).reduce((acc, curr) =>
+                                                                        acc + (curr.oct || 0) + (curr.nov || 0) + (curr.dec || 0), 0
+                                                                    )
+                                                                ).toLocaleString()}
+                                                            </div>
+                                                            <p className="text-[10px] text-slate-500 font-medium mt-1">Aggregated Volume (Oct - Dec)</p>
+                                                        </div>
+
+                                                        {/* Middle/Bottom: Vertically Distributed Monthly Data */}
+                                                        <div className="flex-1 flex flex-col justify-around">
+                                                            {/* Oct */}
+                                                            <div className="flex flex-col group">
+                                                                <div className="flex justify-between items-end mb-1">
+                                                                    <span className="text-xs font-bold text-slate-400 uppercase">Oct</span>
+                                                                    <span className="text-2xl font-bold text-slate-700 group-hover:text-blue-600 transition-colors">
+                                                                        {Math.round(Object.values(consensusValues).reduce((acc, curr) => acc + (curr.oct || 0), 0)).toLocaleString()}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="h-1.5 w-full bg-blue-100/50 rounded-full overflow-hidden">
+                                                                    <div className="h-full bg-blue-500 w-full opacity-20 group-hover:opacity-100 transition-opacity"></div>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Nov */}
+                                                            <div className="flex flex-col group">
+                                                                <div className="flex justify-between items-end mb-1">
+                                                                    <span className="text-xs font-bold text-slate-400 uppercase">Nov</span>
+                                                                    <span className="text-2xl font-bold text-slate-700 group-hover:text-blue-600 transition-colors">
+                                                                        {Math.round(Object.values(consensusValues).reduce((acc, curr) => acc + (curr.nov || 0), 0)).toLocaleString()}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="h-1.5 w-full bg-blue-100/50 rounded-full overflow-hidden">
+                                                                    <div className="h-full bg-blue-500 w-full opacity-20 group-hover:opacity-100 transition-opacity"></div>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Dec */}
+                                                            <div className="flex flex-col group">
+                                                                <div className="flex justify-between items-end mb-1">
+                                                                    <span className="text-xs font-bold text-slate-400 uppercase">Dec</span>
+                                                                    <span className="text-2xl font-bold text-slate-700 group-hover:text-blue-600 transition-colors">
+                                                                        {Math.round(Object.values(consensusValues).reduce((acc, curr) => acc + (curr.dec || 0), 0)).toLocaleString()}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="h-1.5 w-full bg-blue-100/50 rounded-full overflow-hidden">
+                                                                    <div className="h-full bg-blue-500 w-full opacity-20 group-hover:opacity-100 transition-opacity"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* 2. Forecast Breakup (Waterfalls) Section */}
+                                            <div className="flex flex-col gap-3 h-full min-h-0 col-span-2 lg:col-span-1">
+                                                <div className="flex justify-between items-center shrink-0">
+                                                    <h4 className="text-sm font-medium text-gray-700">Consensus Bridge Analysis</h4>
+                                                </div>
+
+                                                {/* Horizontal Scroll or Grid for 3 months */}
+                                                <div className="bg-white border border-gray-200 rounded-lg p-4 grid grid-cols-3 gap-4 flex-1 min-h-0 overflow-hidden">
+                                                    {bridgeData.map((monthData, idx) => {
+                                                        const chartData = [
+                                                            { label: 'Baseline', value: monthData.baseline },
+                                                            { label: 'Sales', value: monthData.sales },
+                                                            { label: 'Marketing', value: monthData.marketing },
+                                                            { label: 'Finance', value: monthData.finance }
+                                                        ];
+                                                        return (
+                                                            <div key={idx} className="w-full h-full min-w-0 flex flex-col">
+                                                                <h5 className="text-center font-semibold text-gray-600 mb-2 text-sm">{monthData.label}</h5>
+                                                                <div className="flex-1 min-h-0 relative">
+                                                                    <WaterfallChart data={chartData} />
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+
+                            <AccordionItem value="forecast" className="border border-slate-200 rounded-xl overflow-hidden shadow-sm bg-white">
+                                <AccordionTrigger className="group hover:no-underline px-6 py-4 hover:bg-slate-50/80 transition-all data-[state=open]:bg-slate-50/50 border-b border-transparent data-[state=open]:border-slate-100">
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-2.5 bg-violet-50 text-violet-600 rounded-xl border border-violet-100/50 group-data-[state=open]:bg-violet-100 group-data-[state=open]:text-violet-700 transition-colors">
+                                            <Layers className="w-5 h-5" />
+                                        </div>
+                                        <div className="text-left">
+                                            <span className="text-base font-bold text-slate-800 block">Forecast Breakup</span>
+                                            <span className="text-xs font-medium text-slate-500">System generated forecast components</span>
+                                        </div>
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent className="bg-white/50 px-6 pb-6 pt-4">
+                                    <div className="pt-4 space-y-6">
+                                        {/* 1. Forecast System Breakup Section - VERTICAL WATERFALLS */}
+                                        <div className="flex flex-col gap-3 h-[400px]">
+                                            <div className="flex justify-between items-center shrink-0">
+                                                <h4 className="text-sm font-bold text-gray-700 tracking-tight">System Forecast Decomposition</h4>
+                                            </div>
+
+                                            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 p-4 flex gap-6 overflow-x-auto relative flex-1 min-h-0">
+                                                {/* Background Grid Pattern */}
+                                                <div className="absolute inset-0 bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none opacity-50"></div>
+
+                                                {bridgeData.map((monthData, idx) => {
+                                                    const chartData = [
+                                                        { label: 'Trend', value: monthData.trend },
+                                                        { label: 'Seas.', value: monthData.seasonality },
+                                                        { label: 'Disc.', value: monthData.discount },
+                                                        { label: 'Sup.', value: monthData.spends }, // Renamed Spends to Sup. for brevity if needed, or keep Spends
+                                                        { label: 'Lag3', value: monthData.lag3 },
+                                                        { label: 'MA4', value: monthData.ma4 }
+                                                    ];
+                                                    return (
+                                                        <div key={idx} className="min-w-[320px] flex-1 z-10 flex flex-col">
+                                                            <div className="text-center mb-2">
+                                                                <span className="inline-block px-3 py-1 rounded-full bg-slate-50 border border-slate-100 text-[10px] font-bold text-slate-500 uppercase tracking-wide">
+                                                                    {monthData.label} Breakdown
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex-1 w-full min-h-0">
+                                                                <WaterfallChart data={chartData} />
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+
+                                        <ForecastBreakupTable
+                                            tableData={tableData}
+                                            teamInputs={teamInputs}
+                                            consensusValues={consensusValues}
+                                        />
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
+                    </Card>
+                </div>
+
+                {/* Forecast Table */}
+                <div className="mb-8">
+                    <ForecastTable
+                        data={globalData}
+                        selections={selections}
+                        tableData={tableData}
+                        teamInputs={teamInputs}
+                        consensusValues={consensusValues}
+                        handleTeamInputChange={handleTeamInputChange}
+                        onDrillDown={handleDrillDown}
+                        onPivotRequest={(tableData) => {
+                            setPivotData(tableData);
+                            setShowPivotTable(true);
+                        }}
+                    />
+                </div>
+
+                {/* Pivot Table */}
+                {showPivotTable && (
+                    <PivotTableComponent
+                        tableData={pivotData}
+                        onClose={() => setShowPivotTable(false)}
+                    />
+                )}
+            </div>
+
+            {/* Download Report Button - Fixed Bottom */}
+            <div className="mt-12 flex justify-end pb-12 max-w-[1600px] mx-auto px-6">
+                <Button
+                    onClick={handleDownloadReport}
+                    disabled={isDownloading}
+                    className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white min-w-[200px] h-12 rounded-full shadow-lg shadow-indigo-200 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5"
+                >
+                    {isDownloading ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Generating PDF...
+                        </>
+                    ) : (
+                        <>
+                            <Download className="mr-2 h-4 w-4" />
+                            Download Forecast Report
+                        </>
+                    )}
+                </Button>
             </div>
         </div>
     );

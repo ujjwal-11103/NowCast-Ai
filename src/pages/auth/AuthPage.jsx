@@ -1,11 +1,7 @@
-import { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import LoginForm from './LoginForm';
-import RegisterForm from './RegisterForm';
 
 const AuthPage = () => {
-  const [isLogin, setIsLogin] = useState(true);
-
   return (
     <div className="min-h-screen bg-slate-900 flex">
       {/* ─────────────────── Left Side (Brand) ─────────────────── */}
@@ -39,76 +35,26 @@ const AuthPage = () => {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-slate-900">
         <div className="w-full max-w-md">
           {/* mobile header */}
-          <div className="lg:hidden text-center mb-8 animate-slide-fade-in">
+          <div className="lg:hidden text-center mb-8">
             <h1 className="text-4xl font-bold text-white mb-2">NowCast Ai</h1>
             <p className="text-slate-400">forecasting made easy</p>
           </div>
 
           {/* card */}
-          <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm p-8 shadow-2xl animate-slide-fade-in">
+          <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm p-8 shadow-2xl">
             {/* heading */}
             <div className="mb-8">
               <h2 className="text-3xl font-bold text-white mb-2">
-                {isLogin ? 'Welcome Back' : 'Get Started'}
+                Welcome Back
               </h2>
               <p className="text-slate-400">
-                {isLogin
-                  ? 'Sign in to your account to continue'
-                  : 'Create your account to start forecasting'}
+                Sign in to your account to continue
               </p>
             </div>
 
-            {/* toggle buttons */}
-            <div className="flex mb-3 bg-slate-700/50 p-1 rounded-lg">
-              <button
-                onClick={() => setIsLogin(true)}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200
-                  ${isLogin
-                    ? 'bg-slate-600 text-white shadow-sm'
-                    : 'text-slate-400 hover:text-white'}`}
-              >
-                Sign In
-              </button>
-              <button
-                onClick={() => setIsLogin(false)}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200
-                  ${!isLogin
-                    ? 'bg-slate-600 text-white shadow-sm'
-                    : 'text-slate-400 hover:text-white'}`}
-              >
-                Sign Up
-              </button>
-            </div>
-
-            {/* form container with slide‑in x transition */}
+            {/* form container */}
             <div className="relative overflow-hidden">
-              {/* Login */}
-              <div className={`transition-all duration-300 ease-in-out
-                               ${isLogin
-                  ? 'opacity-100 translate-x-0'
-                  : 'opacity-0 -translate-x-full absolute inset-0'}`}>
-                {isLogin && <LoginForm />}
-              </div>
-              {/* Register */}
-              <div className={`transition-all duration-300 ease-in-out
-                               ${!isLogin
-                  ? 'opacity-100 translate-x-0'
-                  : 'opacity-0 translate-x-full absolute inset-0'}`}>
-                {!isLogin && <RegisterForm />}
-              </div>
-            </div>
-
-            {/* bottom link */}
-            <div className="mt-4 text-center">
-              <p className="text-slate-400 text-sm">
-                {isLogin ? "Don't have an account? " : "Already have an account? "}
-                <button
-                  onClick={() => setIsLogin(!isLogin)}
-                  className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
-                >
-                  {isLogin ? 'Sign up' : 'Sign in'}
-                </button>
-              </p>
+              <LoginForm />
             </div>
           </Card>
         </div>

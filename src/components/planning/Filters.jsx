@@ -33,6 +33,7 @@ const Filters = ({ showFilters }) => {
     const [depotOptions, setDepotOptions] = useState([]);
     const [subCatOptions, setSubCatOptions] = useState([]);
     const [skuOptions, setSkuOptions] = useState([]);
+    const [selectedAccuracy, setSelectedAccuracy] = useState("95%");
     const accuracyOptions = ["90%", "95%", "98%", "99%", "99.5%"];
 
     // --- HANDLERS FOR DROPDOWN CHANGES (Direct Context Update) ---
@@ -83,74 +84,104 @@ const Filters = ({ showFilters }) => {
 
     // --- OPTIONS LOGIC (Derived from Context) ---
 
-    // 1. Load Channels
+    // 1. Load Channels - Single & Pre-chosen
     useEffect(() => {
         if (globalData && globalData.length > 0) {
             const channels = [...new Set(globalData.map(item => item.Channel))];
-            setChannelOptions(channels);
+            if (channels.length > 0) {
+                const target = channels[0];
+                setChannelOptions([target]);
+                if (filters.channel !== target) {
+                    setFilters(prev => ({ ...prev, channel: target }));
+                }
+            }
         }
-    }, [globalData]);
+    }, [globalData, filters.channel]);
 
-    // 2. Chain Logic
+    // 2. Chain Logic - Single & Pre-chosen
     useEffect(() => {
         if (filters.channel && globalData) {
             const filtered = globalData.filter(item => item.Channel === filters.channel);
-            setChainOptions([...new Set(filtered.map(item => item.Chain))]);
+            const chains = [...new Set(filtered.map(item => item.Chain))];
+            if (chains.length > 0) {
+                const target = chains[0];
+                setChainOptions([target]);
+                if (filters.chain !== target) {
+                    setFilters(prev => ({ ...prev, chain: target }));
+                }
+            } else {
+                setChainOptions([]);
+            }
         } else {
             setChainOptions([]);
         }
-    }, [filters.channel, globalData]);
+    }, [filters.channel, globalData, filters.chain]);
 
-    // 3. Depot Logic
+    // 3. Depot Logic - Single & Pre-chosen
     useEffect(() => {
         if (filters.chain && globalData) {
-            if (filters.chain !== "All") {
-                const filtered = globalData.filter(item => item.Channel === filters.channel && item.Chain === filters.chain);
-                setDepotOptions([...new Set(filtered.map(item => item.Depot))]);
+            const filtered = globalData.filter(item => item.Channel === filters.channel && item.Chain === filters.chain);
+            const depots = [...new Set(filtered.map(item => item.Depot))];
+            if (depots.length > 0) {
+                const target = depots[0];
+                setDepotOptions([target]);
+                if (filters.depot !== target) {
+                    setFilters(prev => ({ ...prev, depot: target }));
+                }
             } else {
                 setDepotOptions([]);
             }
         } else {
             setDepotOptions([]);
         }
-    }, [filters.chain, filters.channel, globalData]);
+    }, [filters.chain, filters.channel, globalData, filters.depot]);
 
-    // 4. SubCat Logic
+    // 4. SubCat Logic - Single & Pre-chosen
     useEffect(() => {
         if (filters.depot && globalData) {
-            if (filters.depot !== "All") {
-                const filtered = globalData.filter(item =>
-                    item.Channel === filters.channel &&
-                    item.Chain === filters.chain &&
-                    item.Depot === filters.depot
-                );
-                setSubCatOptions([...new Set(filtered.map(item => item.SubCat))]);
+            const filtered = globalData.filter(item =>
+                item.Channel === filters.channel &&
+                item.Chain === filters.chain &&
+                item.Depot === filters.depot
+            );
+            const subCats = [...new Set(filtered.map(item => item.SubCat))];
+            if (subCats.length > 0) {
+                const target = subCats[0];
+                setSubCatOptions([target]);
+                if (filters.subCat !== target) {
+                    setFilters(prev => ({ ...prev, subCat: target }));
+                }
             } else {
                 setSubCatOptions([]);
             }
         } else {
             setSubCatOptions([]);
         }
-    }, [filters.depot, filters.chain, filters.channel, globalData]);
+    }, [filters.depot, filters.chain, filters.channel, globalData, filters.subCat]);
 
-    // 5. SKU Logic
+    // 5. SKU Logic - Single & Pre-chosen
     useEffect(() => {
         if (filters.subCat && globalData) {
-            if (filters.subCat !== "All") {
-                const filtered = globalData.filter(item =>
-                    item.Channel === filters.channel &&
-                    item.Chain === filters.chain &&
-                    item.Depot === filters.depot &&
-                    item.SubCat === filters.subCat
-                );
-                setSkuOptions([...new Set(filtered.map(item => item.SKU))]);
+            const filtered = globalData.filter(item =>
+                item.Channel === filters.channel &&
+                item.Chain === filters.chain &&
+                item.Depot === filters.depot &&
+                item.SubCat === filters.subCat
+            );
+            const skus = [...new Set(filtered.map(item => item.SKU))];
+            if (skus.length > 0) {
+                const target = skus[0];
+                setSkuOptions([target]);
+                if (filters.sku !== target) {
+                    setFilters(prev => ({ ...prev, sku: target }));
+                }
             } else {
                 setSkuOptions([]);
             }
         } else {
             setSkuOptions([]);
         }
-    }, [filters.subCat, filters.channel, filters.chain, filters.depot, globalData]);
+    }, [filters.subCat, filters.channel, filters.chain, filters.depot, globalData, filters.sku]);
 
     // ==========================================
     //  UPDATED METRICS CALCULATION
@@ -285,7 +316,6 @@ const Filters = ({ showFilters }) => {
                             <Select value={filters.chain || ""} onValueChange={handleChainChange} disabled={!filters.channel}>
                                 <SelectTrigger className="w-full"><SelectValue placeholder="Select chain" /></SelectTrigger>
                                 <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
-                                    <SelectItem value="All">ALL</SelectItem>
                                     {chainOptions.map(chain => <SelectItem key={chain} value={chain}>{chain.toUpperCase()}</SelectItem>)}
                                 </SelectContent>
                             </Select>
@@ -298,7 +328,6 @@ const Filters = ({ showFilters }) => {
                             <Select value={filters.depot || ""} onValueChange={handleDepotChange} disabled={!filters.chain}>
                                 <SelectTrigger className="w-full"><SelectValue placeholder="Select depot" /></SelectTrigger>
                                 <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
-                                    <SelectItem value="All">ALL</SelectItem>
                                     {depotOptions.map(depot => <SelectItem key={depot} value={depot}>{depot.toUpperCase()}</SelectItem>)}
                                 </SelectContent>
                             </Select>
@@ -311,7 +340,6 @@ const Filters = ({ showFilters }) => {
                             <Select value={filters.subCat || ""} onValueChange={handleSubCatChange} disabled={!filters.depot}>
                                 <SelectTrigger className="w-full"><SelectValue placeholder="Select sub-category" /></SelectTrigger>
                                 <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
-                                    <SelectItem value="All">ALL</SelectItem>
                                     {subCatOptions.map(subCat => <SelectItem key={subCat} value={subCat}>{subCat.toUpperCase()}</SelectItem>)}
                                 </SelectContent>
                             </Select>
@@ -324,7 +352,6 @@ const Filters = ({ showFilters }) => {
                             <Select value={filters.sku || ""} onValueChange={handleSkuChange} disabled={!filters.subCat}>
                                 <SelectTrigger className="w-full"><SelectValue placeholder="Select SKU" /></SelectTrigger>
                                 <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
-                                    <SelectItem value="All">ALL</SelectItem>
                                     {skuOptions.map(sku => <SelectItem key={sku} value={sku}>{sku.toUpperCase()}</SelectItem>)}
                                 </SelectContent>
                             </Select>

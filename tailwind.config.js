@@ -7,16 +7,41 @@ export default {
 
   theme: {
     extend: {
-      /* ───────────────────────────────────────── Colors ───────────────────────────────────────── */
-      /* ───────────────────────────────────────── Colors ───────────────────────────────────────── */
+
       colors: {
         primary: {
-          DEFAULT: "#0A2472",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "#0A2472", // Deep Blue (Brand)
+          foreground: "#ffffff",
+          50: "#e6eaf3",
+          100: "#cdd5e7",
+          200: "#9badd0",
+          300: "#6984b8",
+          400: "#375ca0",
+          500: "#0A2472",
+          600: "#081d5b",
+          700: "#061645",
+          800: "#040e2e",
+          900: "#020717",
         },
+        secondary: {
+          DEFAULT: "#0056D2", // Vibrant Blue (Action)
+          foreground: "#ffffff",
+        },
+        accent: {
+          DEFAULT: "#00C2CB", // Vibrant Cyan/Teal
+          foreground: "#ffffff",
+        },
+        success: "#10B981", // Emerald
+        warning: "#F59E0B", // Amber
+        error: "#EF4444",   // Red
+        info: "#3B82F6",    // Blue
+        slate: {
+          850: "#1bd1fc", // Custom dark slate
+        }
       },
       fontFamily: {
-        sans: ['Outfit', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        heading: ['Outfit', 'sans-serif'],
       },
 
       /* ──────────────────────────────────────── Keyframes ─────────────────────────────────────── */

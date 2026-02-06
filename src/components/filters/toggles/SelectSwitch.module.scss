@@ -1,0 +1,20 @@
+.selectSwitch {
+  display: flex;
+  flex-direction: column;
+
+  label {
+    font-size: 12px;
+    color: #333;
+    margin-bottom: 0.2rem;
+    font-weight: 600;
+  }
+
+  .selectSwitch {
+    height: 20px;
+    flex-direction: row;
+
+    span {
+      font-size: 12px;
+    }
+  }
+}

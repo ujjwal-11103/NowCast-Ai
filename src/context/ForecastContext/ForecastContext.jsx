@@ -30,8 +30,8 @@ export const ForecastProvider = ({ children }) => {
     const fetchInitialData = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch("http://20.235.178.245:3001/api/planning/data");
-        // const response = await fetch("http://localhost:3001/api/planning/data");
+        // Use relative path to utilize the Vite proxy
+        const response = await fetch(`/data-api/planning/data`);
         const result = await response.json();
 
         if (result.success && result.data) {
@@ -60,6 +60,8 @@ export const ForecastProvider = ({ children }) => {
             isEdited: false
           }));
           setGlobalData(mappedData);
+        } else {
+          console.error("API returned success:false or no data", result);
         }
       } catch (error) {
         console.error("Error fetching planning data:", error);

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, Sparkles, Zap, FileText, BarChart3, Bot, User, RefreshCcw } from "lucide-react";
+import { Send, Sparkles, Zap, FileText, BarChart3, Bot, User, RefreshCcw, Maximize2, Minimize2 } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Plot from 'react-plotly.js'; // Import Plotly
@@ -7,16 +7,42 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useForecast } from "@/context/ForecastContext/ForecastContext";
+import { useSidebar } from "@/context/sidebar/SidebarContext";
 
-const Chatbot = ({ filters = {}, externalMode, setExternalMode, compact = false }) => {
+const Chatbot = ({ filters = {}, externalMode, setExternalMode, compact = false, allowedModes = null, nrmMode = false, suggestions = [] }) => {
+    const { isSidebarOpen } = useSidebar();
     const [input, setInput] = useState("");
+    const [isMaximized, setIsMaximized] = useState(false);
     const [messages, setMessages] = useState([
-        { type: 'bot', text: 'Hello! I can help you simulate scenarios. Select a mode below or type a command.' }
+        {
+            // ... (skip message state init)
+
+            // ... (skip to return statement)
+
+
+            text: nrmMode
+                ? `**LEVER 1: Price Action Alerts**
+| DATE | ALERT | SEVERITY | CURRENT PRICE INDEX | STRATEGIC PRICE INDEX |
+|---|---|---|---|---|
+| 2026-01-19 | Critical Strategic Price Breach - Channel 3 | High | 115.2 | 103.0 - 107.0 |
+| 2026-01-15 | Strategic Price Deviation - Channel 7 | Medium | 110.5 | 102.5 - 106.5 |
+| 2025-12-22 | Historical Price Breach - Channel 3 | High | 114.8 | 103.0 - 107.0 |
+| 2025-09-15 | Historical Price Breach - Channel 1 | Medium | 108.4 | 100.5 - 104.5 |
+| 2025-07-14 | Historical Price Breach - Channel 5 | Low | 106.1 | 101.0 - 105.0 |
+
+**LEVER 2: Innovation & Mix Alerts**
+| DATE | ALERT | SEVERITY |
+|---|---|---|
+| 2026-01-18 | White Space Detected: Category 2 (Premium) | Medium |
+| 2026-01-10 | CAGR Growth Spike: 3800ml Segment | Low |
+| 2025-11-04 | Incentive Gap Identified: Category 1 vs 2 | Medium |`
+                : 'Hello! I can help you simulate scenarios. Select a mode below or type a command.'
+        }
     ]);
     const [isLoading, setIsLoading] = useState(false);
 
     // Mode State: Priority to external props if provided
-    const [localMode, setLocalMode] = useState("default");
+    const [localMode, setLocalMode] = useState("what-if");
     const activeMode = externalMode || localMode;
     const setActiveMode = setExternalMode || setLocalMode;
 
@@ -50,15 +76,31 @@ const Chatbot = ({ filters = {}, externalMode, setExternalMode, compact = false 
 
             // --- 1. DETERMINE API & PAYLOAD BASED ON MODE ---
 
-            if (activeMode === "explorer") {
+            if (nrmMode) {
+                // NRM MODE: Localhost Endpoint & Specific Payload
+                apiUrl = `/api/whatifscenario`;
+                payload = {
+                    question: userMessage.text,
+                    owner: "kiran",
+                    type: "update-consensus"
+                };
+            } else if (activeMode === "explorer") {
                 // EXPLORER MODE: Specific Endpoint & Simple Payload
-                apiUrl = 'http://20.235.178.245:5500/query';
+                apiUrl = `/explorer/query`;
                 payload = {
                     question: userMessage.text
                 };
+            } else if (activeMode === "default") {
+                // CONSENSUS MODE: New Multi-Update Consensus API
+                apiUrl = '/api/update-consensus-multi';
+                payload = {
+                    question: userMessage.text,
+                    owner: "Analyst Name",
+                    clear_strategy: "all"
+                };
             } else {
-                // STANDARD MODES (Default, What-If, RCA): Unified Chat Endpoint
-                apiUrl = 'http://20.235.178.245:5000/api/chat';
+                // OTHER STANDARD MODES (What-If, RCA): Unified Chat Endpoint
+                apiUrl = `/api/chat`;
 
                 // Prepare Common Data for Standard Modes
                 const cleanFilters = Object.fromEntries(
@@ -68,7 +110,6 @@ const Chatbot = ({ filters = {}, externalMode, setExternalMode, compact = false 
 
                 let type = "query";
                 switch (activeMode) {
-                    case "default": type = "update-consensus"; break;
                     case "what-if": type = "what-if"; break;
                     case "rca": type = "rca"; break;
                     default: type = "query";
@@ -116,8 +157,12 @@ const Chatbot = ({ filters = {}, externalMode, setExternalMode, compact = false 
 
                     if (activeMode === "default") {
                         if (records.length > 0) {
-                            const changeDetails = data.scenario || {};
-                            const parsedFilters = data.scenario?.filters || payload.filters;
+                            const changeDetails = data.scenario || {
+                                owner: "Analyst Name",
+                                reason: userMessage.text,
+                                value: "Updated via Chat"
+                            };
+                            const parsedFilters = data.scenario?.filters || payload.filters || null;
 
                             // Attach Updated Records to the Bot Message so we can render the table in the chat
                             botResponse.tableData = records;
@@ -162,8 +207,24 @@ const Chatbot = ({ filters = {}, externalMode, setExternalMode, compact = false 
         }
     };
 
+    // Define all available modes
+    const allModes = [
+        // { id: 'default', icon: RefreshCcw, label: 'Consensus', color: 'text-blue-600', activeBg: 'bg-blue-50 border-blue-100' },
+        { id: 'what-if', icon: Zap, label: 'What-If', color: 'text-purple-600', activeBg: 'bg-purple-50 border-purple-100' },
+        // { id: 'rca', icon: FileText, label: 'RCA', color: 'text-orange-600', activeBg: 'bg-orange-50 border-orange-100' },
+        // { id: 'explorer', icon: Sparkles, label: 'Explorer', color: 'text-teal-600', activeBg: 'bg-teal-50 border-teal-100' }
+    ];
+
+    // Filter modes if allowedModes prop is provided
+    const availableModes = allowedModes
+        ? allModes.filter(mode => allowedModes.includes(mode.id))
+        : allModes;
+
     return (
-        <Card className="w-full h-full flex flex-col border border-gray-200 shadow-xl overflow-hidden bg-white rounded-xl relative">
+        <Card className={`flex flex-col border border-gray-200 shadow-xl overflow-hidden bg-white transition-all duration-300 ease-in-out ${isMaximized
+            ? `fixed top-0 bottom-0 right-0 z-[40] rounded-none m-0 ${isSidebarOpen ? 'left-64' : 'left-16'}`
+            : "w-full h-full rounded-xl relative"
+            }`}>
 
             {/* Premium Left Vertical Rail - Light & Dynamic */}
             {compact && (
@@ -186,12 +247,7 @@ const Chatbot = ({ filters = {}, externalMode, setExternalMode, compact = false 
 
                     {/* Vertical Mode Toggles */}
                     <div className="flex flex-col w-full px-3 gap-3">
-                        {[
-                            { id: 'default', icon: RefreshCcw, label: 'Consensus', color: 'text-blue-600', activeBg: 'bg-blue-50 border-blue-100' },
-                            { id: 'what-if', icon: Zap, label: 'What-If', color: 'text-purple-600', activeBg: 'bg-purple-50 border-purple-100' },
-                            { id: 'rca', icon: FileText, label: 'RCA', color: 'text-orange-600', activeBg: 'bg-orange-50 border-orange-100' },
-                            { id: 'explorer', icon: Sparkles, label: 'Explorer', color: 'text-teal-600', activeBg: 'bg-teal-50 border-teal-100' }
-                        ].map((mode) => (
+                        {availableModes.map((mode) => (
                             <div key={mode.id} className="relative group/tooltip flex justify-center">
                                 <Button
                                     variant="ghost"
@@ -212,8 +268,23 @@ const Chatbot = ({ filters = {}, externalMode, setExternalMode, compact = false 
                         ))}
                     </div>
 
-                    {/* Dynamic Status Indicator at Bottom */}
-                    <div className="mt-auto mb-2">
+                    {/* Bottom Controls */}
+                    <div className="mt-auto mb-2 flex flex-col gap-4 items-center w-full px-3">
+                        {/* Maximize Toggle */}
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setIsMaximized(!isMaximized)}
+                            className="w-10 h-10 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 transition-all"
+                            title={isMaximized ? "Minimize" : "Maximize"}
+                        >
+                            {isMaximized ? (
+                                <Minimize2 className="w-5 h-5" />
+                            ) : (
+                                <Maximize2 className="w-5 h-5" />
+                            )}
+                        </Button>
+
                         <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${activeMode === 'what-if' ? 'bg-purple-500' :
                             activeMode === 'rca' ? 'bg-orange-500' :
                                 activeMode === 'explorer' ? 'bg-teal-500' :
@@ -245,19 +316,14 @@ const Chatbot = ({ filters = {}, externalMode, setExternalMode, compact = false 
             {/* Mode Toggles - Conditionally Rendered */}
             {!compact && (
                 <div className="flex p-2 bg-gray-50/50 border-b gap-2 justify-center flex-none">
-                    {[
-                        { id: 'default', icon: RefreshCcw, label: 'Consensus', color: 'bg-blue-600' },
-                        { id: 'what-if', icon: Zap, label: 'What-If', color: 'bg-purple-600' },
-                        { id: 'rca', icon: FileText, label: 'RCA', color: 'bg-orange-500' },
-                        { id: 'explorer', icon: Sparkles, label: 'Explorer', color: 'bg-green-600' }
-                    ].map((mode) => (
+                    {availableModes.map((mode) => (
                         <Button
                             key={mode.id}
                             variant="ghost"
                             size="sm"
                             onClick={() => setActiveMode(mode.id)}
                             className={`transition-all duration-200 ${activeMode === mode.id
-                                ? `${mode.color} text-white shadow-md hover:${mode.color} hover:text-white`
+                                ? `${mode.color.replace('text-', 'bg-')} text-white shadow-md hover:${mode.color.replace('text-', 'bg-')} hover:text-white`
                                 : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-100"
                                 }`}
                         >
@@ -290,10 +356,10 @@ const Chatbot = ({ filters = {}, externalMode, setExternalMode, compact = false 
                             )}
 
                             {/* Message Bubble - Premium Refinement */}
-                            <div className={`max-w-[80%] rounded-2xl p-4 text-[13px] leading-relaxed font-medium shadow-sm relative group transition-all duration-300
+                            <div className={`rounded-2xl p-4 text-[13px] leading-relaxed font-medium shadow-sm relative group transition-all duration-300
                                 ${isUser
-                                    ? 'bg-gradient-to-br from-violet-600 to-indigo-600 text-white rounded-tr-none shadow-indigo-500/20 hover:shadow-indigo-500/30'
-                                    : 'bg-white border border-gray-100 text-gray-700 rounded-tl-none shadow-[0_2px_8px_rgb(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgb(0,0,0,0.06)]'
+                                    ? 'max-w-[80%] bg-gradient-to-br from-violet-600 to-indigo-600 text-white rounded-tr-none shadow-indigo-500/20 hover:shadow-indigo-500/30'
+                                    : 'w-fit max-w-full bg-white border border-gray-100 text-gray-700 rounded-tl-none shadow-[0_2px_8px_rgb(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgb(0,0,0,0.06)]'
                                 }`}>
 
                                 {/* Text Response */}
@@ -306,9 +372,49 @@ const Chatbot = ({ filters = {}, externalMode, setExternalMode, compact = false 
                                             components={{
                                                 strong: ({ node, ...props }) => <span className="font-bold text-indigo-700" {...props} />,
                                                 em: ({ node, ...props }) => <span className="italic text-gray-600" {...props} />,
-                                                p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+                                                p: ({ node, ...props }) => <p className="mb-2 last:mb-0 leading-relaxed" {...props} />,
                                                 ul: ({ node, ...props }) => <ul className="list-disc pl-4 mb-2 space-y-1" {...props} />,
                                                 li: ({ node, ...props }) => <li className="pl-1" {...props} />,
+                                                table: ({ node, ...props }) => (
+                                                    <div className="my-2 rounded-xl border border-indigo-100 shadow-sm bg-white w-full overflow-x-auto">
+                                                        <table className="min-w-full divide-y divide-indigo-100 text-xs" {...props} />
+                                                    </div>
+                                                ),
+                                                thead: ({ node, ...props }) => <thead className="bg-indigo-50/80" {...props} />,
+                                                tbody: ({ node, ...props }) => <tbody className="divide-y divide-indigo-50 bg-white" {...props} />,
+                                                tr: ({ node, ...props }) => <tr className="hover:bg-indigo-50 transition-colors duration-150 group even:bg-indigo-50/30" {...props} />,
+                                                th: ({ node, ...props }) => (
+                                                    <th className="px-3 py-2 text-center text-xs font-bold text-indigo-900 uppercase tracking-wider" {...props} />
+                                                ),
+                                                td: ({ node, ...props }) => {
+                                                    const content = String(props.children).trim();
+
+                                                    // Severity Badges - SAME FIXED WIDTH
+                                                    const severityClasses = "inline-flex items-center justify-center w-[60px] py-0.5 rounded text-xs font-medium border";
+
+                                                    if (content === 'High') {
+                                                        return <td className="px-3 py-1.5 text-center"><span className={`${severityClasses} bg-red-100 text-red-800 border-red-200`}>High</span></td>;
+                                                    }
+                                                    if (content === 'Medium') {
+                                                        return <td className="px-3 py-1.5 text-center"><span className={`${severityClasses} bg-amber-100 text-amber-800 border-amber-200`}>Medium</span></td>;
+                                                    }
+                                                    if (content === 'Low') {
+                                                        return <td className="px-3 py-1.5 text-center"><span className={`${severityClasses} bg-green-100 text-green-800 border-green-200`}>Low</span></td>;
+                                                    }
+
+                                                    // Content Pattern Matching for formatting
+                                                    const isDate = /^\d{4}-\d{2}-\d{2}$/.test(content); // Matches 2026-01-19
+                                                    const isLever = /^Lever \d+$/.test(content);        // Matches Lever 1
+                                                    const isPrice = /^[\d\.\-\s]+$|^None$/.test(content);   // Matches 115.2, None, or ranges like 103.0 - 107.0
+
+                                                    // Apply whitespace-nowrap to short data fields
+                                                    if (isDate || isLever || isPrice) {
+                                                        return <td className="px-3 py-1.5 text-center text-slate-700 whitespace-nowrap group-hover:text-indigo-900" {...props} />;
+                                                    }
+
+                                                    // Default (Alerts) - Allow wrapping, min-width for readability
+                                                    return <td className="px-3 py-1.5 text-center text-slate-700 group-hover:text-indigo-900" {...props} />;
+                                                },
                                             }}
                                         >
                                             {msg.text}
@@ -429,12 +535,27 @@ const Chatbot = ({ filters = {}, externalMode, setExternalMode, compact = false 
                         </div>
                         <div className="bg-white/80 border border-gray-100 p-4 rounded-2xl rounded-bl-sm shadow-sm flex items-center gap-1.5">
                             <div className="w-2 h-2 bg-indigo-500 rounded-full animate-[bounce_1s_infinite_0ms]" />
-                            <div className="w-2 h-2 bg-indigo-500 rounded-full animate-[bounce_1s_infinite_200ms]" />
                             <div className="w-2 h-2 bg-indigo-500 rounded-full animate-[bounce_1s_infinite_400ms]" />
                         </div>
                     </div>
                 )}
             </div>
+
+            {/* Suggestions for What-If Mode */}
+            {activeMode === 'what-if' && suggestions && suggestions.length > 0 && (
+                <div className={`px-4 py-2 flex flex-nowrap overflow-x-auto gap-2 ${compact ? 'pl-[90px]' : ''} [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']`}>
+                    {suggestions.map((suggestion, index) => (
+                        <button
+                            key={index}
+                            onClick={() => setInput(suggestion)}
+                            className="group flex-shrink-0 flex items-center gap-2 text-xs px-3 py-1.5 rounded-full bg-white border border-purple-100 shadow-sm hover:shadow-md hover:border-purple-300 hover:-translate-y-0.5 transition-all duration-200 text-slate-600 hover:text-purple-700 font-medium whitespace-nowrap"
+                        >
+                            <span className="w-1.5 h-1.5 rounded-full bg-purple-200 group-hover:bg-purple-500 transition-colors duration-300 flex-shrink-0" />
+                            {suggestion}
+                        </button>
+                    ))}
+                </div>
+            )}
 
             {/* Input Area */}
             <div className={`p-4 bg-white/80 backdrop-blur-sm border-t border-gray-100 flex-none relative z-20 ${compact ? 'pl-[90px]' : ''}`}>

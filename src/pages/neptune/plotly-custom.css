@@ -1,0 +1,171 @@
+/* Custom Plotly Modebar Styling for Market Mix Modelling */
+
+/* Modebar container - Vertical layout at right top - Transparent by default */
+.js-plotly-plot .plotly .modebar {
+    position: absolute !important;
+    top: 8px !important;
+    right: 8px !important;
+    background: rgba(255, 255, 255, 0.3) !important;
+    backdrop-filter: blur(8px) !important;
+    border-radius: 12px !important;
+    padding: 8px 6px !important;
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(226, 232, 240, 0.3) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    z-index: 10 !important;
+    opacity: 0.4 !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Modebar on hover - Fully visible */
+.js-plotly-plot .plotly .modebar:hover {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    border: 1px solid rgba(226, 232, 240, 0.8) !important;
+    opacity: 1 !important;
+}
+
+/* Modebar group - Vertical stacking */
+.js-plotly-plot .plotly .modebar-group {
+    background: transparent !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+}
+
+/* Modebar buttons - Optimized for vertical layout */
+.js-plotly-plot .plotly .modebar-btn {
+    background: transparent !important;
+    border-radius: 8px !important;
+    padding: 8px !important;
+    margin: 0 !important;
+    width: 32px !important;
+    height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+}
+
+/* Modebar button hover */
+.js-plotly-plot .plotly .modebar-btn:hover {
+    background: rgba(99, 102, 241, 0.1) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Modebar button active */
+.js-plotly-plot .plotly .modebar-btn.active,
+.js-plotly-plot .plotly .modebar-btn--active {
+    background: rgba(99, 102, 241, 0.15) !important;
+}
+
+/* Modebar button icons - Transparent by default */
+.js-plotly-plot .plotly .modebar-btn path {
+    fill: #94a3b8 !important;
+    opacity: 0.5 !important;
+    transition: all 0.2s ease !important;
+}
+
+.js-plotly-plot .plotly .modebar-btn:hover path {
+    fill: #6366f1 !important;
+    opacity: 1 !important;
+}
+
+.js-plotly-plot .plotly .modebar-btn.active path,
+.js-plotly-plot .plotly .modebar-btn--active path {
+    fill: #6366f1 !important;
+    opacity: 1 !important;
+}
+
+/* Increase icon opacity when modebar is hovered */
+.js-plotly-plot .plotly .modebar:hover .modebar-btn path {
+    opacity: 0.8 !important;
+}
+
+/* Logo removal (already handled in config, but just in case) */
+.js-plotly-plot .plotly .modebar-btn[data-title="Produced with Plotly"] {
+    display: none !important;
+}
+
+/* Tooltip styling - Positioned to the left for vertical layout */
+.js-plotly-plot .plotly .modebar-btn[data-title]:hover::after {
+    content: attr(data-title);
+    position: absolute;
+    top: 50%;
+    right: calc(100% + 12px);
+    transform: translateY(-50%);
+    background: rgba(15, 23, 42, 0.95);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1000;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Tooltip arrow for left positioning */
+.js-plotly-plot .plotly .modebar-btn[data-title]:hover::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: calc(100% + 6px);
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid rgba(15, 23, 42, 0.95);
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    z-index: 1001;
+}
+
+/* Hover info styling */
+.js-plotly-plot .plotly .hoverlayer .hovertext {
+    border-radius: 8px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+.js-plotly-plot .plotly .hoverlayer .hovertext path {
+    fill: white !important;
+    stroke: #e2e8f0 !important;
+}
+
+.js-plotly-plot .plotly .hoverlayer .hovertext text {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 11px !important;
+}
+
+/* Drag layer styling */
+.js-plotly-plot .plotly .nsewdrag {
+    cursor: crosshair !important;
+}
+
+/* Smooth transitions for all plotly elements */
+.js-plotly-plot .plotly .plot-container {
+    transition: all 0.3s ease !important;
+}
+
+/* Custom scrollbar for plotly if needed */
+.js-plotly-plot .plotly::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.js-plotly-plot .plotly::-webkit-scrollbar-track {
+    background: rgba(241, 245, 249, 0.5);
+    border-radius: 4px;
+}
+
+.js-plotly-plot .plotly::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.5);
+    border-radius: 4px;
+}
+
+.js-plotly-plot .plotly::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 116, 139, 0.7);
+}

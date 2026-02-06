@@ -1,116 +1,87 @@
-import React, { useState, useEffect, useRef } from "react";
-import { BarChart3, Bell, ChevronDown, Download, User } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-// import logoPolestar from "../../assets/img/intellimark.png";
-import parikshit from "../../assets/users/parikshit.png";
-import umesh from "../../assets/users/umesh.png";
-import rahul from "../../assets/users/rahul.png";
-import mahesh from "../../assets/users/mahesh1.png";
-
-const users = {
-    Ravi: { name: "James", position: "CMO", img: rahul, headerText: "Market Mix Modeling" },
-    mahesh: { name: "Daniel", position: "CSCO", img: mahesh, headerText: "Supply Chain Management" },
-    Ramesh: { name: "Michael", position: "CEO", img: parikshit, headerText: "CEO Dashboard" },
-    umesh: { name: "Henry", position: "National Sales Head", img: umesh, headerText: "Sales Performance" },
-    Suresh: { name: "David", position: "Supply Chain Tower", img: mahesh, headerText: "Supply Chain Tower" },
-    sandesh: { name: "John", position: "Pricing Analytics", img: parikshit, headerText: "Pricing Analytics" },
-};
+import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
+import { Bell, Search, User, ChevronDown, Menu } from "lucide-react";
+import { useSidebar } from "@/context/sidebar/SidebarContext";
 
 const NavBar = () => {
-    const [selectedUser, setSelectedUser] = useState(users.mahesh);
-    const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-    const navigate = useNavigate();
-    const dropdownRef = useRef(null);
-    const lastPart = window.location.pathname.substring(window.location.pathname.lastIndexOf("/") + 1);
+    const location = useLocation();
+    const { toggleSidebar, isSidebarOpen } = useSidebar();
 
-    useEffect(() => {
-        const userMap = {
-            neptune: "Ravi",
-            alfred: "umesh",
-            "ceo-cockpit": "Ramesh",
-            supplychaintower: "Suresh",
-            pricingpage: "sandesh",
+    // Helper to get readable title from path
+    const getPageTitle = (pathname) => {
+        const path = pathname.split("/").pop();
+        if (!path) return "Dashboard";
+
+        // Handle specific cases or default to formatting the path
+        const formatting = {
+            "marketMixModeling": "Market Mix Modeling",
+            "ceoDashboard": "CEO Dashboard",
+            "planningAnalyst": "NRM Dashboard",
+            "cvr": "Salesman Rating",
+            "overall": "Overall Dashboard",
+            "tradePromotion": "Trade Promotion",
+            "pricingAnalytics": "Pricing Analytics",
+            "chemical": "Sales Visit",
+            "norms": "Norms Analysis"
         };
-        setSelectedUser(users[userMap[lastPart]] || users.mahesh);
-    }, [lastPart]);
 
-    const toggleDropdown = () => setIsDropdownVisible(!isDropdownVisible);
-
-    const handleUserClick = (userKey) => {
-        setSelectedUser(users[userKey]);
-        setIsDropdownVisible(false);
-        const userRoutes = {
-            Ravi: "/neptune",
-            umesh: "/alfred",
-            mahesh: "/teresa",
-            Ramesh: "/ceo-cockpit",
-            Suresh: "/supplychaintower",
-            sandesh: "/pricingpage",
-        };
-        navigate(userRoutes[userKey]);
+        return formatting[path] || path.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
     };
 
-    // const handleUserClick = (userKey) => {
-    //     setSelectedUser(users[userKey]);
-    //     setIsDropdownVisible(false);
-    //     window.location.href = "http://52.172.42.245:8080/";
-    // };
-
-
-    const handleClickOutside = (event) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-            setIsDropdownVisible(false);
-        }
-    };
-
-    useEffect(() => {
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+    const title = getPageTitle(location.pathname);
 
     return (
-        <header className="bg-[#0a2472] text-white p-4 flex justify-between items-center">
-            {/* Left Section */}
-            <div className="flex items-center space-x-4">
-                {/* <img src="Intellimark_AI.png" alt="Logo" className="me-2" style={{ height: "35px" }} /> */}
-                {/* <h1 className="text-xl font-bold">Intellimark AI</h1> */}
-                <span className="px-3 py-1 bg-[#1e3799] rounded-md text-sm font-medium">{selectedUser.headerText}</span>
-            </div>
+        <header className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm transition-all duration-300">
+            <div className="flex h-16 items-center justify-between px-6">
 
-            {/* Right Section */}
-            {/* <div className="flex items-center space-x-6">
-                <div className="relative" ref={dropdownRef}>
-                    <div className="flex items-center space-x-2 cursor-pointer group" onClick={toggleDropdown}>
-                        <img src={selectedUser.img} alt="Profile" className="w-9 h-9 rounded-full" />
-                        <div>
-                            <p className="text-sm font-medium">{selectedUser.name}</p>
-                            <p className="text-xs text-blue-200">{selectedUser.position}</p>
-                        </div>
-                        <ChevronDown size={16} className="text-blue-200 group-hover:text-white transition-colors" />
+                {/* Left: Title & Mobile Toggle */}
+                <div className="flex items-center gap-4">
+                    {/* Mobile Menu Button - Visible only on small screens if needed, 
+                        but sidebar has its own toggle. We can keep it or sync it. 
+                        Let's hide it for now as Sidebar handles itself usually. */}
+
+                    <h2 className="text-xl font-bold text-slate-800 tracking-tight font-[Montserrat]">
+                        {title}
+                    </h2>
+                </div>
+
+                {/* Right: Actions */}
+                <div className="flex items-center gap-4 md:gap-6">
+
+                    {/* Search Bar (Hidden on mobile) */}
+                    <div className="hidden md:flex items-center bg-slate-100 rounded-full px-4 py-2 border border-transparent focus-within:border-blue-300 focus-within:ring-2 focus-within:ring-blue-100 transition-all w-64">
+                        <Search size={18} className="text-slate-400" />
+                        <input
+                            type="text"
+                            placeholder="Search..."
+                            className="bg-transparent border-none outline-none text-sm ml-2 w-full text-slate-700 placeholder:text-slate-400"
+                        />
                     </div>
 
-                    {isDropdownVisible && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded-md shadow-lg z-50">
-                            {Object.keys(users).map(
-                                (userKey) =>
-                                    userKey !== Object.keys(users).find((key) => users[key].name === selectedUser.name) && (
-                                        <button
-                                            key={userKey}
-                                            className="w-full flex items-center px-4 py-2 hover:bg-gray-200"
-                                            onClick={() => handleUserClick(userKey)}
-                                        >
-                                            <img src={users[userKey].img} alt="User" className="w-6 h-6 rounded-full mr-3" />
-                                            <div className="flex-1 text-left">
-                                                <div className="font-semibold">{users[userKey].name}</div>
-                                                <small className="text-gray-500">{users[userKey].position}</small>
-                                            </div>
-                                        </button>
-                                    )
-                            )}
+                    {/* Icons */}
+                    <div className="flex items-center gap-3">
+                        <button className="p-2 rounded-full hover:bg-slate-100 text-slate-500 hover:text-primary transition-colors relative">
+                            <Bell size={20} />
+                            <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
+                        </button>
+                    </div>
+
+                    {/* Divider */}
+                    <div className="h-6 w-px bg-slate-200"></div>
+
+                    {/* Profile */}
+                    <button className="flex items-center gap-3 pl-1 pr-2 py-1 rounded-full hover:bg-slate-100 transition-all border border-transparent hover:border-slate-200">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-semibold text-sm shadow-md shadow-blue-200">
+                            JD
                         </div>
-                    )}
+                        <div className="hidden md:block text-left">
+                            <p className="text-sm font-semibold text-slate-700 leading-none">John Doe</p>
+                            <p className="text-[10px] text-slate-500 font-medium">Administrator</p>
+                        </div>
+                        <ChevronDown size={14} className="text-slate-400" />
+                    </button>
                 </div>
-            </div> */}
+            </div>
         </header>
     );
 };

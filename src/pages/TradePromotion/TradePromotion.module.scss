@@ -1,0 +1,630 @@
+.tradePromotion {
+  :global {
+
+    [class*="logoContainer"],
+    [class*="settingButton"] {
+      display: none !important;
+    }
+
+    // Target any header (wrapper or internal) to center content
+    header,
+    [class*="header"] {
+      justify-content: center !important;
+    }
+  }
+
+  padding: 0;
+  max-width: 100%;
+  width: 100%;
+  overflow-x: hidden;
+
+  .optimize {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+
+    .optimizeDiv {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      margin: 0;
+      background: linear-gradient(135deg, #fff5f5 0%, #ffe8e6 100%);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 38, 0, 0.1);
+      box-shadow: 0 2px 8px rgba(255, 38, 0, 0.08);
+      transition: all 0.3s ease;
+
+      &:hover {
+        box-shadow: 0 4px 12px rgba(255, 38, 0, 0.12);
+        transform: translateY(-1px);
+      }
+
+      .optimizeText {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        .icon {
+          svg {
+            fill: #ff2600;
+          }
+        }
+
+        span {
+          font-size: 13px;
+          font-weight: 500;
+          line-height: 1.5;
+          color: #1b1b1c;
+        }
+      }
+
+      .optimizeNowButton {
+        button {
+          background: linear-gradient(135deg, #0A2472 0%, #081d5b 100%);
+          border-radius: 8px;
+          width: 150px;
+          height: 36px;
+          border: none;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+          transition: all 0.3s ease;
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+          }
+
+          span {
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1;
+          }
+        }
+      }
+    }
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    min-height: calc(100vh - 200px);
+  }
+
+  .topSection {
+    display: flex;
+    width: 100%;
+    margin: auto;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+    padding: 2rem;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+
+    .leftSide {
+      width: 60%;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+
+      .metricsContainer {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0; // Merge them back
+        padding: 2.5rem 0; // Increased vertical padding
+        background: #f8f9fa;
+        border-radius: 20px;
+        border: 1px solid #e9ecef;
+        align-items: center;
+        margin-bottom: 12px; // Reduced from 24px
+        box-shadow: none; // Remove per-card shadow
+
+        >div {
+          background: transparent;
+          border: none;
+          border-radius: 0;
+          padding: 0 1rem; // Reduced side padding slightly
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-right: 2px solid #e9ecef; // Restore dividers
+          transition: none;
+          overflow: hidden;
+
+          &:first-child {
+            padding-left: 1.5rem;
+          }
+
+          &:last-child {
+            border-right: none;
+            padding-right: 1.5rem;
+          }
+
+          &:hover {
+            background: transparent;
+            box-shadow: none;
+            transform: none;
+          }
+
+          // Specific overrides for CardComponent internals
+          :global {
+            [class*="CardComponent_card__"] {
+              display: flex;
+              width: 100%;
+              align-items: center;
+              justify-content: space-around; // Distribute space evenly
+              gap: 8px; // Small gap between items
+            }
+
+            img {
+              width: 36px !important; // Slightly smaller to fix overlap
+              height: 36px !important;
+              margin-right: 0 !important;
+              padding: 0;
+              background: transparent;
+              border-radius: 0;
+              box-shadow: none;
+              flex-shrink: 0;
+            }
+          }
+
+          // Target the details containers
+          >div>div {
+            flex: 1;
+            min-width: 0; // Crucial for text wrap
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-left: 4px;
+            border-left: 1px solid transparent; // Just in case
+          }
+
+          p {
+            font-size: 10px; // Very compact title
+            font-weight: 700;
+            color: #64748b;
+            white-space: normal !important; // Allow wrap
+            line-height: 1.2;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0px; // Tighter spacing
+          }
+
+          h3,
+          span,
+          [class*="CardComponent_value__"] {
+            white-space: nowrap;
+            font-size: 18px; // Readable but fit
+            font-weight: 800;
+            color: #0f172a;
+          }
+        }
+      }
+
+      .barChart {
+        height: 480px; // Significantly increased to match right side
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 16px;
+        border: 1px solid #e9ecef;
+      }
+
+      .rightSide {
+        width: 45%;
+        display: flex;
+        flex-direction: column; // Stack them vertically
+        gap: 1.5rem; // Increase gap between the two distinct rows
+
+        .section {
+          width: 100%; // Each section takes full width of the column
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          background: #f8f9fa;
+          padding: 0.75rem; // Reduced from 1.25rem
+          border-radius: 16px;
+          border: 1px solid #e9ecef;
+          min-width: 0;
+
+          // Add a subtle shadow since they are now stacked blocks
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+
+          .sectionHeadingLeast {
+            width: 100%;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid rgba(243, 28, 37, 0.1);
+
+            h4 {
+              margin: 0;
+              font-size: 14px;
+              font-weight: 700;
+              line-height: 1.4;
+              color: #f31c25;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              word-wrap: break-word; // Prevent text overflow
+            }
+          }
+
+          .sectionHeadingTop {
+            width: 100%;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid rgba(14, 193, 30, 0.1);
+
+            h4 {
+              margin: 0;
+              font-size: 14px;
+              font-weight: 700;
+              line-height: 1.4;
+              color: #0ec11e;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              word-wrap: break-word;
+            }
+          }
+
+          .columns {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); // Two columns side-by-side
+            gap: 1rem;
+            width: 100%;
+            padding: 0;
+
+            // Target the immediate children divs (the card wrappers)
+            >div {
+              padding: 0 !important;
+              width: 100%;
+              max-width: 100%;
+              height: 100%; // Ensure equal height
+            }
+
+            // Optimized TileComponent Layout & Styling
+            :global {
+              [class*="TileComponent_tile__"] {
+                background: #ffffff;
+                border: 1px solid #e2e8f0;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); // Subtle shadow
+                border-radius: 12px;
+                padding: 1.25rem;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                gap: 1.25rem;
+                transition: all 0.2s ease-in-out;
+                position: relative; // For border accent
+
+                &:hover {
+                  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                  transform: translateY(-3px);
+                  border-color: #cbd5e1;
+                }
+              }
+
+              // Top section (Icon + Title + Action)
+              [class*="TileComponent_topSection__"] {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 0;
+
+                // Logo & Name Wrapper
+                div:first-child {
+                  display: flex;
+                  align-items: center;
+                  gap: 12px;
+
+                  img {
+                    width: 40px !important; // Larger logo
+                    height: 40px !important;
+                    object-fit: contain;
+                    padding: 4px;
+                    background: #f8fafc;
+                    border-radius: 8px;
+                    border: 1px solid #f1f5f9;
+                  }
+
+                  span {
+                    font-size: 16px; // Prominent channel name
+                    font-weight: 700;
+                    color: #1e293b;
+                    line-height: 1.2;
+                  }
+                }
+
+                // "Optimize Now" Action Link
+                [class*="TileComponent_navLink__"] {
+                  display: flex;
+                  align-items: center;
+                  gap: 6px;
+                  cursor: pointer;
+                  background: #eff6ff; // Light blue pill
+                  padding: 6px 10px;
+                  border-radius: 20px;
+                  transition: background 0.2s;
+
+                  &:hover {
+                    background: #dbeafe;
+                  }
+
+                  a {
+                    font-size: 11px;
+                    font-weight: 700;
+                    color: #2563eb;
+                    text-decoration: none;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                  }
+
+                  svg {
+                    width: 10px;
+                    height: 10px;
+
+                    path {
+                      fill: #2563eb;
+                    }
+                  }
+                }
+              }
+
+              // Bottom section (Metrics Grid)
+              [class*="TileComponent_bottomSection__"] {
+                display: grid;
+                grid-template-columns: 1fr 1fr; // 2 Columns
+                gap: 16px; // Spacious gap
+                width: 100%;
+                border-top: 1px solid #f1f5f9;
+                padding-top: 1rem;
+              }
+
+              // Individual Metric Item
+              [class*="TileComponent_tileDetails__"] {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+              }
+
+              // Metric Heading
+              [class*="TileComponent_tileHeader__"] p {
+                font-size: 11px;
+                font-weight: 600;
+                color: #64748b;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+                margin: 0;
+              }
+
+              // Metric Value
+              [class*="TileComponent_tileBody__"] p {
+                font-size: 15px; // Clear, readable values
+                font-weight: 700;
+                color: #0f172a;
+                margin: 0;
+              }
+
+              // Status Colors
+              [class*="TileComponent_redText__"] {
+                color: #dc2626 !important;
+              }
+
+              [class*="TileComponent_greenText__"] {
+                color: #16a34a !important;
+              }
+
+              // Accent Borders (using pseudo-elements or matching classes)
+              [class*="greenBorder"] {
+                border-left: 4px solid #16a34a !important;
+              }
+
+              [class*="redBorder"] {
+                border-left: 4px solid #dc2626 !important;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Close topSection
+
+  .rightBorder {
+    border: none;
+  }
+
+  .bottomSection {
+    display: flex;
+    flex-direction: row; // Explicitly row
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 1.5rem 0; // Removed side padding from container
+    background: transparent; // Remove white bg from container, let children have it
+    border-radius: 0;
+    box-shadow: none;
+
+    .productSection {
+      flex: 1; // Allow flex to handle width
+      width: auto; // Override fixed width
+      min-width: 0; // Prevent overflow
+
+      .section {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        background: white; // restored card style
+        padding: 1.5rem;
+        border-radius: 16px;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        width: 100%;
+
+        .sectionHeading {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+          padding: 0 0 1rem 0;
+          border-bottom: 2px solid #f5f5f5;
+          margin-bottom: 1rem;
+
+          h4 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.5;
+            text-align: left;
+            color: #1b1b1c;
+          }
+
+          .additionalText {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 1.5;
+            color: #f31c25;
+          }
+
+          .additionalTextForGood {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 1.5;
+            color: #0ec11e;
+          }
+
+          .productFilters {
+            display: flex;
+            align-items: center;
+            padding: 0;
+            gap: 8px;
+
+            .sortDropdown div {
+              background-color: #f8f9fa;
+              height: 36px;
+              align-items: center;
+              border-radius: 8px;
+              border: 1px solid #e9ecef;
+              transition: all 0.2s ease;
+
+              &:hover {
+                border-color: #dee2e6;
+                background-color: #fff;
+              }
+            }
+
+            input {
+              padding: 8px 12px;
+              font-size: 13px;
+              border: 1px solid #e9ecef;
+              border-radius: 8px;
+              width: auto;
+              background-color: #f8f9fa;
+              transition: all 0.2s ease;
+
+              &:focus {
+                outline: none;
+                border-color: #2249FF;
+                background-color: #fff;
+                box-shadow: 0 0 0 3px rgba(34, 73, 255, 0.1);
+              }
+
+              &::placeholder {
+                color: #adb5bd;
+              }
+            }
+          }
+        }
+
+        .rows {
+          display: flex;
+          gap: 12px;
+          width: 100%;
+          flex-direction: column;
+          padding: 0;
+          max-height: 320px;
+          overflow-y: auto;
+          overflow-x: hidden;
+
+          /* Custom scrollbar */
+          &::-webkit-scrollbar {
+            width: 6px;
+          }
+
+          &::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+          }
+
+          &::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 10px;
+
+            &:hover {
+              background: #a0aec0;
+            }
+          }
+
+          .emptyDiv {
+            width: 20%;
+          }
+        }
+
+        .productCardDetails {
+          display: flex;
+          width: 60%;
+        }
+      }
+    }
+  }
+}
+
+.emptyDiv {
+  width: 20%;
+}
+
+.mid {
+  width: 60%;
+  display: flex;
+  flex-direction: row !important;
+}
+
+.outer {
+  display: flex;
+  flex-direction: row !important;
+
+}
+
+.cardLabels {
+  padding: 10px;
+  padding-bottom: 0;
+  margin-bottom: -14px;
+
+  .div1,
+  .div2 {
+    width: 20%;
+  }
+
+  .divmid {
+    width: 60%;
+    font-size: 12px;
+
+    p {
+      margin: 0 !important;
+    }
+
+    .filtered {
+      padding-left: 2px;
+    }
+  }
+}
+
+.progress_text {
+  color: blue;
+}
