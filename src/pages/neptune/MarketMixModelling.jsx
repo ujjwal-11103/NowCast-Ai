@@ -1,1106 +1,1062 @@
-import React, { useEffect, useState } from "react";
-import { ArrowDownRight, ArrowUpRight, Calendar, DollarSign, Download, LineChart, Target, Play } from "lucide-react";
-import NavBar from "@/components/navbar/NavBar";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import axios from "axios";
-
+import React, { useState, useRef, useEffect } from "react";
+import ReactDOM from "react-dom";
 import Plot from "react-plotly.js";
-import "./plotly-custom.css";
+import { Select } from "antd";
+import { ArrowDownRight, Download, Play, ArrowRight, ArrowUpRight, DollarSign, Settings, Target } from "lucide-react";
+import axios from "axios";
+import "./style.css";
 
+function MyVerticallyCenteredModal(props) {
+  const { sendDataToParent, show, onHide } = props;
+  const [salesTargetChild, setSalesTargetChild] = useState(0);
 
-const MarketMixModelling = () => {
+  const handleSubmit = () => {
+    sendDataToParent(salesTargetChild);
+  };
 
+  if (!show) return null;
 
-    const [selectedFeature, setSelectedFeature] = useState([]);
-    const [open, setOpen] = useState(false);
-    const [modalShow, setModalShow] = React.useState(false);
-    const [runSimulator, setRunSimulator] = useState(false);
-    const [optimizeAllocate, setOptimizeAllocate] = useState(false);
+  return ReactDOM.createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 font-sans">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-[2px] transition-opacity cursor-pointer"
+        onClick={onHide}
+      />
 
-    const [category, setCategory] = useState("Camera");
-    const [channel, setChannel] = useState({});
+      {/* Modal Content */}
+      <div className="relative bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden w-full max-w-lg z-10 animate-in fade-in zoom-in duration-200">
+        <div className="p-6 font-[Montserrat]">
+          <h4 className="text-base font-semibold text-slate-900 mb-4">Set A Sales Target</h4>
 
-    const [allocatedOptimal, setAllocatedOptimal] = useState(false);
-    const [allocatedSimulated, setAllocatedSimulated] = useState(false);
+          <div className="flex items-center bg-white border border-slate-300 rounded-md px-3 py-2 mb-6 focus-within:border-blue-400 focus-within:ring-1 focus-within:ring-blue-400 transition-all">
+            <span className="text-base font-medium text-slate-400 mr-1">$</span>
+            <input
+              type="number"
+              placeholder="in Million"
+              className="flex-1 bg-transparent border-none outline-none text-base font-normal text-slate-700 placeholder:text-slate-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              onChange={(e) => setSalesTargetChild(e.target.value)}
+              autoFocus
+            />
+          </div>
 
-    const [simulate, setSimulate] = useState({
-        TV: 0,
-        Digital: 0,
-        Sponsorship: 0,
-        product_mrp: 0,
-    });
+          <div className="flex justify-end">
+            <button
+              onClick={() => {
+                handleSubmit();
+                onHide();
+              }}
+              className="px-6 py-1.5 bg-[#FED71F] hover:bg-[#FCD34D] text-slate-900 font-semibold rounded-md transition-all shadow-sm hover:shadow active:scale-95 text-sm"
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
 
-    const [simulateTV, setSimulateTV] = useState(0);
-    const [simulateDigital, setSimulateDigital] = useState(0);
-    const [simulateSponsorship, setSimulateSponsorship] = useState(0);
-    const [simulateproduct_mrp, setSimulateproduct_mrp] = useState(0);
+const Neptune = () => {
+  const [selectedFeature, setSelectedFeature] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [modalShow, setModalShow] = React.useState(false);
+  const [runSimulator, setRunSimulator] = useState(false);
+  const [optimizeAllocate, setOptimizeAllocate] = useState(false);
 
+  const [category, setCategory] = useState("Camera");
+  const [channel, setChannel] = useState({
+    TV: { allocated: 0 },
+    Digital: { allocated: 0 },
+    Sponsorship: { allocated: 0 },
+  });
 
-    // for second stage
-    const [salesTarget, setSalesTarget] = useState(0);
-    console.log("salesTarget:::", salesTarget);
+  const [allocatedOptimal, setAllocatedOptimal] = useState(false);
+  const [allocatedSimulated, setAllocatedSimulated] = useState(false);
 
-    // get the data from the API using axios and store it in the state and this should be async
-    const [allocatedBudgetData, setAllocatedBudgetData] = useState([]);
-    const [loadingABD, setLoadingABD] = useState(true);
-    const [errorABD, setErrorABD] = useState(null);
+  const [simulate, setSimulate] = useState({
+    TV: 0,
+    Digital: 0,
+    Sponsorship: 0,
+    product_mrp: 0,
+  });
 
-    // header data
+  const [simulateTV, setSimulateTV] = useState(0);
+  const [simulateDigital, setSimulateDigital] = useState(0);
+  const [simulateSponsorship, setSimulateSponsorship] = useState(0);
+  const [simulateproduct_mrp, setSimulateproduct_mrp] = useState(0);
 
-    // Mock Data Constants
-    const MOCK_ALLOCATED_BUDGET = {
-        budget: {
-            individual: [
-                ["TV", 150],
-                ["Digital", 120],
-                ["Sponsorship", 80]
-            ]
-        },
-        sales: "453Mn",
-        "Base ROMI": 2.13
+  // for second stage
+  const [salesTarget, setSalesTarget] = useState(0);
+  console.log("salesTarget:::", salesTarget);
+
+  // get the data from the API using axios and store it in the state and this should be async
+  const [allocatedBudgetData, setAllocatedBudgetData] = useState([]);
+  const [loadingABD, setLoadingABD] = useState(true);
+  const [errorABD, setErrorABD] = useState(null);
+
+  // header data
+
+  useEffect(() => {
+    const fetchDataABD = async () => {
+      try {
+        const response = await axios.post(
+          "http://13.71.126.202:8082/neptune/allocated-budget/",
+          {
+            category: category,
+          }
+        );
+        setAllocatedBudgetData(response.data);
+      } catch (error) {
+        setErrorABD(error);
+      }
+      setLoadingABD(false);
     };
+    fetchDataABD();
+  }, [category]);
 
-    const MOCK_SIMULATED_DATA = {
-        forecast: [120, 130, 140], // Example forecast values
-        romi: 2.25
-    };
+  // const [chatbot, setChatbot] = useState(0);
+  // useEffect(() => {
+  //   const fetchDataABD = async () => {
+  //     try {
+  //       const response = await axios.post("http://13.71.126.202:8181/chatbot", {
+  //         user: "How has my company been performing in the last quarter?",
+  //       });
+  //       setChatbot(response.data);
+  //     } catch (error) {
+  //       setErrorABD(error);
+  //     }
+  //     setLoadingABD(false);
+  //   };
+  //   fetchDataABD();
+  // }, []);
 
-    const MOCK_BAR_GRAPH_DATA = {
-        fig_data: [
-            {
-                x: ["TV", "Digital", "Sponsorship"],
-                y: [150, 120, 80],
-                type: "bar",
-                name: "Current Allocation",
-                marker: { color: "#6366f1" }
+  // console.log("chatbot", chatbot);
+
+  // const val = fetch('http://13.71.126.202:8081/chatbot/', {
+  //   method: 'POST',
+  //   headers: {
+  //       'Content-Type': 'application/json'
+  //   },
+  //   body: JSON.stringify({
+  //       user: "How has my company been performing in the last quarter?"
+  //   })
+  // })
+  // .then(response => response.json())
+  // .then(data => console.log(data))
+  // .catch(error => console.error('Error:', error));
+
+  // console.log("val", val);
+
+  // simulated Data
+  const [simulatedData, setSimulatedData] = useState({});
+  const [salesSimulatedData, setSalesSimulatedData] = useState(0);
+  console.log(
+    "simulatedData::::+++++++++++++++++",
+    "Total",
+    salesSimulatedData
+  );
+  const [ROMISimulatedData, setROMISimulatedData] = useState(0);
+
+  useEffect(() => {
+    const fetchSimulateData = async () => {
+      try {
+        const response = await axios.post(
+          "http://13.71.126.202:8082/neptune/simulate/",
+          {
+            category: category,
+            cols_to_update: {
+              TV: parseInt(simulate.TV),
+              Digital: parseInt(simulate.Digital),
+              Sponsorship: parseInt(simulate.Sponsorship),
+              product_mrp: parseInt(simulate.product_mrp),
             },
-            {
-                x: ["TV", "Digital", "Sponsorship"],
-                y: [170, 140, 70],
-                type: "bar",
-                name: "Optimal Allocation",
-                marker: { color: "#10b981" }
-            }
-        ],
-        optimal_break_down: {
-            TV: 170,
-            Digital: 140,
-            Sponsorship: 70
-        },
-        optimal_budget: 380000000
+          }
+        );
+        setSimulatedData(response.data);
+      } catch (error) {
+        setErrorABD(error);
+      }
+      setLoadingABD(false);
     };
+    fetchSimulateData();
+  }, [category, simulate]);
 
-    const MOCK_CURVE_GRAPH_DATA = {
-        data: [
-            {
-                x: [100, 200, 300, 400, 500],
-                y: [10, 25, 45, 60, 70],
-                type: 'scatter',
-                mode: 'lines',
-                name: 'TV Response',
-                line: { color: '#8b5cf6', width: 3 }
+
+
+
+  // 1. Bar graph data
+  const [barGraphData, setBarGraphData] = useState([]);
+  const [barGraphOptimalBudget, setBarGraphOptimalBudget] = useState(["--"]);
+  const [optimalROMI, setOptimalROMI] = useState(["--"]);
+  console.log("barGraphOptimalBudget", barGraphOptimalBudget);
+  useEffect(() => {
+    const fetchBarGraphData = async () => {
+      try {
+        const response = await axios.post(
+          "http://13.71.126.202:8082/neptune/optimal-budget-allocation/",
+          {
+            category: category,
+            optimal: allocatedOptimal,
+            simulated: allocatedSimulated ? simulate : false,
+            sales_target: +salesTarget * 1e6,
+          }
+        );
+        setBarGraphData(response.data);
+      } catch (error) {
+        setErrorABD(error);
+      }
+      setLoadingABD(false);
+    };
+    fetchBarGraphData();
+  }, [salesTarget, simulate, category, allocatedOptimal]);
+
+  console.log("barGraphData", barGraphData);
+
+  // 2. curve graph
+  const [curveGraphData, setCurveGraphData] = useState([]);
+  // get the data for curveGraphData from the API using axios as a post method and store it in the state and this should be async ans it take request body
+
+  useEffect(() => {
+    const newChannel = {
+      ...channel,
+      TV: {
+        allocated:
+          (allocatedBudgetData?.budget?.individual?.find(
+            (item) => item[0] === "TV"
+          )?.[1] || 0) * 1e6,
+        ...(simulate.TV !== 0 && { simulated: simulate.TV }),
+        optimal: barGraphData?.optimal_break_down?.TV,
+      },
+      Digital: {
+        allocated:
+          (allocatedBudgetData?.budget?.individual?.find(
+            (item) => item[0] === "Digital"
+          )?.[1] || 0) * 1e6,
+        ...(simulate.Digital !== 0 && { simulated: simulate.Digital }),
+        optimal: barGraphData?.optimal_break_down?.Digital,
+      },
+      Sponsorship: {
+        allocated:
+          (allocatedBudgetData?.budget?.individual?.find(
+            (item) => item[0] === "Sponsorship"
+          )?.[1] || 0) * 1e6,
+        ...(simulate.Sponsorship !== 0 && { simulated: simulate.Sponsorship }),
+        optimal: barGraphData?.optimal_break_down?.Sponsorship,
+      },
+    };
+    setChannel(newChannel);
+  }, [
+    simulate.TV,
+    simulate.Digital,
+    simulate.Sponsorship,
+    allocatedBudgetData?.budget?.individual,
+    barGraphData,
+  ]);
+
+  useEffect(() => {
+    const fetchDataCurveGraph = async () => {
+      try {
+        const response = await axios.post(
+          "http://13.71.126.202:8082/neptune/response-curve/",
+          {
+            category,
+            channel,
+          }
+        );
+        setCurveGraphData(response.data);
+      } catch (error) {
+        setErrorABD(error);
+      }
+      setLoadingABD(false);
+    };
+    fetchDataCurveGraph();
+  }, [simulate, channel]);
+
+  console.log("curveGraphData", curveGraphData);
+
+  // 3. scatter graph
+  const [forecastGraphData, setForecastGraphData] = useState([]);
+  useEffect(() => {
+    const fetchDataForecastPlot = async () => {
+      try {
+        const response = await axios.post(
+          "http://13.71.126.202:8082//neptune/forecast-plot/",
+          {
+            category: category,
+            ci: 0.95,
+            optimal: allocatedOptimal,
+            simulated: allocatedSimulated,
+            cols_to_update: {
+              TV: parseInt(simulate.TV),
+              Digital: parseInt(simulate.Digital),
+              Sponsorship: parseInt(simulate.Sponsorship),
+              product_mrp: parseInt(simulate.product_mrp),
             },
-            {
-                x: [100, 200, 300, 400, 500],
-                y: [15, 35, 50, 65, 75],
-                type: 'scatter',
-                mode: 'lines',
-                name: 'Digital Response',
-                line: { color: '#10b981', width: 3 }
-            }
-        ]
+          }
+        );
+        setForecastGraphData(response.data);
+      } catch (error) {
+        setErrorABD(error);
+      }
+      setLoadingABD(false);
     };
+    fetchDataForecastPlot();
+  }, [simulate, category, allocatedOptimal, allocatedSimulated]);
 
-    const MOCK_FORECAST_GRAPH_DATA = {
-        data: [
-            {
-                x: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-                y: [40, 45, 30, 50, 60, 55, 70, 65, 80, 85, 90, 100],
-                type: 'scatter',
-                mode: 'lines+markers',
-                name: 'Actual Sales',
-                line: { color: '#3b82f6', width: 3 },
-                marker: { size: 6 }
-            },
-            {
-                x: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-                y: [35, 40, 35, 45, 55, 60, 65, 70, 75, 80, 85, 95],
-                type: 'scatter',
-                mode: 'lines',
-                name: 'Baseline Forecast',
-                line: { color: '#f97316', width: 3, dash: 'dot' }
-            }
-        ]
+  console.log("forecastGraphData", forecastGraphData);
+
+  // if (loadingABD) return "Loading...";
+  // if (errorABD) return "Error!";
+  // console.log(allocatedBudgetData.sales);
+
+  // const getSalesBaseline = (sales) => {
+  //   if (sales) {
+  //     const match = sales.match(/\d+/);
+  //     return match ? match[0] : "0";
+  //   }
+  //   return "0";
+  // };
+
+  const baseROMI = allocatedBudgetData["Base ROMI"];
+
+  const handleCollapse = () => {
+    if (runSimulator) {
+      setOpen(!open);
+    }
+  };
+
+
+
+
+  // 4. Bar graph data
+
+
+  const [sosGraphData, setSosGraphData] = useState([]);
+
+  useEffect(() => {
+    const fetchDataSOE = async () => {
+      try {
+        const response = await axios.get(
+          "http://13.71.126.202:8082/neptune/sos-soe/"
+        );
+        setSosGraphData(response.data);
+      } catch (error) {
+        setErrorABD(error);
+      }
+      setLoadingABD(false);
     };
+    fetchDataSOE();
+  }, [simulate, channel]);
 
-    const MOCK_SOS_GRAPH_DATA = [
-        {
-            x: ["TV", "Digital", "Sponsorship"],
-            y: [40, 35, 25],
-            type: "bar",
-            name: "Share of Spends",
-            marker: { color: "#64748b" }
-        },
-        {
-            x: ["TV", "Digital", "Sponsorship"],
-            y: [45, 40, 15],
-            type: "bar",
-            name: "Share of Effects",
-            marker: { color: "#f97316" }
-        }
-    ];
+  console.log("sosGraphData", sosGraphData);
 
 
-    // State definitions restored
-    const [simulatedData, setSimulatedData] = useState({});
-    const [salesSimulatedData, setSalesSimulatedData] = useState(0);
-    const [ROMISimulatedData, setROMISimulatedData] = useState(0);
-
-    const [barGraphData, setBarGraphData] = useState([]);
-    const [barGraphOptimalBudget, setBarGraphOptimalBudget] = useState(["--"]);
-    const [optimalROMI, setOptimalROMI] = useState(["--"]);
-
-    const [curveGraphData, setCurveGraphData] = useState([]);
-    const [forecastGraphData, setForecastGraphData] = useState([]);
-    const [sosGraphData, setSosGraphData] = useState([]);
-
-    const [showAlert, setShowAlert] = useState(true);
-
-    // Use Effects with Mock Data for extensive testing
-    // header data
-    useEffect(() => {
-        // Mocking API call for Allocated Budget
-        setAllocatedBudgetData(MOCK_ALLOCATED_BUDGET);
-        setLoadingABD(false);
-        setErrorABD(null); // Clear errors for mock mode
-    }, [category]);
-
-    useEffect(() => {
-        setTimeout(() => {
-            setShowAlert(false);
-        }, 10000);
-    }, []);
 
 
-    // simulated Data
-    useEffect(() => {
-        if (runSimulator) { // Only update if simulator is "running" or just set default
-            setSimulatedData(MOCK_SIMULATED_DATA);
-        }
-    }, [category, simulate, runSimulator]);
-
-    // 1. Bar graph data
-    useEffect(() => {
-        // Mocking API call for Bar Graph
-        setBarGraphData(MOCK_BAR_GRAPH_DATA);
-    }, [salesTarget, simulate, category, allocatedOptimal]);
-
-    // 2. curve graph
-    useEffect(() => {
-        const newChannel = {
-            ...channel,
-            Digital: {
-                allocated:
-                    MOCK_ALLOCATED_BUDGET.budget.individual.find(
-                        (item) => item[0] === "Digital"
-                    )?.[1] || 0,
-                ...(simulate.Digital !== 0 && { simulated: simulate.Digital }),
-                optimal: MOCK_BAR_GRAPH_DATA.optimal_break_down?.Digital,
-            },
-        };
-        // Avoid infinite loop by checking JSON string equality or just setting it once if possible
-        // For mock purposes, simplified logic:
-        if (JSON.stringify(channel) !== JSON.stringify(newChannel)) {
-            setChannel(newChannel);
-        }
-
-    }, [simulate.Digital]); // Reduced dependencies for mock stability
-
-    useEffect(() => {
-        // Mocking API call for Curve Graph
-        setCurveGraphData(MOCK_CURVE_GRAPH_DATA);
-    }, [simulate, channel]);
-
-    // 3. scatter graph
-    useEffect(() => {
-        // Mocking API call for Forecast Plot
-        setForecastGraphData(MOCK_FORECAST_GRAPH_DATA);
-    }, [simulate, category, allocatedOptimal, allocatedSimulated]);
 
 
-    // 4. Bar graph data (SOS vs SOE)
-    useEffect(() => {
-        // Mocking API call for SOS vs SOE
-        setSosGraphData(MOCK_SOS_GRAPH_DATA);
-    }, [simulate, channel]);
+  const [showAlert, setShowAlert] = useState(false);
+  useEffect(() => {
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 10000);
+  }, []);
+
+  const handleAlert = () => {
+    setShowAlert(false);
+  };
 
 
-    // Channel update logic for interaction
-    useEffect(() => {
-        const newChannel = {
-            ...channel,
-        };
-        if (MOCK_BAR_GRAPH_DATA.optimal_break_down?.TV && newChannel?.TV) {
-            newChannel.TV.optimal = MOCK_BAR_GRAPH_DATA.optimal_break_down.TV;
-        }
-        if (MOCK_BAR_GRAPH_DATA.optimal_break_down?.Digital && newChannel?.Digital) {
-            newChannel.Digital.optimal = MOCK_BAR_GRAPH_DATA.optimal_break_down.Digital;
-        }
-        if (MOCK_BAR_GRAPH_DATA.optimal_break_down?.Sponsorship && newChannel?.Sponsorship) {
-            newChannel.Sponsorship.optimal = MOCK_BAR_GRAPH_DATA.optimal_break_down.Sponsorship;
-        }
-        // Only set if changed
-        if (JSON.stringify(channel) !== JSON.stringify(newChannel)) {
-            setChannel(newChannel);
-        }
-    }, [channel?.Digital, channel?.Sponsorship, channel?.TV]); // Removed MOCK_BAR_GRAPH_DATA dependency loop
-
-    const buttonStyles = {
-        fontSize: "12px",
-        fontWeight: "600",
-        padding: "10px 15px", // Uniform padding
-        display: "flex",
-        alignItems: "center",
-        gap: "8px",
+  useEffect(() => {
+    const newChannel = {
+      ...channel,
     };
+    // console.log("barGraphData.optimal_break_down", barGraphData.optimal_break_down);
+    if (barGraphData.optimal_break_down?.TV && newChannel?.TV) {
+      newChannel.TV.optimal = barGraphData.optimal_break_down.TV;
+    }
+    if (barGraphData.optimal_break_down?.Digital && newChannel?.Digital) {
+      newChannel.Digital.optimal = barGraphData.optimal_break_down.Digital;
+    }
+    if (barGraphData.optimal_break_down?.Sponsorship && newChannel?.Sponsorship) {
+      newChannel.Sponsorship.optimal = barGraphData.optimal_break_down.Sponsorship;
+    }
+    setChannel(newChannel);
+  }, [barGraphData.optimal_break_down, channel?.Digital, channel?.Sponsorship, channel?.TV]);
+
+  const buttonStyles = {
+    fontSize: "12px",
+    fontWeight: "600",
+    padding: "10px 15px", // Uniform padding
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+  };
 
 
-    // plot bar width increment purpose
-    const updatedGraphData = Array.isArray(barGraphData?.fig_data)
-        ? barGraphData.fig_data.map((item) => ({
-            ...item,
-            width: 0.4, // Adjust this value to increase bar width
-        }))
-        : [];
+  // plot bar width increment purpose
+  const updatedGraphData = Array.isArray(barGraphData?.fig_data)
+    ? barGraphData.fig_data.map((item) => ({
+      ...item,
+      width: 0.4, // Adjust this value to increase bar width
+    }))
+    : [];
 
-    const updatedSosGraphData = Array.isArray(sosGraphData) ? sosGraphData.map((item) => ({
-        ...item,
-        width: 0.4, // Increased bar width
-    })) : [];
-
-    const handleSubmit = () => {
-        console.log("Sales Target:", salesTarget);
-        setOpen(false);
-    };
-
-    const handleAlert = () => {
-        setShowAlert(false);
-    };
+  const updatedSosGraphData = Array.isArray(sosGraphData) ? sosGraphData.map((item) => ({
+    ...item,
+    width: 0.4, // Increased bar width
+  })) : [];
 
 
-    return (
-        <div className="flex min-h-screen flex-col bg-slate-50 font-sans relative overflow-x-hidden text-slate-900">
-            {/* Vibrant Light Weight Background Decoration */}
-            <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-gradient-to-br from-indigo-100/40 to-blue-100/40 rounded-full blur-[120px]" />
-                <div className="absolute top-[10%] right-[-10%] w-[50%] h-[50%] bg-gradient-to-bl from-rose-100/30 to-amber-100/30 rounded-full blur-[100px]" />
-                <div className="absolute bottom-[-10%] left-[20%] w-[40%] h-[40%] bg-teal-100/30 rounded-full blur-[100px]" />
+  // ---
+
+
+  return (
+    <div className="flex-1 bg-slate-50 relative min-h-screen p-8 font-sans overflow-x-hidden text-slate-900">
+      {/* Background Blobs - CEO Dashboard Theme */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-gradient-to-br from-indigo-100/40 to-blue-100/40 rounded-full blur-[120px]" />
+        <div className="absolute top-[10%] right-[-10%] w-[50%] h-[50%] bg-gradient-to-bl from-rose-100/30 to-amber-100/30 rounded-full blur-[100px]" />
+        <div className="absolute bottom-[-10%] left-[20%] w-[40%] h-[40%] bg-teal-100/30 rounded-full blur-[100px]" />
+      </div>
+
+      <div className="max-w-[1700px] mx-auto space-y-8 relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both">
+
+        {/* Header */}
+        <div className="flex justify-between items-end">
+          <div>
+            <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-2 font-[Montserrat]">Market Mix Modeling</h1>
+            <p className="text-slate-500 font-medium text-lg font-[Montserrat]">Analyze and optimize marketing strategies.</p>
+          </div>
+        </div>
+
+        {/* Alert Section */}
+        {showAlert && (
+          <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-6 rounded-2xl flex justify-between items-center shadow-xl shadow-orange-500/20 border border-orange-400/50 animate-in slide-in-from-top-4 duration-500 w-full relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+
+            <div className="flex items-start gap-5 relative z-10">
+              <div className="bg-white/20 p-3 rounded-xl backdrop-blur-md shadow-inner border border-white/20">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white drop-shadow-sm">
+                  <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#FED71F" stroke="#B45309" strokeWidth="1.5" />
+                  <path d="M12 8V13" stroke="#92400E" strokeWidth="2" strokeLinecap="round" />
+                  <path d="M12 16H12.01" stroke="#92400E" strokeWidth="3" strokeLinecap="round" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="font-bold text-lg mb-1 tracking-tight">Sales Alert</h4>
+                <p className="text-orange-50 font-medium opacity-90 text-sm leading-relaxed">
+                  Major drop in Camera sales with lower forecasts than planned.
+                  <span className="block font-bold mt-1 text-white">Optimize now to get better results.</span>
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={handleAlert}
+              className="bg-white/20 hover:bg-white/30 text-white p-2.5 rounded-xl transition-all duration-300 hover:scale-105 backdrop-blur-sm border border-white/10 relative z-10"
+            >
+              <span className="text-xl font-bold leading-none">&times;</span>
+            </button>
+          </div>
+        )}
+
+
+
+        {/* Controls Section */}
+        <div className="bg-white/60 backdrop-blur-md p-6 rounded-3xl shadow-sm border border-slate-200/50">
+          <div className="flex flex-col gap-6">
+
+            {/* Top Controls: Category & Buttons */}
+            <div className="flex flex-wrap justify-between items-center gap-4">
+              <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200">
+                <label htmlFor="dropdown" className="font-semibold text-slate-700 text-sm">Product Category:</label>
+                <Select
+                  value={category}
+                  onChange={(value) => setCategory(value)}
+                  placeholder="Select a category"
+                  style={{ minWidth: 160 }}
+                  bordered={false}
+                  className="font-medium"
+                >
+                  <Select.Option value="Camera">Camera</Select.Option>
+                  <Select.Option value="CameraAccessory">Camera Accessory</Select.Option>
+                </Select>
+              </div>
+
+              <MyVerticallyCenteredModal
+                show={modalShow}
+                onHide={() => setModalShow(false)}
+                sendDataToParent={(data) => {
+                  setSalesTarget(data);
+                  setBarGraphOptimalBudget(barGraphData.optimal_budget);
+                  setOptimalROMI(salesTarget / (barGraphData.optimal_budget / 1000000));
+                  setAllocatedOptimal(true);
+                }}
+              />
+
+              <div className="flex items-center gap-3">
+                {/* Sales Target Button */}
+                <button
+                  onClick={() => setModalShow(true)}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-xl transition-all shadow-md shadow-blue-600/20 active:scale-95"
+                >
+                  <Target size={16} />
+                  <span>Optimize For Sales Target</span>
+                </button>
+
+                {!optimizeAllocate ? (
+                  <button
+                    onClick={() => setOptimizeAllocate(true)}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-semibold text-sm rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95"
+                  >
+                    <Settings size={16} />
+                    <span>Optimize Budget</span>
+                  </button>
+                ) : !runSimulator ? (
+                  <button
+                    onClick={() => {
+                      setOpen(!open);
+                      setRunSimulator(true);
+                    }}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm rounded-xl transition-all shadow-md shadow-orange-500/20 active:scale-95"
+                  >
+                    <Play size={16} fill="white" />
+                    <span>Run Simulator</span>
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-3 bg-orange-50 px-4 py-2 rounded-xl border border-orange-100">
+                    <span className="flex items-center gap-2 text-orange-600 font-bold text-sm">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                      Simulator On
+                    </span>
+                    <button
+                      onClick={() => {
+                        setOpen(!open);
+                        setRunSimulator(false);
+                        setSimulate({ TV: 0, Digital: 0, Sponsorship: 0, product_mrp: 0 });
+                      }}
+                      className="flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-slate-800 bg-white px-2 py-1 rounded-lg border border-slate-200 transition-colors ml-2 shadow-sm"
+                    >
+                      <div className="w-2 h-2 bg-slate-400 rounded-sm"></div>
+                      Stop
+                    </button>
+                  </div>
+                )}
+
+                <button className="flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-semibold text-sm rounded-xl transition-all shadow-sm active:scale-95">
+                  <Download size={16} />
+                  <span>Export</span>
+                </button>
+              </div>
             </div>
 
-            <main className="flex-1 p-8 relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both max-w-[1600px] mx-auto w-full">
-
-                {errorABD && (
-                    <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg z-10 relative">
-                        <div className="flex items-center">
-                            <div className="flex-shrink-0">
-                                <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                                </svg>
-                            </div>
-                            <div className="ml-3">
-                                <p className="text-sm text-red-700">
-                                    <span className="font-bold">Error:</span> Unable to fetch data. Please check your network connection or try again later.
-                                    <br />
-                                    <span className="text-xs text-red-500 font-mono mt-1 block">{errorABD.message}</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Header */}
-                <div className="flex justify-between items-end mb-8">
-                    <div>
-                        <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Market Mix Modeling</h1>
-                        <p className="text-slate-500 font-medium text-lg">Optimize your marketing spend for maximum ROI.</p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <div className="text-sm font-medium text-slate-500 bg-white/50 px-3 py-1 rounded-full border border-slate-200/50 backdrop-blur-sm">
-                            Last updated: Just now
-                        </div>
-                    </div>
+            {/* Optimization Active Banner */}
+            {(optimizeAllocate || salesTarget) && (
+              <div className="flex justify-between items-center bg-indigo-50 px-6 py-3 rounded-xl border border-indigo-100 animate-in fade-in slide-in-from-top-2">
+                <div className="text-indigo-900 font-bold text-sm flex items-center gap-2">
+                  <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
+                  You are now viewing the Optimized Budget
                 </div>
+                <button
+                  onClick={() => {
+                    setOptimizeAllocate(false);
+                    handleCollapse();
+                    setSalesTarget(0);
+                    setOptimalROMI("--");
+                    setAllocatedOptimal(false);
+                    setAllocatedSimulated(false);
+                  }}
+                  className="flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-semibold text-xs py-1 px-3 rounded-lg hover:bg-indigo-100 transition-colors"
+                >
+                  <ArrowDownRight size={14} />
+                  Back to baseline view
+                </button>
+              </div>
+            )}
 
-                {/* Alert */}
-                {showAlert && (
-                    <div className="bg-amber-50/80 backdrop-blur-sm border border-amber-200/50 text-amber-900 px-6 py-4 flex justify-between items-start md:items-center mb-8 rounded-2xl shadow-sm animate-in fade-in slide-in-from-top-2">
-                        <div className="flex items-start md:items-center gap-4">
-                            <div className="bg-amber-100 p-2 rounded-full flex-shrink-0 text-amber-600">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                                    <line x1="12" y1="9" x2="12" y2="13"></line>
-                                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                                </svg>
-                            </div>
-                            <div>
-                                <h4 className="font-bold text-sm text-amber-950">Optimization Recommendation</h4>
-                                <p className="text-sm opacity-90 font-medium">
-                                    Major drop in Camera sales detected. Optimization is recommended to recover forecast targets.
-                                </p>
-                            </div>
-                        </div>
-                        <button
-                            onClick={handleAlert}
-                            className="text-amber-700 hover:text-amber-900 transition-colors bg-amber-100/50 hover:bg-amber-200/50 p-2 rounded-xl"
-                        >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
+            {/* Simulator Inputs (Collapse) */}
+            {open && (
+              <div id="example-collapse-text" className="bg-slate-50 p-6 rounded-2xl border border-slate-200/60 mt-2 animate-in slide-in-from-top-4 fade-in duration-300">
+                <div className="flex items-center gap-6 flex-wrap">
+                  <div className="font-bold text-slate-700 text-sm whitespace-nowrap">
+                    Specify Budget For Different Channels:
+                  </div>
+                  {/* Inputs */}
+                  {/* TV Input */}
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">TV</label>
+                    <div className="relative group">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold group-focus-within:text-orange-500 transition-colors">$</span>
+                      <input
+                        type="text"
+                        value={simulateTV || ''}
+                        className="w-32 pl-7 pr-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all shadow-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        onChange={(e) => setSimulateTV(e.target.value)}
+                      />
                     </div>
-                )}
+                  </div>
 
-                {/* Dialogue */}
-                <Dialog open={open} onOpenChange={setOpen}>
-
-                    <DialogContent className="font-[Montserrat] text-[16px]">
-                        <DialogHeader>
-                            <DialogTitle className="text-lg font-semibold">Set A Sales Target</DialogTitle>
-                        </DialogHeader>
-
-                        <div className="flex items-center space-x-2 bg-gray-200 rounded-md p-2 my-3">
-                            <span className="text-xl font-medium">$</span>
-                            <Input
-                                placeholder="in Million"
-                                className="bg-gray-100 text-xl"
-                                onChange={(e) => setSalesTarget(e.target.value)}
-                            />
-                        </div>
-
-                        <div className="text-right">
-                            <Button
-                                className="bg-[#FED71F] hover:bg-[#e6c40f] text-black text-sm font-normal px-6"
-                                onClick={handleSubmit}
-                            >
-                                Continue
-                            </Button>
-                        </div>
-                    </DialogContent>
-                </Dialog>
-
-                {/* Action Bar */}
-                <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-white/60 backdrop-blur-sm p-4 rounded-2xl border border-white/50 shadow-sm">
-                    <div className="flex items-center gap-3">
-                        <div className="flex flex-col gap-1">
-                            <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">Product Category</span>
-                            <Select defaultValue="camera">
-                                <SelectTrigger className="w-[180px] border-slate-200/60 bg-white/50 shadow-sm focus:ring-0 rounded-lg">
-                                    <SelectValue placeholder="Select category" />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-xl border-slate-100 shadow-lg">
-                                    <SelectItem value="camera">Camera</SelectItem>
-                                    <SelectItem value="smartphone">Smartphone</SelectItem>
-                                    <SelectItem value="laptop">Laptop</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
+                  {/* Digital Input */}
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Digital</label>
+                    <div className="relative group">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold group-focus-within:text-orange-500 transition-colors">$</span>
+                      <input
+                        type="text"
+                        value={simulateDigital || ''}
+                        className="w-32 pl-7 pr-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all shadow-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        onChange={(e) => setSimulateDigital(e.target.value)}
+                      />
                     </div>
+                  </div>
 
-                    <div className="flex flex-col gap-2 md:flex-row md:items-center">
-                        <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm rounded-lg" onClick={() => setOpen(true)}>
-                            <Target className="mr-2 h-4 w-4" />
-                            Optimize For Sales
-                        </Button>
-
-                        {!optimizeAllocate ? (
-                            <Button variant="outline" className="border-slate-200 bg-white/80 hover:bg-white text-slate-700 rounded-lg" onClick={() => setOptimizeAllocate(true)}>
-                                <LineChart className="mr-2 h-4 w-4" />
-                                Optimize Budget
-                            </Button>
-                        ) : !runSimulator ? (
-                            <Button
-                                className="bg-[#FF6B00] hover:bg-[#e65a00] text-white border-none shadow-sm rounded-lg"
-                                onClick={() => {
-                                    setRunSimulator(true);
-                                }}
-                            >
-                                <Play className="mr-2 w-4 h-4 fill-current" />
-                                Run Simulator
-                            </Button>
-                        ) : (
-                            <div className="flex items-center gap-2 bg-white rounded-lg px-2 py-1 border border-slate-200 shadow-sm">
-                                <div className="flex items-center gap-2 font-bold text-sm mr-2 text-[#FF6B00]">
-                                    <Play className="h-4 w-4 fill-current" />
-                                    <span>Simulator On</span>
-                                </div>
-
-                                <Button
-                                    size="sm"
-                                    className="bg-slate-900 hover:bg-slate-800 text-white flex items-center gap-2 h-7 px-3 text-xs rounded-lg"
-                                    onClick={() => {
-                                        setRunSimulator(false);
-                                        setSimulate({ TV: 0, Digital: 0, Sponsorship: 0, product_mrp: 0 });
-                                    }}
-                                >
-                                    <div className="rounded-full bg-[#FF6B00] p-0.5 w-3 h-3 flex items-center justify-center">
-                                        <div className="w-1.5 h-1.5 bg-white rounded-sm"></div>
-                                    </div>
-                                    Stop
-                                </Button>
-                            </div>
-                        )}
-                        <Button variant="outline" className="border-slate-200 bg-white/80 hover:bg-white text-slate-700 rounded-lg">
-                            <Download className="mr-2 h-4 w-4" />
-                            Export
-                        </Button>
+                  {/* Sponsorship Input */}
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Sponsorship</label>
+                    <div className="relative group">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold group-focus-within:text-orange-500 transition-colors">$</span>
+                      <input
+                        type="text"
+                        value={simulateSponsorship || ''}
+                        className="w-32 pl-7 pr-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 transition-all shadow-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        onChange={(e) => setSimulateSponsorship(e.target.value)}
+                      />
                     </div>
+                  </div>
+
+                  {/* Product MRP Input (Disabled to match original logic) */}
+                  {/* <div className="flex flex-col gap-1 border-l pl-6 border-slate-200 ml-4">
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Product MRP</label>
+                    <div className="relative group">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold group-focus-within:text-amber-500 transition-colors">$</span>
+                      <input
+                        type="text"
+                        value={simulateproduct_mrp || ''}
+                        className="w-32 pl-7 pr-3 py-2 bg-amber-50/50 border border-amber-200 rounded-lg text-sm font-semibold text-amber-900 outline-none focus:ring-2 focus:ring-amber-500/10 focus:border-amber-500 transition-all shadow-sm"
+                        onChange={(e) => setSimulateproduct_mrp(e.target.value)}
+                      />
+                    </div>
+                  </div> */}
+
+                  <button
+                    onClick={() => {
+                      const newChannel = { ...channel };
+                      if (simulateTV !== 0 && newChannel.TV) newChannel.TV.simulated = simulateTV;
+                      if (simulateDigital !== 0 && newChannel.Digital) newChannel.Digital.simulated = simulateDigital;
+                      if (simulateSponsorship !== 0 && newChannel.Sponsorship) newChannel.Sponsorship.simulated = simulateSponsorship;
+                      setChannel(newChannel);
+
+                      setSimulate({
+                        TV: simulateTV,
+                        Digital: simulateDigital,
+                        Sponsorship: simulateSponsorship,
+                        product_mrp: simulateproduct_mrp,
+                      });
+                      // Make sure simulatedData exists before accessing it
+                      if (simulatedData && simulatedData.forecast) {
+                        const temp = +simulatedData.forecast[0] + +simulatedData.forecast[1] + +simulatedData.forecast[2];
+                        setSalesSimulatedData(temp);
+                        setROMISimulatedData(simulatedData.romi);
+                      }
+                      setAllocatedSimulated(true);
+                    }}
+                    className="ml-auto px-6 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl shadow-lg shadow-slate-900/10 transition-all active:scale-95 flex items-center gap-2"
+                  >
+                    <Play size={14} fill="white" />
+                    Simulate
+                  </button>
                 </div>
-
-                {/* Optimized View Banner */}
-                {(optimizeAllocate || salesTarget) && (
-                    <div className="flex justify-between items-center bg-indigo-50/80 backdrop-blur-sm border-l-4 border-indigo-500 p-4 mb-8 shadow-sm rounded-r-2xl">
-                        <div className="flex items-center gap-3">
-                            <div className="bg-indigo-100 p-1.5 rounded-full text-indigo-600">
-                                <LineChart className="w-5 h-5" />
-                            </div>
-                            <div>
-                                <h4 className="font-bold text-indigo-900 text-sm">Optimized Budget Mode</h4>
-                                <p className="text-xs text-indigo-700">Displaying optimal allocation for maximum ROI.</p>
-                            </div>
-                        </div>
-                        <button
-                            className="flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-800 transition-colors bg-white/80 px-4 py-2 rounded-lg shadow-sm border border-indigo-100 hover:shadow-md"
-                            onClick={() => {
-                                setOptimizeAllocate(false);
-                                if (runSimulator) setRunSimulator(false);
-                                setSalesTarget(0);
-                                setOptimalROMI("--");
-                                setAllocatedOptimal(false);
-                                setAllocatedSimulated(false);
-                            }}
-                        >
-                            <ArrowDownRight className="w-4 h-4 mr-2" />
-                            Return to Baseline
-                        </button>
-                    </div>
-                )}
-
-                {/* Simulator Inputs */}
-                {runSimulator && (
-                    <div className="bg-white/80 backdrop-blur-sm p-6 mb-8 rounded-2xl border border-white/60 shadow-sm animate-in fade-in slide-in-from-top-2">
-                        <div className="flex justify-between items-center mb-6">
-                            <div className="flex items-center gap-2">
-                                <span className="bg-orange-100 p-2 rounded-lg text-orange-600">
-                                    <Target className="w-5 h-5" />
-                                </span>
-                                <div>
-                                    <h4 className="font-bold text-slate-800 text-sm">Simulator Configuration</h4>
-                                    <p className="text-xs text-slate-500">Adjust budget allocation to simulate outcomes</p>
-                                </div>
-                            </div>
-                            <Button
-                                className="bg-[#FF6B00] hover:bg-[#e65a00] text-white text-xs font-semibold px-6 shadow-md shadow-orange-100 rounded-lg"
-                                onClick={() => {
-                                    const newChannel = { ...channel };
-                                    if (simulateTV !== 0 && newChannel.TV) newChannel.TV.simulated = simulateTV;
-                                    if (simulateDigital !== 0 && newChannel.Digital) newChannel.Digital.simulated = simulateDigital;
-                                    if (simulateSponsorship !== 0 && newChannel.Sponsorship) newChannel.Sponsorship.simulated = simulateSponsorship;
-                                    setChannel(newChannel);
-
-                                    setSimulate({
-                                        TV: simulateTV,
-                                        Digital: simulateDigital,
-                                        Sponsorship: simulateSponsorship,
-                                        product_mrp: simulateproduct_mrp,
-                                    });
-
-                                    const temp = (simulatedData.forecast?.[0] || 0) + (simulatedData.forecast?.[1] || 0) + (simulatedData.forecast?.[2] || 0);
-                                    setSalesSimulatedData(temp);
-                                    setROMISimulatedData(simulatedData.romi);
-                                    setAllocatedSimulated(true);
-                                }}
-                            >
-                                Run Simulation
-                            </Button>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">TV Budget</label>
-                                <div className="relative">
-                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-medium">$</span>
-                                    <Input
-                                        type="number"
-                                        placeholder="0"
-                                        className="pl-8 bg-slate-50/50 border-slate-200 focus:ring-orange-500/20 focus:border-orange-500 rounded-lg"
-                                        onChange={(e) => setSimulateTV(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Digital Budget</label>
-                                <div className="relative">
-                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-medium">$</span>
-                                    <Input
-                                        type="number"
-                                        placeholder="0"
-                                        className="pl-8 bg-slate-50/50 border-slate-200 focus:ring-orange-500/20 focus:border-orange-500 rounded-lg"
-                                        onChange={(e) => setSimulateDigital(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Sponsorship Budget</label>
-                                <div className="relative">
-                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-medium">$</span>
-                                    <Input
-                                        type="number"
-                                        placeholder="0"
-                                        className="pl-8 bg-slate-50/50 border-slate-200 focus:ring-orange-500/20 focus:border-orange-500 rounded-lg"
-                                        onChange={(e) => setSimulateSponsorship(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Cards */}
-                <div className="grid gap-6 md:grid-cols-3">
-                    {/* Allocated Budget Card */}
-                    <Card className="bg-blue-50/80 backdrop-blur-sm py-4 border border-blue-100/50 shadow-sm rounded-2xl">
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-xs font-bold text-slate-500 uppercase tracking-wider">ALLOCATED BUDGET</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex items-center justify-between mb-4">
-                                <div>
-                                    <h3 className="text-3xl font-extrabold text-slate-900">
-                                        ${Math.round(
-                                            (allocatedBudgetData?.budget?.individual?.reduce((a, b) => a + b[1], 0) || 0)
-                                        )}Mn
-                                    </h3>
-                                    <p className="text-sm font-medium text-emerald-600 mt-1 flex items-center">+2.5% vs Last Month</p>
-                                </div>
-                                <div className="bg-white/80 p-2 rounded-xl shadow-sm">
-                                    <DollarSign className="h-6 w-6 text-blue-600" />
-                                </div>
-                            </div>
-                            <div className="border-t border-blue-200/50 mb-4" ></div>
-                            <div className="grid grid-cols-3 gap-4 text-center">
-                                <div>
-                                    <p className="text-[10px] uppercase font-semibold text-slate-400">Current</p>
-                                    <p className="font-bold text-slate-700">
-                                        ${Math.round(
-                                            (allocatedBudgetData?.budget?.individual?.reduce((a, b) => a + b[1], 0) || 0)
-                                        )}Mn
-                                    </p>
-                                </div>
-                                <div>
-                                    <p className="text-[10px] uppercase font-semibold text-slate-400">Target</p>
-                                    <p className="font-bold text-slate-700">
-                                        {barGraphData?.optimal_budget ? "$" + Math.floor(barGraphData.optimal_budget / 1000000) + "Mn" : "--"}
-                                    </p>
-                                </div>
-                                <div>
-                                    <p className="text-[10px] uppercase font-semibold text-slate-400">Simulate</p>
-                                    <p className="font-bold text-slate-700">
-                                        {allocatedSimulated ? "$" + Math.round((simulatedData?.forecast?.reduce((a, b) => a + b, 0) || 0)) + "Mn" : "--"}
-                                    </p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Sales Card */}
-                    <Card className="bg-white/80 backdrop-blur-sm py-4 border border-white/60 shadow-sm rounded-2xl hover:shadow-md transition-shadow">
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-xs font-bold text-slate-500 uppercase tracking-wider">SALES</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex items-center justify-between mb-4">
-                                <div>
-                                    <h3 className="text-3xl font-extrabold text-slate-900">
-                                        {allocatedBudgetData?.sales || "--"}
-                                    </h3>
-                                    <p className="text-sm font-medium text-emerald-600 mt-1">+15.3% YoY Growth</p>
-                                </div>
-                                <div className="bg-blue-50/50 p-2 rounded-xl">
-                                    <ArrowUpRight className="h-6 w-6 text-blue-600" />
-                                </div>
-                            </div>
-                            <div className="border-t border-slate-100 mb-4"></div>
-                            <div className="grid grid-cols-3 gap-4 text-center">
-                                <div>
-                                    <p className="text-[10px] uppercase font-semibold text-slate-400">Current</p>
-                                    <p className="font-bold text-slate-700">{allocatedBudgetData?.sales || "--"}</p>
-                                </div>
-                                <div>
-                                    <p className="text-[10px] uppercase font-semibold text-slate-400">Target</p>
-                                    <p className="font-bold text-slate-700">{salesTarget > 0 ? salesTarget + "Mn" : "--"}</p>
-                                </div>
-                                <div>
-                                    <p className="text-[10px] uppercase font-semibold text-slate-400">Simulate</p>
-                                    <p className="font-bold text-slate-700">
-                                        {allocatedSimulated ? Math.round((simulatedData?.forecast?.reduce((a, b) => a + b, 0) || 0)) + "Mn" : "--"}
-                                    </p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* ROMI Card */}
-                    <Card className="bg-white/80 backdrop-blur-sm py-4 border border-white/60 shadow-sm rounded-2xl hover:shadow-md transition-shadow">
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-xs font-bold text-slate-500 uppercase tracking-wider">ROMI</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex items-center justify-between mb-4">
-                                <div>
-                                    <h3 className="text-3xl font-extrabold text-slate-900">
-                                        {allocatedBudgetData?.["Base ROMI"] || 2.13}
-                                    </h3>
-                                    <p className="text-sm font-medium text-rose-500 mt-1">-0.8% vs Target</p>
-                                </div>
-                                <div className="bg-blue-50/50 p-2 rounded-xl">
-                                    <ArrowDownRight className="h-6 w-6 text-blue-600" />
-                                </div>
-                            </div>
-                            <div className="border-t border-slate-100 mb-4"></div>
-                            <div className="grid grid-cols-3 gap-4 text-center">
-                                <div>
-                                    <p className="text-[10px] uppercase font-semibold text-slate-400">Current</p>
-                                    <p className="font-bold text-slate-700">{allocatedBudgetData?.["Base ROMI"] || "--"}</p>
-                                </div>
-                                <div>
-                                    <p className="text-[10px] uppercase font-semibold text-slate-400">Target</p>
-                                    <p className="font-bold text-slate-700">2.5</p>
-                                </div>
-                                <div>
-                                    <p className="text-[10px] uppercase font-semibold text-slate-400">Simulate</p>
-                                    <p className="font-bold text-slate-700">{allocatedSimulated ? (simulatedData?.romi || "--") : "--"}</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Calculated Budget Card (Shown only if salesTarget and optimal budget exist) */}
-                    {salesTarget > 0 && barGraphData?.optimal_budget > 0 && (
-                        <Card className="py-4 border-0 shadow-sm bg-gray-50/80 backdrop-blur-sm rounded-2xl">
-                            <CardHeader>
-                                <CardTitle className="text-md font-medium text-gray-600">CALCULATED BUDGET</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <h3 className="text-3xl font-bold">
-                                    {Math.floor(barGraphData.optimal_budget / 1000000) + "Mn"}
-                                </h3>
-                            </CardContent>
-                        </Card>
-                    )}
-
-                </div>
-
-                {/* Plots */}
-                {/* Plots */}
-                <div className="mt-8 grid gap-6 md:grid-cols-2">
-                    {/* Forecast Plot */}
-                    <Card className="bg-white/80 backdrop-blur-sm border border-white/60 shadow-sm rounded-2xl">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-lg font-bold text-slate-800">Forecast Plot</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex justify-start items-center text-[10px] mb-4">
-                                <div className="mx-2 flex items-center">
-                                    <div className="w-[10px] h-[10px] bg-[#558fff] mx-2 rounded-sm"></div>
-                                    <div>Actual Sales</div>
-                                </div>
-
-                                <div className="mx-2 flex items-center">
-                                    <div className="w-[10px] h-[10px] bg-[#ff8b35] mx-2 rounded-sm"></div>
-                                    <div>Baseline Forecast</div>
-                                </div>
-                            </div>
-                            <div className="w-full h-[280px] flex items-center justify-center rounded-xl bg-gradient-to-br from-slate-50/80 to-white/50 p-3">
-                                <Plot
-                                    data={forecastGraphData?.data || []}
-                                    layout={{
-                                        autosize: true,
-                                        margin: { l: 45, r: 20, t: 10, b: 40 },
-                                        xaxis: {
-                                            showgrid: true,
-                                            gridcolor: 'rgba(148, 163, 184, 0.1)',
-                                            gridwidth: 1,
-                                            title: {
-                                                text: 'Month',
-                                                font: { size: 10, color: '#64748b', family: 'Inter, sans-serif' }
-                                            },
-                                            tickfont: { size: 9, color: '#64748b' }
-                                        },
-                                        yaxis: {
-                                            showgrid: true,
-                                            gridcolor: 'rgba(148, 163, 184, 0.1)',
-                                            gridwidth: 1,
-                                            title: {
-                                                text: 'Sales (Mn)',
-                                                font: { size: 10, color: '#64748b', family: 'Inter, sans-serif' }
-                                            },
-                                            tickfont: { size: 9, color: '#64748b' }
-                                        },
-                                        showlegend: false,
-                                        paper_bgcolor: 'rgba(0,0,0,0)',
-                                        plot_bgcolor: 'rgba(0,0,0,0)',
-                                        hovermode: 'x unified',
-                                        hoverlabel: {
-                                            bgcolor: 'white',
-                                            bordercolor: '#e2e8f0',
-                                            font: { size: 11, family: 'Inter, sans-serif' }
-                                        }
-                                    }}
-                                    config={{
-                                        displayModeBar: true,
-                                        displaylogo: false,
-                                        modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d', 'autoScale2d'],
-                                        toImageButtonOptions: { filename: 'forecast_plot' }
-                                    }}
-                                    useResizeHandler
-                                    style={{ width: "100%", height: "100%" }}
-                                />
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Response Curve */}
-                    <Card className="bg-white/80 backdrop-blur-sm border border-white/60 shadow-sm rounded-2xl">
-                        <CardHeader className="">
-                            <CardTitle className="text-lg font-bold text-slate-800">Response Curve</CardTitle>
-                        </CardHeader>
-                        <div className="mx-8 text-[10px] font-normal">
-                            <h5 className="text-[14px] font-medium mb-1">Marketing Channels</h5>
-
-                            <div className="flex justify-start items-center gap-2 flex-wrap mb-4">
-                                {/* TV Checkbox */}
-                                <div className="my-1">
-                                    <input
-                                        type="checkbox"
-                                        id="btn-check-1-outlined"
-                                        className="hidden peer"
-                                        autoComplete="off"
-                                        defaultChecked={channel.TV}
-                                        onChange={(e) => {
-                                            if (e.target.checked) {
-                                                setChannel({
-                                                    ...channel,
-                                                    TV: {
-                                                        allocated:
-                                                            (allocatedBudgetData.budget.individual.find(
-                                                                (item) => item[0] === "TV"
-                                                            )?.[1] || 0) * 1e6,
-                                                        ...(simulate.TV !== 0 && { simulated: simulate.TV }),
-                                                        optimal: barGraphData.optimal_break_down.TV,
-                                                    },
-                                                });
-                                            } else {
-                                                const newChannel = { ...channel };
-                                                if (Object.keys(newChannel).length > 0) {
-                                                    delete newChannel.TV;
-                                                }
-                                                setChannel(newChannel);
-                                            }
-                                        }}
-                                    />
-                                    <label
-                                        htmlFor="btn-check-1-outlined"
-                                        className="cursor-pointer px-3 py-1.5 border border-slate-300 rounded-lg text-slate-600 peer-checked:bg-slate-800 peer-checked:text-white peer-checked:border-slate-800 text-xs font-medium transition-all"
-                                    >
-                                        TV
-                                    </label>
-                                </div>
-
-                                {/* Digital Checkbox */}
-                                <div className="my-1">
-                                    <input
-                                        type="checkbox"
-                                        id="btn-check-2-outlined"
-                                        className="hidden peer"
-                                        autoComplete="off"
-                                        checked={channel.Digital}
-                                        onChange={(e) => {
-                                            if (e.target.checked) {
-                                                setChannel({
-                                                    ...channel,
-                                                    Digital: {
-                                                        allocated:
-                                                            (allocatedBudgetData.budget.individual.find(
-                                                                (item) => item[0] === "Digital"
-                                                            )?.[1] || 0) * 1e6,
-                                                        ...(simulate.Digital !== 0 && { simulated: simulate.Digital }),
-                                                        optimal: barGraphData.optimal_break_down.Digital,
-                                                    },
-                                                });
-                                            } else {
-                                                const newChannel = { ...channel };
-                                                if (Object.keys(newChannel).length > 0) {
-                                                    delete newChannel.Digital;
-                                                }
-                                                setChannel(newChannel);
-                                            }
-                                        }}
-                                    />
-                                    <label
-                                        htmlFor="btn-check-2-outlined"
-                                        className="cursor-pointer px-3 py-1.5 border border-slate-300 rounded-lg text-slate-600 peer-checked:bg-slate-800 peer-checked:text-white peer-checked:border-slate-800 text-xs font-medium transition-all"
-                                    >
-                                        Digital
-                                    </label>
-                                </div>
-
-                                {/* Sponsorship Checkbox */}
-                                <div className="my-1">
-                                    <input
-                                        type="checkbox"
-                                        id="btn-check-3-outlined"
-                                        className="hidden peer"
-                                        autoComplete="off"
-                                        defaultChecked={channel.Sponsorship}
-                                        onChange={(e) => {
-                                            if (e.target.checked) {
-                                                setChannel({
-                                                    ...channel,
-                                                    Sponsorship: {
-                                                        allocated:
-                                                            (allocatedBudgetData.budget.individual.find(
-                                                                (item) => item[0] === "Sponsorship"
-                                                            )?.[1] || 0) * 1e6,
-                                                        ...(simulate.Sponsorship !== 0 && {
-                                                            simulated: simulate.Sponsorship,
-                                                        }),
-                                                        optimal: barGraphData.optimal_break_down.Sponsorship,
-                                                    },
-                                                });
-                                            } else {
-                                                const newChannel = { ...channel };
-                                                if (Object.keys(newChannel).length > 0) {
-                                                    delete newChannel.Sponsorship;
-                                                }
-                                                setChannel(newChannel);
-                                            }
-                                        }}
-                                    />
-                                    <label
-                                        htmlFor="btn-check-3-outlined"
-                                        className="cursor-pointer px-3 py-1.5 border border-slate-300 rounded-lg text-slate-600 peer-checked:bg-slate-800 peer-checked:text-white peer-checked:border-slate-800 text-xs font-medium transition-all"
-                                    >
-                                        Sponsorship
-                                    </label>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <CardContent>
-
-                            <div className="m-3 flex items-center text-[10px]">
-                                <div className="mx-2 flex items-center">
-                                    <div className="w-2.5 h-2.5 bg-[#558fff] mx-2 rounded-full"></div>
-                                    <div>Allocated Budget</div>
-                                </div>
-
-                                <div className="mx-2 flex items-center">
-                                    <div className="w-2.5 h-2.5 bg-green-500 mx-2 rounded-full"></div>
-                                    <div>Sponsorship</div>
-                                </div>
-
-                                <div className="mx-2 flex items-center">
-                                    <div className="w-2.5 h-2.5 bg-violet-500 mx-2 rounded-full"></div>
-                                    <div>TV</div>
-                                </div>
-                            </div>
-
-                            <div className="w-full h-[280px] flex items-center justify-center rounded-xl bg-gradient-to-br from-slate-50/80 to-white/50 p-3">
-                                <Plot
-                                    data={curveGraphData?.data || []}
-                                    layout={{
-                                        autosize: true,
-                                        margin: { l: 45, r: 20, t: 10, b: 40 },
-                                        xaxis: {
-                                            showgrid: true,
-                                            gridcolor: 'rgba(148, 163, 184, 0.1)',
-                                            gridwidth: 1,
-                                            title: {
-                                                text: 'Budget (Mn)',
-                                                font: { size: 10, color: '#64748b', family: 'Inter, sans-serif' }
-                                            },
-                                            tickfont: { size: 9, color: '#64748b' }
-                                        },
-                                        yaxis: {
-                                            showgrid: true,
-                                            gridcolor: 'rgba(148, 163, 184, 0.1)',
-                                            gridwidth: 1,
-                                            title: {
-                                                text: 'Sales Impact',
-                                                font: { size: 10, color: '#64748b', family: 'Inter, sans-serif' }
-                                            },
-                                            tickfont: { size: 9, color: '#64748b' }
-                                        },
-                                        showlegend: false,
-                                        paper_bgcolor: 'rgba(0,0,0,0)',
-                                        plot_bgcolor: 'rgba(0,0,0,0)',
-                                        hovermode: 'closest',
-                                        hoverlabel: {
-                                            bgcolor: 'white',
-                                            bordercolor: '#e2e8f0',
-                                            font: { size: 11, family: 'Inter, sans-serif' }
-                                        }
-                                    }}
-                                    config={{
-                                        displayModeBar: true,
-                                        displaylogo: false,
-                                        modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d', 'autoScale2d'],
-                                        toImageButtonOptions: { filename: 'response_curve' }
-                                    }}
-                                    useResizeHandler
-                                    style={{ width: "100%", height: "100%" }}
-                                />
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Marketing Channels Wise Budget Allocated */}
-                    <Card className="bg-white/80 backdrop-blur-sm border border-white/60 shadow-sm rounded-2xl">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-lg font-bold text-slate-800">Marketing Channels Wise Budget Allocated</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex justify-start items-center text-[10px] mb-4">
-                                <div className="mx-2 flex items-center">
-                                    <div className="w-[10px] h-[10px] bg-[#558fff] mx-2 rounded-sm"></div>
-                                    <div>Marketing Channels</div>
-                                </div>
-                            </div>
-                            <div className="w-full h-[280px] flex items-center justify-center rounded-xl bg-gradient-to-br from-slate-50/80 to-white/50 p-3">
-                                <Plot
-                                    data={updatedGraphData}
-                                    useResizeHandler
-                                    style={{ width: "100%", height: "100%" }}
-                                    layout={{
-                                        autosize: true,
-                                        margin: { l: 45, r: 20, t: 10, b: 40 },
-                                        xaxis: {
-                                            showgrid: false,
-                                            title: {
-                                                text: 'Marketing Channel',
-                                                font: { size: 10, color: '#64748b', family: 'Inter, sans-serif' }
-                                            },
-                                            tickfont: { size: 9, color: '#64748b' }
-                                        },
-                                        yaxis: {
-                                            showgrid: true,
-                                            gridcolor: 'rgba(148, 163, 184, 0.1)',
-                                            gridwidth: 1,
-                                            title: {
-                                                text: 'Budget (Mn)',
-                                                font: { size: 10, color: '#64748b', family: 'Inter, sans-serif' }
-                                            },
-                                            tickfont: { size: 9, color: '#64748b' }
-                                        },
-                                        paper_bgcolor: 'rgba(0,0,0,0)',
-                                        plot_bgcolor: 'rgba(0,0,0,0)',
-                                        bargap: 0.3,
-                                        hovermode: 'closest',
-                                        hoverlabel: {
-                                            bgcolor: 'white',
-                                            bordercolor: '#e2e8f0',
-                                            font: { size: 11, family: 'Inter, sans-serif' }
-                                        }
-                                    }}
-                                    config={{
-                                        displayModeBar: true,
-                                        displaylogo: false,
-                                        modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d', 'autoScale2d'],
-                                        toImageButtonOptions: { filename: 'budget_allocation' }
-                                    }}
-                                />
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* SOS vs SOE */}
-                    <Card className="bg-white/80 backdrop-blur-sm border border-white/60 shadow-sm rounded-2xl">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-lg font-bold text-slate-800">SOS vs SOE</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="m-1 flex items-center text-[10px] mb-4">
-                                <div className="mx-2 flex items-center">
-                                    <div className="mx-2 w-[12px] h-[12px] bg-gray-600 border border-gray-600 rounded-full"></div>
-                                    <div>Share of Spends</div>
-                                </div>
-
-                                <div className="mx-2 flex items-center">
-                                    <div className="mx-2 w-[12px] h-[12px] bg-orange-500 border border-orange-500 rounded-full"></div>
-                                    <div>Share of Effects</div>
-                                </div>
-                            </div>
-
-                            <div className="w-full h-[280px] flex items-center justify-center rounded-xl bg-gradient-to-br from-slate-50/80 to-white/50 p-3">
-                                <Plot
-                                    data={updatedSosGraphData}
-                                    layout={{
-                                        autosize: true,
-                                        margin: { l: 45, r: 20, t: 10, b: 40 },
-                                        xaxis: {
-                                            showgrid: false,
-                                            title: {
-                                                text: 'Marketing Channel',
-                                                font: { size: 10, color: '#64748b', family: 'Inter, sans-serif' }
-                                            },
-                                            tickfont: { size: 9, color: '#64748b' }
-                                        },
-                                        yaxis: {
-                                            showgrid: true,
-                                            gridcolor: 'rgba(148, 163, 184, 0.1)',
-                                            gridwidth: 1,
-                                            title: {
-                                                text: 'Percentage (%)',
-                                                font: { size: 10, color: '#64748b', family: 'Inter, sans-serif' }
-                                            },
-                                            tickfont: { size: 9, color: '#64748b' }
-                                        },
-                                        showlegend: false,
-                                        barmode: 'group',
-                                        bargap: 0.2,
-                                        bargroupgap: 0.1,
-                                        paper_bgcolor: 'rgba(0,0,0,0)',
-                                        plot_bgcolor: 'rgba(0,0,0,0)',
-                                        hovermode: 'closest',
-                                        hoverlabel: {
-                                            bgcolor: 'white',
-                                            bordercolor: '#e2e8f0',
-                                            font: { size: 11, family: 'Inter, sans-serif' }
-                                        }
-                                    }}
-                                    config={{
-                                        displayModeBar: true,
-                                        displaylogo: false,
-                                        modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d', 'autoScale2d'],
-                                        toImageButtonOptions: { filename: 'sos_vs_soe' }
-                                    }}
-                                    useResizeHandler
-                                    style={{ width: "100%", height: "100%" }}
-                                />
-
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                </div>
-            </main>
+              </div>
+            )}
+          </div>
         </div>
-    );
-};
 
-export default MarketMixModelling;
+        {/* KPI Cards Section */}
+        <div className="grid grid-cols-12 gap-6 items-start">
+          {/* Allocated Budget Card */}
+          <div className="col-span-12 md:col-span-4 bg-white/90 backdrop-blur-sm border border-emerald-100 shadow-sm rounded-3xl p-6 hover:shadow-lg hover:shadow-emerald-100/40 transition-all group">
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <p className="text-emerald-600/80 font-bold text-xs uppercase tracking-wider mb-2">Allocated Budget</p>
+                <h3 className="text-2xl xl:text-3xl font-extrabold text-slate-800 tracking-tight">
+                  ${allocatedBudgetData?.budget?.total ? Math.floor(allocatedBudgetData.budget.total) : "0"}Mn
+                </h3>
+                <div className="flex items-center gap-1 mt-2 bg-emerald-50 w-fit px-2 py-1 rounded-lg">
+                  <ArrowUpRight size={14} className="text-emerald-600" />
+                  <span className="text-emerald-700 text-xs font-bold">+2.5% vs Last Month</span>
+                </div>
+              </div>
+              <div className="bg-emerald-100 p-3 rounded-2xl group-hover:bg-emerald-200 transition-colors">
+                <DollarSign className="w-6 h-6 text-emerald-600" />
+              </div>
+            </div>
+            <div className="h-px bg-slate-100 my-4"></div>
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div>
+                <p className="text-slate-400 text-xs font-semibold mb-1">Current</p>
+                <p className="text-slate-700 font-bold">{allocatedBudgetData?.budget?.total ? Math.floor(allocatedBudgetData.budget.total) : "0"}Mn</p>
+              </div>
+              <div>
+                <p className="text-slate-400 text-xs font-semibold mb-1">Target</p>
+                <p className="text-slate-700 font-bold">
+                  {barGraphData?.optimal_budget > 0 ? `${Math.floor(barGraphData.optimal_budget / 1000000)}Mn` : "--"}
+                </p>
+              </div>
+              <div>
+                <p className="text-slate-400 text-xs font-semibold mb-1">Simulate</p>
+                <p className="text-slate-700 font-bold">
+                  {barGraphData?.simulated_budget > 0 ? `${Math.floor(barGraphData.simulated_budget / 1000000)}Mn` : "--"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Sales Card */}
+          <div className="col-span-12 md:col-span-4 bg-white/90 backdrop-blur-sm border border-blue-100 shadow-sm rounded-3xl p-6 hover:shadow-lg hover:shadow-blue-100/40 transition-all group">
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <p className="text-blue-600/80 font-bold text-xs uppercase tracking-wider mb-2">Sales</p>
+                <h3 className="text-2xl xl:text-3xl font-extrabold text-slate-800 tracking-tight flex items-baseline gap-1">
+                  {allocatedBudgetData?.sales ? Math.floor(allocatedBudgetData.sales) : "0"}Mn
+                  <span className="text-slate-400 text-sm font-medium">(USD)</span>
+                </h3>
+                <div className="flex items-center gap-1 mt-2 bg-blue-50 w-fit px-2 py-1 rounded-lg">
+                  <ArrowUpRight size={14} className="text-blue-600" />
+                  <span className="text-blue-700 text-xs font-bold">+15.3% YoY Growth</span>
+                </div>
+              </div>
+              <div className="bg-blue-100 p-3 rounded-2xl group-hover:bg-blue-200 transition-colors">
+                <ArrowUpRight className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+            <div className="h-px bg-slate-100 my-4"></div>
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div>
+                <p className="text-slate-400 text-xs font-semibold mb-1">Current</p>
+                <p className="text-slate-700 font-bold">{allocatedBudgetData?.sales ? Math.floor(allocatedBudgetData.sales) : "0"}Mn</p>
+              </div>
+              <div>
+                <p className="text-slate-400 text-xs font-semibold mb-1">Target</p>
+                <p className="text-slate-700 font-bold">{salesTarget > 0 ? `${salesTarget}Mn  ` : "--"}</p>
+              </div>
+              <div>
+                <p className="text-slate-400 text-xs font-semibold mb-1">Simulate</p>
+                <p className="text-slate-700 font-bold">
+                  {salesSimulatedData !== undefined && salesSimulatedData !== null ? (Math.floor(salesSimulatedData) / 1000000).toFixed(1) : "--"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* ROMI Card */}
+          <div className="col-span-12 md:col-span-4 bg-white/90 backdrop-blur-sm border border-amber-100 shadow-sm rounded-3xl p-6 hover:shadow-lg hover:shadow-amber-100/40 transition-all group">
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <p className="text-amber-600/80 font-bold text-xs uppercase tracking-wider mb-2">ROMI</p>
+                <h3 className="text-2xl xl:text-3xl font-extrabold text-slate-800 tracking-tight">{baseROMI}</h3>
+                <div className="flex items-center gap-1 mt-2 bg-rose-50 w-fit px-2 py-1 rounded-lg">
+                  <ArrowDownRight size={14} className="text-rose-600" />
+                  <span className="text-rose-700 text-xs font-bold">-0.8% vs Target</span>
+                </div>
+              </div>
+              <div className="bg-amber-100 p-3 rounded-2xl group-hover:bg-amber-200 transition-colors">
+                <ArrowDownRight className="w-6 h-6 text-amber-600" />
+              </div>
+            </div>
+            <div className="h-px bg-slate-100 my-4"></div>
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div>
+                <p className="text-slate-400 text-xs font-semibold mb-1">Current</p>
+                <p className="text-slate-700 font-bold">{baseROMI}</p>
+              </div>
+              <div>
+                <p className="text-slate-400 text-xs font-semibold mb-1">Target</p>
+                <p className="text-slate-700 font-bold">{optimalROMI !== "--" ? optimalROMI : "--"}</p>
+              </div>
+              <div>
+                <p className="text-slate-400 text-xs font-semibold mb-1">Simulate</p>
+                <p className="text-slate-700 font-bold">{ROMISimulatedData ?? "--"}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Calculated Budget Card (Shown only if salesTarget exists) */}
+          {salesTarget > 0 && barGraphData?.optimal_budget > 0 && (
+            <div className="col-span-12 md:col-span-4">
+              <div className="bg-slate-50 border border-slate-200 shadow-sm rounded-3xl p-6">
+                <p className="text-slate-500 font-bold text-xs uppercase tracking-wider mb-2">CALCULATED BUDGET</p>
+                <h3 className="text-2xl xl:text-3xl font-extrabold text-slate-800 mb-0">
+                  {Math.floor(barGraphData.optimal_budget / 1000000) + "Mn"}
+                </h3>
+              </div>
+            </div>
+          )}
+        </div>
+
+
+        {/* Plots */}
+        {/* Charts Section */}
+        <div className="grid grid-cols-12 gap-6 mt-8">
+          {/* Forecast Plot */}
+          <div className="col-span-12 lg:col-span-6 bg-white/90 backdrop-blur-sm border border-slate-200 shadow-sm rounded-3xl p-6 relative group hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="font-bold text-slate-800 text-lg tracking-tight">Forecast Sales</h3>
+              <div className="flex items-center gap-4 text-[10px] font-medium text-slate-600">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 bg-[#558fff]"></div>
+                  <span>Actual Sales</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 bg-[#ff8b35]"></div>
+                  <span>Baseline Forecast</span>
+                </div>
+              </div>
+            </div>
+            <div className="h-[400px] w-full rounded-2xl overflow-hidden relative z-0">
+              <Plot
+                data={forecastGraphData.data}
+                layout={{
+                  xaxis: { showgrid: false, zeroline: false, showline: true, linecolor: '#e2e8f0' },
+                  yaxis: { showgrid: true, gridcolor: '#f1f5f9', zeroline: false },
+                  margin: { l: 40, r: 20, t: 20, b: 40 },
+                  paper_bgcolor: 'rgba(0,0,0,0)',
+                  plot_bgcolor: 'rgba(0,0,0,0)',
+                  showlegend: false,
+                  autosize: true
+                }}
+                useResizeHandler
+                style={{ width: "100%", height: "100%" }}
+                config={{ displayModeBar: false }}
+              />
+            </div>
+          </div>
+
+          {/* Response Curve */}
+          <div className="col-span-12 lg:col-span-6 bg-white/90 backdrop-blur-sm border border-slate-200 shadow-sm rounded-3xl p-6 relative group hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h3 className="font-bold text-slate-800 text-lg tracking-tight mb-2">Response Curve</h3>
+                <p className="text-xs font-medium text-slate-500">Analyze marketing channels efficiency</p>
+              </div>
+
+              <div className="flex flex-col gap-2 items-end">
+                <div className="flex items-center gap-3 bg-slate-50 px-3 py-2 rounded-xl border border-slate-100">
+                  {/* TV Checkbox */}
+                  <div className="flex items-center gap-2">
+                    <label className="flex items-center gap-1.5 cursor-pointer relative">
+                      <input
+                        type="checkbox"
+                        className="peer sr-only"
+                        checked={!!channel.TV}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setChannel({
+                              ...channel,
+                              TV: {
+                                allocated: (allocatedBudgetData?.budget?.individual?.find(item => item[0] === "TV")?.[1] || 0) * 1e6,
+                                ...(simulate?.TV !== 0 && { simulated: simulate?.TV }),
+                                optimal: barGraphData?.optimal_break_down?.TV
+                              }
+                            });
+                          } else {
+                            const newChannel = { ...channel };
+                            if (Object.keys(newChannel).length > 0) delete newChannel.TV;
+                            setChannel(newChannel);
+                          }
+                        }}
+                      />
+                      <div className="w-4 h-4 bg-white border-2 border-slate-300 rounded peer-checked:bg-blue-600 peer-checked:border-blue-600 transition-all flex items-center justify-center">
+                        <svg className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-xs font-bold text-slate-600 peer-checked:text-blue-700">TV</span>
+                    </label>
+                  </div>
+
+                  {/* Digital Checkbox */}
+                  <div className="flex items-center gap-2">
+                    <label className="flex items-center gap-1.5 cursor-pointer relative">
+                      <input
+                        type="checkbox"
+                        className="peer sr-only"
+                        checked={!!channel.Digital}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setChannel({
+                              ...channel,
+                              Digital: {
+                                allocated: (allocatedBudgetData?.budget?.individual?.find(item => item[0] === "Digital")?.[1] || 0) * 1e6,
+                                ...(simulate?.Digital !== 0 && { simulated: simulate?.Digital }),
+                                optimal: barGraphData?.optimal_break_down?.Digital
+                              }
+                            });
+                          } else {
+                            const newChannel = { ...channel };
+                            if (Object.keys(newChannel).length > 0) delete newChannel.Digital;
+                            setChannel(newChannel);
+                          }
+                        }}
+                      />
+                      <div className="w-4 h-4 bg-white border-2 border-slate-300 rounded peer-checked:bg-blue-600 peer-checked:border-blue-600 transition-all flex items-center justify-center">
+                        <svg className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-xs font-bold text-slate-600 peer-checked:text-blue-700">Digital</span>
+                    </label>
+                  </div>
+
+                  {/* Sponsorship Checkbox */}
+                  <div className="flex items-center gap-2">
+                    <label className="flex items-center gap-1.5 cursor-pointer relative">
+                      <input
+                        type="checkbox"
+                        className="peer sr-only"
+                        checked={!!channel.Sponsorship}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setChannel({
+                              ...channel,
+                              Sponsorship: {
+                                allocated: (allocatedBudgetData?.budget?.individual?.find(item => item[0] === "Sponsorship")?.[1] || 0) * 1e6,
+                                ...(simulate?.Sponsorship !== 0 && { simulated: simulate?.Sponsorship }),
+                                optimal: barGraphData?.optimal_break_down?.Sponsorship
+                              }
+                            });
+                          } else {
+                            const newChannel = { ...channel };
+                            if (Object.keys(newChannel).length > 0) delete newChannel.Sponsorship;
+                            setChannel(newChannel);
+                          }
+                        }}
+                      />
+                      <div className="w-4 h-4 bg-white border-2 border-slate-300 rounded peer-checked:bg-blue-600 peer-checked:border-blue-600 transition-all flex items-center justify-center">
+                        <svg className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-xs font-bold text-slate-600 peer-checked:text-blue-700">Sponsorship</span>
+                    </label>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 text-[10px] font-bold text-slate-400">
+                  <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-[#558fff]"></div> Current</div>
+                  <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-[#696969]"></div> Optimal</div>
+                  <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-[#ff8b35]"></div> Simulated</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="h-[400px] w-full rounded-2xl overflow-hidden relative z-0">
+              <Plot
+                data={curveGraphData.data}
+                layout={{
+                  xaxis: { showgrid: false, zeroline: false, showline: true, linecolor: '#e2e8f0' },
+                  yaxis: { showgrid: true, gridcolor: '#f1f5f9', zeroline: false },
+                  margin: { l: 40, r: 20, t: 20, b: 40 },
+                  paper_bgcolor: 'rgba(0,0,0,0)',
+                  plot_bgcolor: 'rgba(0,0,0,0)',
+                  showlegend: false,
+                  autosize: true
+                }}
+                useResizeHandler
+                style={{ width: "100%", height: "100%" }}
+                config={{ displayModeBar: false }}
+              />
+            </div>
+          </div>
+
+          {/* Budget Allocation Chart */}
+          <div className="col-span-12 lg:col-span-6 bg-white/90 backdrop-blur-sm border border-slate-200 shadow-sm rounded-3xl p-6 relative group hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="font-bold text-slate-800 text-lg tracking-tight">Budget Allocation</h3>
+              <div className="flex items-center gap-4 text-[10px] font-medium text-slate-600">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#568FFF]"></div>
+                  <span>Marketing Channels</span>
+                </div>
+                {barGraphData?.optimal_budget > 0 && (
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 bg-[#696969]"></div>
+                    <span>Optimal Budget Allocation</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="h-[400px] w-full rounded-2xl overflow-hidden relative z-0">
+              <Plot
+                data={updatedGraphData}
+                useResizeHandler
+                style={{ width: "100%", height: "100%" }}
+                layout={{
+                  autosize: true,
+                  margin: { l: 50, r: 30, t: 20, b: 120 },
+                  paper_bgcolor: 'rgba(0,0,0,0)',
+                  plot_bgcolor: 'rgba(0,0,0,0)',
+                  xaxis: {
+                    showgrid: false,
+                    zeroline: false,
+                    showline: true,
+                    linecolor: '#e2e8f0',
+                    tickangle: -45,
+                    automargin: true,
+                    tickfont: { size: 10 }
+                  },
+                  yaxis: { showgrid: true, gridcolor: '#f1f5f9', zeroline: false },
+                  showlegend: false
+                }}
+                config={{ displayModeBar: false }}
+              />
+            </div>
+          </div>
+
+          {/* Spending Efficiency (SOS vs SOE) */}
+          <div className="col-span-12 lg:col-span-6 bg-white/90 backdrop-blur-sm border border-slate-200 shadow-sm rounded-3xl p-6 relative group hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="font-bold text-slate-800 text-lg tracking-tight">Spending Efficiency</h3>
+              <div className="flex items-center gap-4 text-xs font-semibold bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-sm bg-[#696969]"></div>
+                  <span className="text-slate-600">Share of Spend</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-sm bg-[#ff8b35]"></div>
+                  <span className="text-slate-600">Share of Effect</span>
+                </div>
+              </div>
+            </div>
+            <div className="h-[400px] w-full rounded-2xl overflow-hidden relative z-0">
+              <Plot
+                data={updatedSosGraphData}
+                useResizeHandler
+                style={{ width: "100%", height: "100%" }}
+                layout={{
+                  autosize: true,
+                  margin: { l: 50, r: 30, t: 20, b: 120 },
+                  paper_bgcolor: 'rgba(0,0,0,0)',
+                  plot_bgcolor: 'rgba(0,0,0,0)',
+                  xaxis: {
+                    showgrid: false,
+                    zeroline: false,
+                    showline: true,
+                    linecolor: '#e2e8f0',
+                    tickangle: -45,
+                    automargin: true,
+                    tickfont: { size: 10 }
+                  },
+                  yaxis: { showgrid: true, gridcolor: '#f1f5f9', zeroline: false },
+                  showlegend: false
+                }}
+                config={{ displayModeBar: false }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+export default Neptune;

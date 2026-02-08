@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 // SideBar moved to Layout
 import { useForecast } from "@/context/ForecastContext/ForecastContext";
-import SalesTrendChart from "@/components/planning/SalesTrendChart ";
+import SalesTrendChart from "@/components/planning/SalesTrendChart";
 import ForecastTable from "@/components/planning/ForecastTable";
 import ForecastBreakupTable, { ConsensusBridge, ForecastBridge } from "@/components/planning/ForecastBreakupTable";
 

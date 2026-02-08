@@ -4,7 +4,7 @@ import { useSidebar } from "@/context/sidebar/SidebarContext";
 import {
     Menu, ChevronLeft, ChevronRight, Gauge, FilePlus, Calendar,
     BarChart2, BarChart3, AlertCircle, ClipboardList, ShoppingCart, LogOut, Database, TrendingUp, ChevronDown, DollarSign, Activity,
-    Hammer, Package, CheckCircle, Clipboard, Building
+    Hammer, Package, CheckCircle, Clipboard, Building, Brain
 } from "lucide-react";
 import { useAuth } from "@/context/auth/AuthContext";
 import Logo from "@/assets/Login/Favicon.png";
@@ -43,7 +43,7 @@ const SideBar = () => {
             icon: DollarSign,
             children: [
                 { label: "Market Mix Modeling", path: "/marketMixModeling", icon: BarChart2 },
-                // { label: "CEO Dashboard", path: "/ceoDashboard", icon: Gauge },
+                { label: "CEO Dashboard", path: "/ceoDashboard", icon: Gauge },
                 { label: "Pricing Analytics", path: "/pricingAnalytics", icon: TrendingUp },
                 { label: "TPO", path: "/tradePromotion", icon: TrendingUp },
                 { label: "NRM Dashboard", path: "/planningAnalyst", icon: BarChart3 },
@@ -124,9 +124,13 @@ const SideBar = () => {
                     {/* Header */}
                     <div className="p-4 flex justify-between items-center border-b border-white/10 bg-white/5 backdrop-blur-sm">
                         {isSidebarOpen && (
-                            <div className="flex items-center gap-3 animate-in fade-in duration-300">
-                                <img src={Logo} alt="Logo" className="w-8 h-8" />
-                                <span className="text-xl font-bold text-white tracking-wide font-[Montserrat] whitespace-nowrap">NowCast AI</span>
+                            <div className="flex flex-col gap-2 animate-in fade-in duration-500">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-1.5 shadow-lg border border-white/10">
+                                        <Brain size={18} className="text-white" />
+                                    </div>
+                                    <span className="text-lg font-bold text-white tracking-tight font-[Montserrat] whitespace-nowrap">IntelliMark AI</span>
+                                </div>
                             </div>
                         )}
                         <button type="button" onClick={toggleSidebar} className="p-1.5 hover:bg-white/10 rounded-lg transition-colors text-slate-400 hover:text-white">

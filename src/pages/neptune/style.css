@@ -1,0 +1,293 @@
+.neptuneMain {
+  width: 100%;
+  min-height: auto;
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 0;
+  background-color: transparent;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif !important;
+}
+
+.neptuneMain * {
+  box-sizing: border-box;
+}
+
+.neptuneMain h5 {
+  margin-bottom: 0px !important;
+}
+
+.neptuneMain hr {
+  margin: 0.6rem 0 !important;
+}
+
+.neptuneMain p {
+  margin-bottom: 0.6rem !important;
+}
+
+/* Glassmorphism utility for sections if needed, though module css handles cards */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  border-radius: 16px;
+  border: 1px solid rgba(226, 232, 240, 0.6);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.upr-section {
+  padding: 3vh 0;
+  align-items: center;
+}
+
+.p-dropdown-items {
+  margin-bottom: 0px
+}
+
+.primary-button {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #055a9e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  /* Softer radius */
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(5, 90, 158, 0.2);
+}
+
+.primary-button:hover {
+  background-color: #003f73;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(5, 90, 158, 0.3);
+}
+
+.secondary-button {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: white;
+  color: black;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.secondary-button:hover {
+  color: black;
+  background-color: #f8fafc;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.export-button {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: white;
+  color: black;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.export-button:hover {
+  color: black;
+  background-color: #f8fafc;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.btn-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.7vh 1vw;
+  background-color: rgba(255, 240, 229, 0.8);
+  /* lighter bg matching theme */
+  border-radius: 10px;
+  backdrop-filter: blur(2px);
+}
+
+.btn-text {
+  font-size: 1.1vw;
+  color: #FF6B00;
+}
+
+.btn1 {
+  color: white;
+  padding: 1.2vh 1vw;
+  margin-left: 20px;
+  background-color: black;
+  border: 1px solid transparent;
+  border-radius: 5px;
+}
+
+.mid-text {
+  width: 100%;
+  padding: 1vh 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(222, 220, 220, 0.5);
+  /* semi-transparent */
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.left-part-text {
+  font-size: 1vw;
+  margin-left: 2%;
+}
+
+.left-part-text h3 {
+  font-weight: 600;
+  font-size: 1vw;
+}
+
+.right-part-text {
+  font-size: 0.9vw;
+  margin-right: 2%;
+}
+
+.right-part-text h3 {
+  font-weight: 600;
+  font-size: 1vw;
+}
+
+.mid-lwr-section {
+  width: 100%;
+  padding: 1vh 0;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 2vh;
+}
+
+.mid-lwr-section-text {
+  margin-right: 4%;
+}
+
+.mid-lwr-section-text h3 {
+  font-size: 1vw;
+}
+
+.mid-lwr-section-boxes {
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  gap: 2%;
+}
+
+.mid-lwr-box-1,
+.mid-lwr-box-2,
+.mid-lwr-box-3,
+.mid-lwr-box-4 {
+  display: flex;
+  justify-content: center;
+  align-items: left;
+  flex-direction: column;
+}
+
+.mid-lwr-box-1 h3,
+.mid-lwr-box-2 h3,
+.mid-lwr-box-3 h3,
+.mid-lwr-box-4 h3 {
+  font-weight: 500;
+  text-align: left;
+  font-size: 0.8vw;
+  margin-bottom: 2px;
+}
+
+.mid-lwr-box-1 input,
+.mid-lwr-box-2 input,
+.mid-lwr-box-3 input,
+.mid-lwr-box-4 input {
+  padding: 1vh;
+  background-color: #f1f5f9;
+  /* slate-100 */
+  border-radius: 5px;
+  border: 1px solid #e2e8f0;
+}
+
+.mid-lwr-btn-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mid-lwr-btn {
+  color: white;
+  padding: 1.5vh 2.2vw;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background-color: #FF6B00;
+  transition: all 0.3s ease;
+}
+
+.mid-lwr-btn:hover {
+  background-color: #ff7a1b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(255, 107, 0, 0.2);
+}
+
+.lwr-section {
+  width: 100%;
+  padding: 1vw;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  /* Add card style to this section if it acts as a container */
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  border-radius: 16px;
+  border: 1px solid rgba(226, 232, 240, 0.6);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  margin-top: 1rem;
+}
+
+.lwr-section-box-1 {
+  width: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  margin-left: 20px;
+  background-color: #FED71F;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.lwr-section-left-part {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin: 10px;
+}
+
+.text-1 {
+  font-weight: 500;
+  font-size: 0.8vw;
+}
+
+.text-2 {
+  font-weight: 700;
+  font-size: 1.5vw;
+}
+
+.lwr-section-box-2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

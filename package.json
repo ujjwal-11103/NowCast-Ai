@@ -86,7 +86,7 @@
     "eslint-plugin-react-refresh": "^0.4.5",
     "globals": "^13.24.0",
     "postcss": "^8.4.32",
-    "tailwindcss": "latest",
+    "tailwindcss": "^3.4.17",
     "vite": "latest"
   }
 }
