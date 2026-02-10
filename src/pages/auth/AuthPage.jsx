@@ -29,7 +29,7 @@ const AuthPage = () => {
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-2xl border border-white/20">
               <Brain size={24} className="text-white" />
             </div>
-            <span className="text-3xl font-bold text-white tracking-tight">IntelliMark AI</span>
+            <span className="text-3xl font-bold text-white tracking-tight">IntelliMark</span>
           </div>
 
           <p className="text-xl text-slate-300 font-light tracking-wide">
@@ -49,7 +49,7 @@ const AuthPage = () => {
                 <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                   <Brain size={14} className="text-white" />
                 </div>
-                <span className="text-xl font-bold text-white/90">IntelliMark AI</span>
+                <span className="text-xl font-bold text-white/90">IntelliMark</span>
               </div>
               <p className="text-slate-400 text-sm">Revenue Growth AI</p>
             </div>

@@ -146,11 +146,11 @@ const App = () => {
                   </ProtectedRoute>
                 } />
 
-                <Route path="/ceoDashboard" element={
+                {/* <Route path="/ceoDashboard" element={
                   <ProtectedRoute>
                     <CEODashboard />
                   </ProtectedRoute>
-                } />
+                } /> */}
 
                 <Route path="/pricingAnalytics" element={
                   <ProtectedRoute>

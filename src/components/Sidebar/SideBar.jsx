@@ -43,7 +43,7 @@ const SideBar = () => {
             icon: DollarSign,
             children: [
                 { label: "Market Mix Modeling", path: "/marketMixModeling", icon: BarChart2 },
-                { label: "CEO Dashboard", path: "/ceoDashboard", icon: Gauge },
+                // { label: "CEO Dashboard", path: "/ceoDashboard", icon: Gauge },
                 { label: "Pricing Analytics", path: "/pricingAnalytics", icon: TrendingUp },
                 { label: "TPO", path: "/tradePromotion", icon: TrendingUp },
                 { label: "NRM Dashboard", path: "/planningAnalyst", icon: BarChart3 },
@@ -129,7 +129,7 @@ const SideBar = () => {
                                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-1.5 shadow-lg border border-white/10">
                                         <Brain size={18} className="text-white" />
                                     </div>
-                                    <span className="text-lg font-bold text-white tracking-tight font-[Montserrat] whitespace-nowrap">IntelliMark AI</span>
+                                    <span className="text-lg font-bold text-white tracking-tight font-[Montserrat] whitespace-nowrap">IntelliMark</span>
                                 </div>
                             </div>
                         )}
