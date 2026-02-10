@@ -156,7 +156,7 @@ const TradePromotion = () => {
                 }`,
             },
           ],
-          navText: "Invest More",
+
         };
       });
 
@@ -232,7 +232,7 @@ const TradePromotion = () => {
             label: "Budget",
             data: budgetData,
             backgroundColor: "#2249FF",
-            barThickness: 5,
+
             borderRadius: 6,
             order: 2,
             yAxisID: "y",
