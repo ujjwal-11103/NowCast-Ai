@@ -485,75 +485,10 @@ const Neptune = () => {
                 </Select>
               </div>
 
-              <MyVerticallyCenteredModal
-                show={modalShow}
-                onHide={() => setModalShow(false)}
-                sendDataToParent={(data) => {
-                  setSalesTarget(data);
-                  setBarGraphOptimalBudget(barGraphData.optimal_budget);
-                  setOptimalROMI(salesTarget / (barGraphData.optimal_budget / 1000000));
-                  setAllocatedOptimal(true);
-                }}
-              />
-
-              <div className="flex items-center gap-3">
-                {/* Sales Target Button */}
-                <button
-                  onClick={() => setModalShow(true)}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-xl transition-all shadow-md shadow-blue-600/20 active:scale-95"
-                >
-                  <Target size={16} />
-                  <span>Optimize For Sales Target</span>
-                </button>
-
-                {!optimizeAllocate ? (
-                  <button
-                    onClick={() => setOptimizeAllocate(true)}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-semibold text-sm rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95"
-                  >
-                    <Settings size={16} />
-                    <span>Optimize Budget</span>
-                  </button>
-                ) : !runSimulator ? (
-                  <button
-                    onClick={() => {
-                      setOpen(!open);
-                      setRunSimulator(true);
-                    }}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm rounded-xl transition-all shadow-md shadow-orange-500/20 active:scale-95"
-                  >
-                    <Play size={16} fill="white" />
-                    <span>Run Simulator</span>
-                  </button>
-                ) : (
-                  <div className="flex items-center gap-3 bg-orange-50 px-4 py-2 rounded-xl border border-orange-100">
-                    <span className="flex items-center gap-2 text-orange-600 font-bold text-sm">
-                      <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-                      Simulator On
-                    </span>
-                    <button
-                      onClick={() => {
-                        setOpen(!open);
-                        setRunSimulator(false);
-                        setSimulate({ TV: 0, Digital: 0, Sponsorship: 0, product_mrp: 0 });
-                      }}
-                      className="flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-slate-800 bg-white px-2 py-1 rounded-lg border border-slate-200 transition-colors ml-2 shadow-sm"
-                    >
-                      <div className="w-2 h-2 bg-slate-400 rounded-sm"></div>
-                      Stop
-                    </button>
-                  </div>
-                )}
-
-                <button className="flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-semibold text-sm rounded-xl transition-all shadow-sm active:scale-95">
-                  <Download size={16} />
-                  <span>Export</span>
-                </button>
-              </div>
             </div>
 
             {/* Optimization Active Banner */}
-            {(optimizeAllocate || salesTarget) && (
+            {(optimizeAllocate || salesTarget > 0) && (
               <div className="flex justify-between items-center bg-indigo-50 px-6 py-3 rounded-xl border border-indigo-100 animate-in fade-in slide-in-from-top-2">
                 <div className="text-indigo-900 font-bold text-sm flex items-center gap-2">
                   <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
@@ -1056,7 +991,7 @@ const Neptune = () => {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 export default Neptune;

@@ -19,8 +19,8 @@ const DUMMY_CREDENTIALS = [
     password: "admin123",
   },
   {
-    username: "rahulranjan@intellimark.ai",
-    password: "intellimark123",
+    username: "uniliverDemo",
+    password: "MyDogBarksAt3PMSharp!",
   }
 ];
 
