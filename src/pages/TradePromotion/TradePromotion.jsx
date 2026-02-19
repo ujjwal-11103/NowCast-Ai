@@ -749,13 +749,14 @@ const TradePromotion = () => {
               {/* Left Column (Cards + Chart) */}
               <div className="col-span-12 xl:col-span-8 flex flex-col gap-3 h-full">
                 {/* Metric Cards Row */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-stretch">
                   {data?.cardsTradeData?.map((card, index) => (
-                    <div key={index} className="bg-white border border-slate-200/60 rounded-2xl p-1 shadow-sm hover:shadow-md transition-all duration-300">
+                    <div key={index} className="bg-white border border-slate-200/60 rounded-2xl p-1 shadow-sm hover:shadow-md transition-all duration-300 h-full">
                       <CardComponent
                         image={card?.image}
                         cardDetails={card?.cardDetails}
                         chart={card?.chart}
+                        customClass="!h-full"
                       />
                     </div>
                   ))}
