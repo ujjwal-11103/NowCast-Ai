@@ -19,7 +19,7 @@ const DUMMY_CREDENTIALS = [
     password: "admin123",
   },
   {
-    username: "uniliverDemo",
+    username: "unileverDemo",
     password: "MyDogBarksAt3PMSharp!",
   }
 ];
