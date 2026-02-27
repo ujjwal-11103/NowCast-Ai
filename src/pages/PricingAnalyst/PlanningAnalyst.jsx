@@ -1374,7 +1374,7 @@ const PlanningAnalyst = () => {
             </div>
 
             {/* AI Chatbot */}
-            <div className="w-full h-[600px] mt-8 mb-8 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-indigo-100/50 bg-gradient-to-b from-white to-slate-50/50">
+            <div className="w-full h-[600px] rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-indigo-100/50 bg-gradient-to-b from-white to-slate-50/50">
                 <Chatbot
                     filters={{}}
                     compact={true}

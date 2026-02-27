@@ -22,13 +22,14 @@ import Reporting from './pages/Reporting/Reporting';
 import ErrorAnalysis from './pages/Error Analysis/ErrorAnalysis';
 import Norms from './pages/Norms/Norms';
 import AuthPage from './pages/auth/AuthPage';
-
+import ForecastTestPage from './testing/ForecastTestPage';
+import PricingPage from './testing/PricingPage';
 import MEIO from './pages/MEIO/MEIO';
 import Chemical from './pages/Chemical/ChemicalApp';
 import CVR from './pages/CVR/CVRApp';
 import SalesPerformance from './pages/Sales/SalesPerformance';
 import PricingAnalytics from './pages/PricingAnalyst/PricingAnalytics';
-// import MarketMixModeling from './pages/PricingAnalyst/MarketMixModeling';
+import MarketMixModeling from './pages/PricingAnalyst/MarketMixModeling';
 import CEODashboard from './pages/PricingAnalyst/CEODashboard';
 import PlanningAnalyst from './pages/PricingAnalyst/PlanningAnalyst';
 import CustomReporting from './pages/Reporting/CustomReporting';

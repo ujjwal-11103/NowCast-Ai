@@ -1,6 +1,5 @@
 import { Card } from "@/components/ui/card";
 import LoginForm from './LoginForm';
-import { Brain } from 'lucide-react';
 
 const AuthPage = () => {
   return (
@@ -17,23 +16,16 @@ const AuthPage = () => {
         {/* logo + tagline */}
         <div className="relative z-10 text-center animate-slide-fade-in">
           {/* animated gradient text that always stays visible */}
-          <h1 className="text-6xl font-extrabold mb-4 tracking-tight flex items-center justify-center gap-4">
-            <span className="text-white">NowCast</span>
+          <h1 className="text-6xl font-extrabold mb-6 tracking-tight">
+            <span className="text-white">NowCast&nbsp;</span>
             <span className="bg-gradient-to-r from-blue-400 via-violet-500 to-fuchsia-500
                    bg-[length:200%_200%] bg-clip-text text-transparent animate-gradient-x">
               Ai
             </span>
           </h1>
 
-          <div className="flex items-center justify-center gap-3 mb-6 animate-slide-fade-in delay-200">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-2xl border border-white/20">
-              <Brain size={24} className="text-white" />
-            </div>
-            <span className="text-3xl font-bold text-white tracking-tight">IntelliMark</span>
-          </div>
-
           <p className="text-xl text-slate-300 font-light tracking-wide">
-            Revenue Growth AI
+            forecasting made easy
           </p>
           <div className="mt-12 w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto rounded-full" />
         </div>
@@ -44,15 +36,8 @@ const AuthPage = () => {
         <div className="w-full max-w-md">
           {/* mobile header */}
           <div className="lg:hidden text-center mb-8">
-            <div className="flex flex-col items-center gap-2">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                  <Brain size={14} className="text-white" />
-                </div>
-                <span className="text-xl font-bold text-white/90">IntelliMark</span>
-              </div>
-              <p className="text-slate-400 text-sm">Revenue Growth AI</p>
-            </div>
+            <h1 className="text-4xl font-bold text-white mb-2">NowCast Ai</h1>
+            <p className="text-slate-400">forecasting made easy</p>
           </div>
 
           {/* card */}

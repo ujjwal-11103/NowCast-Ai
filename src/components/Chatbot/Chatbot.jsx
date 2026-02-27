@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+﻿import React, { useState, useRef, useEffect } from "react";
 import { Send, Sparkles, Zap, FileText, BarChart3, Bot, User, RefreshCcw, Maximize2, Minimize2 } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -78,7 +78,7 @@ const Chatbot = ({ filters = {}, externalMode, setExternalMode, compact = false,
 
             if (nrmMode) {
                 // NRM MODE: Localhost Endpoint & Specific Payload
-                apiUrl = `/api/whatifscenario`;
+                apiUrl = `https://nowcast.intellimark.ai/api/whatifscenario`;
                 payload = {
                     question: userMessage.text,
                     owner: "kiran",

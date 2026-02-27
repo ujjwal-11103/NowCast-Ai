@@ -82,62 +82,60 @@ function ViewDetailPopup({ visible, closeAction, rowData }) {
 
     return (
         <Dialog open={visible} onOpenChange={closeAction}>
-            <DialogContent className="sm:max-w-[85vw] !max-w-[85vw] w-full p-0 bg-white shadow-2xl border-none overflow-hidden transition-all duration-300">
-                <DialogHeader className="p-8 border-b bg-slate-50/50">
-                    <DialogTitle className="flex items-center gap-3 text-2xl font-bold text-slate-900">
-                        <div className="p-2 bg-indigo-100 rounded-lg">
-                            <img src={home} className="w-6 h-6" />
-                        </div>
-                        <span>Store Insights & Recommendations</span>
+            <DialogContent className="max-w-[65vw] p-0 bg-white">
+                <DialogHeader className="p-4 border-b">
+                    <DialogTitle className="flex items-center gap-2">
+                        <img src={home} className="w-5 h-5" />
+                        <span>Outlet Details</span>
                     </DialogTitle>
                 </DialogHeader>
 
-                <div className="flex h-[450px] w-full">
-                    <div className="w-2/3 p-10 flex flex-col gap-6">
-                        <div className="flex flex-wrap gap-8 border-b border-slate-100 pb-8">
+                <div className="flex h-[335px] w-full">
+                    <div className="w-2/3 p-6 flex flex-col gap-1">
+                        <div className="flex flex-wrap gap-2 h-[30%] border-b border-gray-300 pb-2">
                             {[
-                                { label: "Outlet Name", value: outletData?.Outlet },
-                                { label: "Customer Group", value: outletData?.Customer },
-                                { label: "Distribution Channel", value: outletData?.Channel },
+                                { label: "Outlet", value: outletData?.Outlet },
+                                { label: "Customer", value: outletData?.Customer },
+                                { label: "Channel", value: outletData?.Channel },
                                 { label: "Forecasted Sales", value: formatNumber(outletData?.forecasted_target) },
                                 { label: "Achieved Target", value: formatNumber(outletData?.achieved_target) },
-                                { label: "Status Indicator", value: outletData?.Status, color: true }
+                                { label: "Status", value: outletData?.Status, color: true }
                             ].map((item, idx) => (
-                                <div key={idx} className="min-w-[150px] flex-1">
-                                    <h5 className="font-bold text-[12px] text-slate-400 font-[Montserrat] uppercase tracking-wider mb-1">{item.label}</h5>
-                                    <p className={`font-extrabold text-[16px] font-[Montserrat] text-left leading-tight ${item.color ?
-                                        (item.value === "No Alert" ? "text-emerald-600" :
-                                            item.value === "Lower than Geo Growth" ? "text-amber-500" :
-                                                item.value === "Regulars not selling" ? "text-rose-600" : "text-slate-900") : "text-slate-900"}`}>
-                                        {item.value || "N/A"}
+                                <div key={idx} className="w-[30%]">
+                                    <h5 className="font-medium text-[10px] text-gray-500 font-[Montserrat]">{item.label}</h5>
+                                    <p className={`font-semibold text-[12px] font-[Montserrat] text-left ${item.color ?
+                                        (item.value === "No Alert" ? "text-green-600" :
+                                            item.value === "Lower than Geo Growth" ? "text-orange-500" :
+                                                item.value === "Regulars not selling" ? "text-red-600" : "text-black") : "text-[#1B1A1C]"}`}>
+                                        {item.value}
                                     </p>
                                 </div>
                             ))}
                         </div>
 
-                        <div className="flex gap-10 h-full mt-4">
+                        <div className="flex gap-2 h-[70%] mt-2">
                             <div className="w-1/2">
-                                <h5 className="font-bold text-sm font-[Montserrat] text-slate-800 mb-4 border-l-4 border-emerald-500 pl-3">EASY TO EARN RECOMMENDATIONS</h5>
-                                <div className="h-[220px] overflow-auto pr-2 custom-scrollbar">
+                                <h5 className="font-semibold text-[11px] font-[Montserrat]">Easy To Earn Recommendations</h5>
+                                <div className="h-[90%] overflow-auto py-4">
                                     {goodProducts.map((product, index) => (
-                                        <div key={index} className="w-full h-[50px] bg-slate-50 border border-slate-100 rounded-xl flex items-center mb-3 relative group hover:bg-emerald-50 hover:border-emerald-100 transition-all cursor-pointer">
-                                            <div className="absolute left-[2%] top-[-10px] scale-125">
+                                        <div key={index} className="w-full h-[35px] bg-[#F7F7F7] rounded flex items-center mb-2 relative cursor-pointer">
+                                            <div className="absolute left-[4%] top-[-11px]">
                                                 {dslrICon}
                                             </div>
-                                            <h6 className="font-bold text-[13px] font-[Montserrat] text-slate-700 pl-[60px] m-0">{product}</h6>
+                                            <h6 className="font-semibold text-[9px] font-[Montserrat] pl-[50px] m-0">{product}</h6>
                                         </div>
                                     ))}
                                 </div>
                             </div>
                             <div className="w-1/2">
-                                <h5 className="font-bold text-sm font-[Montserrat] text-slate-800 mb-4 border-l-4 border-rose-500 pl-3">EASY TO SELL RECOMMENDATIONS</h5>
-                                <div className="h-[220px] overflow-auto pr-2 custom-scrollbar">
+                                <h5 className="font-semibold text-[11px] font-[Montserrat]">Easy To Sell Recommendations</h5>
+                                <div className="h-[90%] overflow-auto py-4">
                                     {badProducts.map((product, index) => (
-                                        <div key={index} className="w-full h-[50px] bg-slate-50 border border-slate-100 rounded-xl flex items-center mb-3 relative group hover:bg-rose-50 hover:border-rose-100 transition-all cursor-pointer">
-                                            <div className="absolute left-[2%] top-[-10px] scale-125">
+                                        <div key={index} className="w-full h-[35px] bg-[#F7F7F7] rounded flex items-center mb-2 relative cursor-pointer">
+                                            <div className="absolute left-[4%] top-[-11px]">
                                                 {p2picon}
                                             </div>
-                                            <h6 className="font-bold text-[13px] font-[Montserrat] text-slate-700 pl-[60px] m-0">{product}</h6>
+                                            <h6 className="font-semibold text-[9px] font-[Montserrat] pl-[50px] m-0">{product}</h6>
                                         </div>
                                     ))}
                                 </div>
@@ -145,25 +143,23 @@ function ViewDetailPopup({ visible, closeAction, rowData }) {
                         </div>
                     </div>
 
-                    <div className="w-1/3 bg-slate-100/50 border-l flex flex-col justify-center items-center gap-8 p-6">
-                        <div className="h-[45%] w-full bg-emerald-600 rounded-xl flex relative shadow-lg shadow-emerald-100 group hover:scale-[1.02] transition-transform">
-                            <div className="relative flex items-center h-full">
+                    <div className="w-1/3 bg-[#F1F1F1] flex flex-col justify-center items-center gap-5 p-2">
+                        <div className="h-[40%] w-[90%] bg-[#268F5F] rounded-r-md flex relative">
+                            <div className="relative flex items-center">
                                 {shadowIcon}
-                                <div className="absolute left-[20px] scale-150">{hornIcon}</div>
+                                <div className="absolute left-[15px]">{hornIcon}</div>
                             </div>
-                            <div className="flex flex-col justify-center ml-4 pr-6">
-                                <span className="text-[10px] font-bold text-emerald-100 uppercase tracking-widest mb-1">PROMOTION CHANNEL</span>
-                                <h5 className="font-extrabold text-[22px] text-white font-[Montserrat] leading-tight">{outletData?.promotion_channel || "None"}</h5>
+                            <div className="flex items-center ml-5 pl-6">
+                                <h5 className="font-semibold text-[20px] text-white font-[Montserrat]">{outletData?.promotion_channel}</h5>
                             </div>
                         </div>
-                        <div className="h-[45%] w-full bg-white border border-slate-200 rounded-xl flex relative shadow-lg shadow-slate-100 group hover:scale-[1.02] transition-transform">
-                            <div className="relative flex items-center h-full">
+                        <div className="h-[40%] w-[90%] bg-[#D6D6D6] rounded-r-md flex relative">
+                            <div className="relative flex items-center">
                                 {shadowIcon}
-                                <div className="absolute left-[20px] scale-150">{impactIcon}</div>
+                                <div className="absolute left-[15px]">{impactIcon}</div>
                             </div>
-                            <div className="flex flex-col justify-center ml-4 pr-6">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">STRATEGIC COMMENT</span>
-                                <h5 className="font-extrabold text-[22px] text-slate-800 font-[Montserrat] leading-tight">{outletData?.Comment || "N/A"}</h5>
+                            <div className="flex items-center ml-5 pl-6">
+                                <h5 className="font-semibold text-[20px] text-black font-[Montserrat]">{outletData?.Comment}</h5>
                             </div>
                         </div>
                     </div>

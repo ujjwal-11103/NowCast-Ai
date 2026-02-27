@@ -59,3 +59,14 @@ meio_test_data.csv
 
 # Documentation figures (if generated)
 figs/
+
+
+.agent/
+.gemini/
+.gsd/
+GSD-STYLE.md
+PROJECT_RULES.md
+adapters/
+docs/
+model_capabilities.yaml
+scripts/
