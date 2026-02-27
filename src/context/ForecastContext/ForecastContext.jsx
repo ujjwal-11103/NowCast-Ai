@@ -31,7 +31,7 @@ export const ForecastProvider = ({ children }) => {
       try {
         setIsLoading(true);
         // Use relative path to utilize the Vite proxy
-        const response = await fetch(`https://nowcast.intellimark.ai/data-api/planning/data`);
+        const response = await fetch(`/data-api/planning/data`);
         const result = await response.json();
 
         if (result.success && result.data) {
