@@ -86,13 +86,13 @@ const Chatbot = ({ filters = {}, externalMode, setExternalMode, compact = false,
                 };
             } else if (activeMode === "explorer") {
                 // EXPLORER MODE: Specific Endpoint & Simple Payload
-                apiUrl = `/explorer/query`;
+                apiUrl = `https://nowcast.intellimark.ai/explorer/query`;
                 payload = {
                     question: userMessage.text
                 };
             } else if (activeMode === "default") {
                 // CONSENSUS MODE: New Multi-Update Consensus API
-                apiUrl = '/api/update-consensus-multi';
+                apiUrl = `https://nowcast.intellimark.ai/api/update-consensus-multi`;
                 payload = {
                     question: userMessage.text,
                     owner: "Analyst Name",
@@ -100,7 +100,7 @@ const Chatbot = ({ filters = {}, externalMode, setExternalMode, compact = false,
                 };
             } else {
                 // OTHER STANDARD MODES (What-If, RCA): Unified Chat Endpoint
-                apiUrl = `/api/chat`;
+                apiUrl = `https://nowcast.intellimark.ai/api/chat`;
 
                 // Prepare Common Data for Standard Modes
                 const cleanFilters = Object.fromEntries(

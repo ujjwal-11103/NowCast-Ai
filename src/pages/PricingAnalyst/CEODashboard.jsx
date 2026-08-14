@@ -113,7 +113,7 @@ const CEODashboard = () => {
     useEffect(() => {
         const fetchSellingProducts = async () => {
             try {
-                const response = await axios.get("http://13.71.126.202:8085/alfred/e2e-e2s/");
+                const response = await axios.get("http://20.235.178.245:8085/alfred/e2e-e2s/");
                 if (response.data) setSellingProducts(response.data);
             } catch (error) {
                 console.error("Error fetching selling products:", error);
@@ -126,7 +126,7 @@ const CEODashboard = () => {
     useEffect(() => {
         const fetchDonutGraphData = async () => {
             try {
-                const response = await axios.get("http://13.71.126.202:8000/teresa/eda-plots");
+                const response = await axios.get("http://20.235.178.245:8080/teresa/eda-plots");
                 if (response.data) setDonutGraphData(response.data);
             } catch (error) {
                 console.error("Error fetching donut data:", error);
@@ -142,7 +142,7 @@ const CEODashboard = () => {
             setCustomerData(null);
 
             try {
-                const response = await axios.get("http://13.71.126.202:8085/alfred/lat-long");
+                const response = await axios.get("http://20.235.178.245:8085/alfred/lat-long");
                 if (response.data && response.data.length > 0) {
                     const mappedData = response.data.map(item => ({
                         ...item,

@@ -49,13 +49,13 @@ export default defineConfig(({ mode }) => {
           secure: false
         },
         '/alfred': {
-          target: 'http://13.71.126.202:8085',
+          target: 'http://20.235.178.245:8085',
           changeOrigin: true,
           secure: false,
           rewrite: (path) => path.replace(/^\/alfred/, '')
         },
         '/neptune': {
-          target: 'http://13.71.126.202:8082',
+          target: 'http://20.235.178.245:8082',
           changeOrigin: true,
           secure: false
         },
